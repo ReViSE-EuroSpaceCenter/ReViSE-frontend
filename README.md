@@ -1,3 +1,6 @@
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ReViSE-EuroSpaceCenter_ReViSE-frontend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ReViSE-EuroSpaceCenter_ReViSE-frontend)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ReViSE-EuroSpaceCenter_ReViSE-frontend&metric=coverage)](https://sonarcloud.io/summary/new_code?id=ReViSE-EuroSpaceCenter_ReViSE-frontend)
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
