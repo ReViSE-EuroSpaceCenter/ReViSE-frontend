@@ -1916,13 +1916,14 @@
     invariant "^2.2.4"
     nullthrows "^1.1.1"
 
-"@react-navigation/core@^7.12.3":
-  version "7.12.3"
-  resolved "https://registry.npmjs.org/@react-navigation/core/-/core-7.12.3.tgz"
-  integrity sha512-oEz5sL8KTYmCv8SQX1A4k75A7VzYadOCudp/ewOBqRXOmZdxDQA9JuN7baE9IVyaRW0QTVDy+N/Wnqx9F4aW6A==
+"@react-navigation/core@^7.13.2":
+  version "7.13.2"
+  resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-7.13.2.tgz#25c67bf578eb4329b8bf6c4ed9ef348871964f95"
+  integrity sha512-A0pFeZlKp+FJob2lVr7otDt3M4rsSJrnAfXWoWR9JVeFtfEXsH/C0s7xtpDCMRUO58kzSBoTF1GYzoMC5DLD4g==
   dependencies:
-    "@react-navigation/routers" "^7.5.1"
+    "@react-navigation/routers" "^7.5.2"
     escape-string-regexp "^4.0.0"
+    fast-deep-equal "^3.1.3"
     nanoid "^3.3.11"
     query-string "^7.1.3"
     react-is "^19.1.0"
@@ -1938,21 +1939,21 @@
     use-latest-callback "^0.2.4"
     use-sync-external-store "^1.5.0"
 
-"@react-navigation/native@^7.1.16":
-  version "7.1.16"
-  resolved "https://registry.npmjs.org/@react-navigation/native/-/native-7.1.16.tgz"
-  integrity sha512-JnnK81JYJ6PiMsuBEshPGHwfagRnH8W7SYdWNrPxQdNtakkHtG4u0O9FmrOnKiPl45DaftCcH1g+OVTFFgWa0Q==
+"@react-navigation/native@^7.1.21":
+  version "7.1.21"
+  resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-7.1.21.tgz#77228e0c556a35e5d6aa7e571a17465ae796f789"
+  integrity sha512-mhpAewdivBL01ibErr91FUW9bvKhfAF6Xv/yr6UOJtDhv0jU6iUASUcA3i3T8VJCOB/vxmoke7VDp8M+wBFs/Q==
   dependencies:
-    "@react-navigation/core" "^7.12.3"
+    "@react-navigation/core" "^7.13.2"
     escape-string-regexp "^4.0.0"
     fast-deep-equal "^3.1.3"
     nanoid "^3.3.11"
     use-latest-callback "^0.2.4"
 
-"@react-navigation/routers@^7.5.1":
-  version "7.5.1"
-  resolved "https://registry.npmjs.org/@react-navigation/routers/-/routers-7.5.1.tgz"
-  integrity sha512-pxipMW/iEBSUrjxz2cDD7fNwkqR4xoi0E/PcfTQGCcdJwLoaxzab5kSadBLj1MTJyT0YRrOXL9umHpXtp+Dv4w==
+"@react-navigation/routers@^7.5.2":
+  version "7.5.2"
+  resolved "https://registry.yarnpkg.com/@react-navigation/routers/-/routers-7.5.2.tgz#c885a66a76286f1c4c94261814ceddad628fbbea"
+  integrity sha512-kymreY5aeTz843E+iPAukrsOtc7nabAH6novtAPREmmGu77dQpfxPB2ZWpKb5nRErIRowp1kYRoN2Ckl+S6JYw==
   dependencies:
     nanoid "^3.3.11"
 
