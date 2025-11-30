@@ -1,4 +1,4 @@
-describe('Defualt', () => {
+describe('Default', () => {
 
     it('Default true', () => {
         expect(true).toBeTruthy();
