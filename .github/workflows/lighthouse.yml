@@ -12,18 +12,23 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v6
 
-      - name: Wait for Netlify Preview URL
-        uses: jakepartusch/wait-for-netlify-action@v1.4
-        id: netlify
-        with:
-          site_name: revise-frontend.netlify.app
-          max_timeout: 300
+      #- name: Wait for Netlify Preview URL
+      #  uses: jakepartusch/wait-for-netlify-action@v1.4
+      #  id: netlify
+      #  with:
+      #    site_name: revise-frontend.netlify.app
+      #    max_timeout: 300
+
+      - name: Set test URL
+        id: test_url
+        run: echo "url=https://example.com" >> $GITHUB_OUTPUT
 
       - name: Run Lighthouse CI (Mobile)
         id: lhci_mobile
         uses: treosh/lighthouse-ci-action@v12
         with:
-          urls: ${{ steps.netlify.outputs.url }}
+          #urls: ${{ steps.netlify.outputs.url }}
+          urls: ${{ steps.test_url.outputs.url }}
           formFactor: mobile
           uploadArtifacts: true
 
@@ -31,7 +36,8 @@ jobs:
         id: lhci_desktop
         uses: treosh/lighthouse-ci-action@v12
         with:
-          urls: ${{ steps.netlify.outputs.url }}
+          #urls: ${{ steps.netlify.outputs.url }}
+          urls: ${{ steps.test_url.outputs.url }}
           formFactor: desktop
           uploadArtifacts: true
 
@@ -40,7 +46,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const previewUrl = "${{ steps.netlify.outputs.url }}".replace(/\/$/, "");
+            const previewUrl = "${{ steps.test_url.outputs.url }}".replace(/\/$/, "");
     
             const manifestMobile = JSON.parse(`${{ steps.lhci_mobile.outputs.manifest }}`);
             const manifestDesktop = JSON.parse(`${{ steps.lhci_desktop.outputs.manifest }}`);
@@ -99,4 +105,3 @@ jobs:
                 body
               });
             }
-
