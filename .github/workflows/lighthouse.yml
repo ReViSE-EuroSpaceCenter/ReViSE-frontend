@@ -21,7 +21,8 @@ jobs:
 
       - name: Set test URL
         id: test_url
-        run: echo "url=https://example.com" >> $GITHUB_OUTPUT
+        run: |
+          echo "url=https://example.com" >> $GITHUB_OUTPUT
 
       - name: Run Lighthouse CI (Mobile)
         id: lhci_mobile
