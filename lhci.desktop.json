@@ -1,0 +1,15 @@
+{
+  "ci": {
+    "collect": {
+      "numberOfRuns": 1,
+      "settings": {
+        "emulatedFormFactor": "desktop",
+        "throttlingMethod": "devtools"
+      }
+    },
+    "assert": {},
+    "upload": {
+      "target": "temporary-public-storage"
+    }
+  }
+}
