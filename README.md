@@ -1,4 +1,4 @@
-# ReViSE - Recherche de Vie Sur Europe
+# ReViSE - Recherche de Vie Sur Europe - FrontEnd
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ReViSE-EuroSpaceCenter_ReViSE-frontend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ReViSE-EuroSpaceCenter_ReViSE-frontend)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ReViSE-EuroSpaceCenter_ReViSE-frontend&metric=coverage)](https://sonarcloud.io/summary/new_code?id=ReViSE-EuroSpaceCenter_ReViSE-frontend)
@@ -7,6 +7,8 @@
 ## About the project
 
 This project includes the digital component of ReViSE - Recherche de Vie Sur Europe - a board game designed to help secondary students understand how AI functions and its impact on jobs. It is part of an awareness and critical education initiative focused on AI, encouraging collective reflection, experimentation, and practical application. Six teams collaborate to address challenges based on specific AI use cases.
+
+This repository contains the FrontEnd of ReViSE.
 
 ## Getting Started
 
