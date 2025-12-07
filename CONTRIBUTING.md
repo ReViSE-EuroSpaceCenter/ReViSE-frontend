@@ -17,5 +17,6 @@ If not, please create one.
 - Provide a clear description of what your PR does  
 - Make sure your changes don't introduce errors
 - All the tests must pass
+- If you corrected a bug, add a test
 
 Thanks for helping improve the project!
