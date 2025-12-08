@@ -5,15 +5,11 @@ on:
     workflows: ["Run Jest Tests"]
     types: [completed]
 
-  push:
-    branches:
-      - main
 
 jobs:
   eslint:
-    if: >
-      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
-      || (github.event_name == 'push')
+    if: (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+
 
     name: Run ESLint Checks
     runs-on: ubuntu-latest

@@ -16,9 +16,6 @@ on:
     workflows: ["Run Jest Tests"]
     types: [completed]
 
-  push:
-    branches: ["main"]
-
   schedule:
     - cron: '24 14 * * 4'
 
@@ -26,7 +23,6 @@ jobs:
   analyze:
     if: >
       (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
-      || (github.event_name == 'push')
       || (github.event_name == 'schedule')
 
     name: Analyze (${{ matrix.language }})

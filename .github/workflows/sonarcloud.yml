@@ -5,10 +5,6 @@ on:
     workflows: ["Run Jest Tests"]
     types: [completed]
 
-  push:
-    branches:
-      - main
-
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -18,7 +14,6 @@ jobs:
   sonarqube:
     if: >
       (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
-      || (github.event_name == 'push')
       || (github.event_name == 'pull_request')
 
     name: SonarQube
