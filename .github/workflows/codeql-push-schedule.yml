@@ -1,0 +1,11 @@
+name: codeql-push-schedule.yml
+on:
+  push:
+    branches:
+        - main
+  schedule:
+    - cron: '24 14 * * 4'
+
+jobs:
+  analyze:
+    uses: ./.github/workflows/codeql.yml

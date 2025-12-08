@@ -1,0 +1,31 @@
+name: ci-pr-main.yml
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+
+jobs:
+  jest:
+    uses: ./.github/workflows/tests.yml
+
+
+  eslint:
+    needs: jest
+    if: needs.jest.outputs.jest_success == 'true'
+    uses: ./.github/workflows/eslint.yml
+
+
+  lighthouse:
+    if: needs.jest.outputs.jest_success == 'true'
+    uses: ./.github/workflows/lighthouse.yml
+
+  sonar:
+    if: needs.jest.outputs.jest_success == 'true'
+    uses: ./.github/workflows/sonarcloud.yml
+
+  codeql:
+    needs: jest
+    if: needs.jest.outputs.jest_success == 'true'
+    uses: ./.github/workflows/codeql.yml

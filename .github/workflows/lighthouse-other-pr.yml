@@ -1,0 +1,11 @@
+name: lighthouse-other-pr.yml
+on:
+
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches-ignore:
+      - main
+
+jobs:
+  lighthouse-ci:
+    uses: ./.github/workflows/lighthouse.yml

@@ -1,14 +1,19 @@
 name: Run Jest Tests
 
 on:
-  pull_request:
-    branches:
-      - main
-    types: [opened, synchronize, reopened]
+  workflow_call:
+    outputs:
+      jest_success:
+        description: 'Whether Jest tests passed'
+        value: ${{ jobs.test.outputs.jest_success }}
 
 jobs:
   test:
+    name: Run Jest Tests
     runs-on: ubuntu-latest
+    outputs:
+      jest_success: ${{ steps.check.outputs.success }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,4 +28,11 @@ jobs:
         run: npm ci
 
       - name: Run tests
-        run: npm test
+        id: check
+        run: |
+          if npm test; then
+            echo "success=true" >> $GITHUB_OUTPUT
+          else
+            echo "success=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
