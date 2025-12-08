@@ -1,8 +1,9 @@
 name: ESLint
+
 on:
-  pull_request:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["Run Jest Tests"]
+    types: [completed]
 
   push:
     branches:
@@ -10,6 +11,10 @@ on:
 
 jobs:
   eslint:
+    if: >
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+      || (github.event_name == 'push')
+
     name: Run ESLint Checks
     runs-on: ubuntu-latest
     steps:
@@ -27,5 +32,4 @@ jobs:
 
       - name: Run ESLint
         run: npm run lint
-
 
