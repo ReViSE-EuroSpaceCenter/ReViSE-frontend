@@ -1,9 +1,0 @@
-name: eslint-push.yml
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  eslint:
-    uses: ./.github/workflows/eslint.yml
