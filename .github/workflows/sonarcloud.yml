@@ -1,10 +1,9 @@
 name: SonarCloud
 
 on:
-  workflow_run:
-    workflows: ["Run Jest Tests"]
-    types: [completed]
-
+  push:
+    branches:
+      - main
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -12,10 +11,6 @@ permissions:
   contents: read  
 jobs:
   sonarqube:
-    if: >
-      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
-      || (github.event_name == 'pull_request')
-
     name: SonarQube
     runs-on: ubuntu-latest
     steps:

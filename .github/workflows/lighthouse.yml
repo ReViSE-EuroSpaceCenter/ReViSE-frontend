@@ -1,10 +1,6 @@
 name: Lighthouse CI
 
 on:
-  workflow_run:
-    workflows: ["Run Jest Tests"]
-    types: [completed]
-
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -14,9 +10,6 @@ permissions:
 
 jobs:
   lighthouse-ci:
-    if: >
-      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
-      || (github.event_name == 'pull_request')
 
     runs-on: ubuntu-latest
 
