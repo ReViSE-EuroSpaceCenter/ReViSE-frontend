@@ -4,4 +4,8 @@ describe('Default', () => {
         expect(true).toBeTruthy();
     });
 
+    it('Default false', () => {
+        expect(false).toBeFalsy();
+    });
+
 });
