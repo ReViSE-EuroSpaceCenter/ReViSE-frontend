@@ -3,6 +3,10 @@ name: Lighthouse CI
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+    branches-ignore:
+      - main
+
+  workflow_call:
 
 permissions:
   contents: write
