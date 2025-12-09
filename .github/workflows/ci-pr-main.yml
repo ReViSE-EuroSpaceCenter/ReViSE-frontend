@@ -30,4 +30,5 @@ jobs:
     needs: jest
     if: success()
     uses: ./.github/workflows/sonarcloud.yml
-
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
