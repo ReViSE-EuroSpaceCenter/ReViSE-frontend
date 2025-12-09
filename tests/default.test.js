@@ -1,7 +1,7 @@
 describe('Default', () => {
 
     it('Default true', () => {
-        expect(false).toBeTruthy();
+        expect(true).toBeTruthy();
     });
 
     it('Default false', () => {
