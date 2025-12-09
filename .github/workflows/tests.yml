@@ -1,11 +1,12 @@
 name: Run Jest Tests
 
 on:
-  pull_request:
+  push:
     branches:
       - main
+  pull_request:
     types: [opened, synchronize, reopened]
-
+    
 jobs:
   test:
     runs-on: ubuntu-latest
