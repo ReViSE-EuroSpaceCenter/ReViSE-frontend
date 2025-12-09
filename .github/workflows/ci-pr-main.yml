@@ -31,7 +31,3 @@ jobs:
     if: needs.jest.outputs.jest_success == 'true'
     uses: ./.github/workflows/sonarcloud.yml
 
-  codeql:
-    needs: jest
-    if: needs.jest.outputs.jest_success == 'true'
-    uses: ./.github/workflows/codeql.yml
