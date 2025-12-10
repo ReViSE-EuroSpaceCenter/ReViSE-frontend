@@ -20,7 +20,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: '24 14 * * 4'
+    - cron: '01 0 * * 0'
 
 jobs:
   analyze:
