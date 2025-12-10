@@ -16,7 +16,7 @@ If not, please create one.
 - Keep changes focused on a single issue  
 - Provide a clear description of what your PR does  
 - Make sure your changes don't introduce errors
-- All the tests must pass
+- All the tests must pass and the coverage must be of 80% or higher
 - If you corrected a bug, add a test
 
 Thanks for helping improve the project!
