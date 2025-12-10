@@ -8,9 +8,21 @@ If not, please create one.
 
 ## 🔧 How to Contribute
 1. **Fork** the repository  
-2. Create a branch for your changes  
-3. Make your updates  
-4. Open a **Pull Request**, and **link it to the related issue**
+2. Create a branch for your changes named with the GitFlow strategy:
+    - Feature branch: feature/\<story number>_\<developer initials>\_\<descriptor>
+    - Bugfix branch: bugfix/\<ticket>_\<developer initials>\_\<descriptor>
+    - Hotfix branch: hotfix/\<ticket>\_\<developer initials>\_\<descriptor>
+4. Make your updates using the Conventional Commits nomenclature:
+  ```
+    <type>[optional scope]: <description>
+
+    [optional body]  
+
+    [optional footer(s)]
+  ```
+  The type is: **fix**, **feat**, **breaking change** depending on the type of the issue. Nomenclature must be respected to allow automatic changlog generation.
+  
+6. Open a **Pull Request**, and **link it to the related issue**
 
 ## ✔️ Pull Request Rules
 - Keep changes focused on a single issue  
@@ -18,5 +30,6 @@ If not, please create one.
 - Make sure your changes don't introduce errors
 - All the tests must pass and the coverage must be of 80% or higher
 - If you corrected a bug, add a test
+- The check must pass
 
 Thanks for helping improve the project!
