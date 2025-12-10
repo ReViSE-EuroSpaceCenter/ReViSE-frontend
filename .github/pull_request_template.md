@@ -1,32 +1,43 @@
-# 🐞 Bug Report
+## Type of change
+Please select the option that best describes the type of change in this pull request.
+- [ ] 🍕 New Feature
+- [ ] 🎨 Enhancement Feature
+- [ ] 🐛 Fix Bug
+- [ ] 📚 Documentation Update
+- [ ] 🧪 Unit Tests Update
+- [ ] 🚀 Performance Improvement
+- [ ] 🧹 Code Refactor
+- [ ] 🔒 Security Update
 
-## 📌 Problem Description
-Clearly describe the issue.  
-Examples: what you intended to do, what actually happened, any error messages.
+## Describe your code changes
+<!-- 
+Please do not leave this blank 
+This PR [adds/removes/fixes/replaces] the [feature/bug/etc]. 
+-->
+## Related Feature / issue & Documents
+<!-- 
+Please use this format link issue numbers: Fixes #123
+-->
 
-**Expected behavior:**  
-**Actual behavior:**
 
----
+## Created Unit tests?
+- [ ] 👍 yes
+- [ ] 🙅 no, because they aren't needed
+- [ ] 🙋 no, because I need help
+- [ ] 🤷 no, because I forgot
 
-## 🔁 Steps to Reproduce
-1. …
-2. …
-3. …
-4. …
+# Checklist:
 
----
+- [ ] My code follows the style guidelines of this project
+- [ ] I have performed a self-review of my code
+- [ ] I have commented my code, particularly in hard-to-understand areas
+- [ ] I have made corresponding changes to the documentation
+- [ ] My changes generate no new warnings
+- [ ] I have added tests that prove my fix is effective or that my feature works
+- [ ] New and existing unit tests pass locally with my changes
+- [ ] Any dependent changes have been merged and published in downstream modules
+- [ ] I have checked my code and corrected any misspellings
+- [ ] This PR is ready to be merged and not breaking any other features
 
-## 🖥️ Environment
-- App version:  
-- Browser:  
 
----
-
-## 📄 Logs / Screenshots
-Add any relevant logs, screenshots, or videos.
-
----
-
-## 📝 Additional Information
-Include anything else that might help reproduce or understand the issue.
+## [optional] Are there any post-deployment tasks we need to perform?
