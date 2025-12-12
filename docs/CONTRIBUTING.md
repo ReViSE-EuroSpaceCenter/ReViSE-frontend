@@ -32,4 +32,6 @@ If not, please create one.
 - If you corrected a bug, add a test
 - The check must pass
 
+A non-blaming approach will be applied to avoid conflict and allow open, respectful communication and more focus on root cause analysis.
+
 Thanks for helping improve the project!
