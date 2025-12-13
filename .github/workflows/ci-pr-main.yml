@@ -14,12 +14,10 @@ jobs:
   jest:
     uses: ./.github/workflows/tests.yml
 
-
   eslint:
     needs: jest
     if: success()
     uses: ./.github/workflows/eslint.yml
-
 
   lighthouse:
     needs: jest
