@@ -34,6 +34,7 @@ If not, please create one.
 - All the tests must pass and the coverage must be of 80% or higher
 - If you corrected a bug, add a test
 - The check must pass
+- The code must follow the code convention defined by Next.js
 
 A non-blaming approach will be applied to avoid conflict and allow open, respectful communication and more focus on root cause analysis.
 
