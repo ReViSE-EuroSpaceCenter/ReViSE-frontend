@@ -1,0 +1,23 @@
+# <type>[optional scope]: <description>
+#
+# Types:
+#   feat     → nouvelle fonctionnalité
+#   fix      → correction de bug
+#   breaking → breaking change
+#
+# Exemple:
+# feat(auth): add JWT authentication
+#
+# Body:
+# - expliquer le pourquoi du changement
+# - ce qui a été modifié
+#
+# Footer:
+# - BREAKING CHANGE:
+# - Closes #123
+
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
