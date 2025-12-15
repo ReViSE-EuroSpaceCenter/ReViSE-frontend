@@ -21,10 +21,10 @@ If not, please create one.
     [optional footer(s)]
   ```
   The type is: **fix**, **feat**, **breaking change** depending on the type of the issue. Nomenclature must be respected to allow automatic changlog generation.
-  The git message template can be found in [git commit message template](.github/gitmessage) and enforce with
+  The git commit message template can be found in [commit message template](.github/gitmessage) and enforce with:
   ```bash
-    git config commit.template .gitmessage
-   
+  git config commit.template .gitmessage
+  ```
 6. Open a **Pull Request**, and **link it to the related issue**
 
 ## ✔️ Pull Request Rules
