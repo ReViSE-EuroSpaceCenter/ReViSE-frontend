@@ -36,6 +36,10 @@ If not, please create one.
 - The check must pass
 - The code must follow the code convention defined by Next.js
 
-A non-blaming approach will be applied to avoid conflict and allow open, respectful communication and more focus on root cause analysis.
+
+## Additional info
+- This repository uses a non-blaming approach to avoid conflict and allow open, respectful communication and more focus on root cause analysis
+- This repository uses the GitHub flow strategy as a branch system
+___
 
 Thanks for helping improve the project!
