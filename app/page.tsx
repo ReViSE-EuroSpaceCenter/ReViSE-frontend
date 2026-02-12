@@ -1,6 +1,6 @@
 import { createLobby } from "@/api/lobbyApi";
 import { redirect } from "next/navigation";
-import NumberTeamSelector from "./numberTeamSelector";
+import NumberTeamSelector from "../components/numberTeamSelector";
 
 export default function HomePage() {
 
