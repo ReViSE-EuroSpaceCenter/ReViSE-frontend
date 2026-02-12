@@ -1,10 +1,15 @@
-import {createLobby} from "@/api/lobbyApi";
+import { createLobby } from "@/api/lobbyApi";
+import { redirect } from "next/navigation";
+import NumberTeamSelector from "../components/numberTeamSelector";
 
-export default async function HomePage() {
-  const lobby = await createLobby();
-  console.log(lobby)
+export default function HomePage() {
 
-  return (
-    <h1 className="text-3xl">Page d{"'"}accueil du site</h1>
-  );
+    async function handleCreateLobby() {
+        "use server";
+
+        const lobbyCode = await createLobby();
+        redirect(`/lobby/${lobbyCode}`);
+    }
+
+    return <NumberTeamSelector action={handleCreateLobby} />;
 }
