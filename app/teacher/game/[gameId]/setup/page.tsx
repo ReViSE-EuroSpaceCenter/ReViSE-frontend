@@ -1,10 +1,10 @@
-"use client";
+"use client"
 
+import {useEffect} from "react";
 import {useRouter} from "next/navigation";
 import {useWebSocket} from "@/components/WebSocketProvider";
-import {useEffect} from "react";
 
-export default function TeamPage() {
+export default function SetUpPage() {
 	const router = useRouter();
 	const { subscribe, connected } = useWebSocket();
 
@@ -31,7 +31,14 @@ export default function TeamPage() {
 		};
 	}, [router, subscribe, connected]);
 
+
 	return (
-		<h1>Page pour choisir son équipe</h1>
+		<>
+			<h1>Page de configuration d{"'"}une partie</h1>
+			<div>
+				<p>- Afficher un code de connexion</p>
+				<p>- Bouton Démarrer la partie</p>
+			</div>
+		</>
 	)
 }

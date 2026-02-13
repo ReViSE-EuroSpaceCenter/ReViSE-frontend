@@ -46,5 +46,11 @@ export const post = async (endpoint: EndPoint, options: PostOptions) => {
 	})
 
 	checkStatus(response)
+	const contentType = response.headers.get('content-type')
+
+	if (response.status === 204 || !contentType?.includes('application/json')) {
+		return true
+	}
+
 	return response.json()
 }
