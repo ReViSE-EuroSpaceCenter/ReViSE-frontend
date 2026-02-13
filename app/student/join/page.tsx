@@ -19,7 +19,7 @@ export default function JoinPage() {
 			<input
 				type={"text"}
 				name={"lobbyCode"}
-				className="bg-white border border-gray-300 rounded-lg"
+				className="bg-white text-black border border-gray-300 rounded-lg"
 			/>
 			<button
 				type="submit"
