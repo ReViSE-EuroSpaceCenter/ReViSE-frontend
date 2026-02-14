@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Mission } from "@/data/mission";
+import { Mission } from "@/types/mission";
 
 type Props = {
     mission: Mission;

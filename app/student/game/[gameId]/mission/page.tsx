@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { teams } from "@/data/teams";
-import MissionBadge from "@/components/missionBadge";
-import ChecklistModal from "@/components/checklistModal";
-import { defaultChecklist } from "@/data/checklist";
+import { teams } from "@/types/teams";
+import MissionBadge from "@/components/student/MissionBadge";
+import ChecklistModal from "@/components/student/ChecklistModal";
+import { defaultChecklist } from "@/types/checklist";
 
 export default function MissionPage() {
     const currentTeam = teams["MECA"]; // TODO: remplacer par l'équipe dynamique
