@@ -1,6 +1,6 @@
 import { createLobby } from "@/api/lobbyApi";
 import { redirect } from "next/navigation";
-import NumberTeamSelector from "../components/numberTeamSelector";
+import NumberTeamSelector from "../components/teacher/NumberTeamSelector";
 import { cookies } from "next/headers";
 
 async function handleCreateLobby(formData: FormData) {

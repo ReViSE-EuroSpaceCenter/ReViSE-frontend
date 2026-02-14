@@ -1,4 +1,4 @@
-import { Team } from "@/data/mission";
+import { Team } from "@/types/Mission";
 
 export const teams: Record<string, Team> = {
     MECA: {
