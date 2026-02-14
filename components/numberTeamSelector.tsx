@@ -7,10 +7,6 @@ export default function NumberTeamSelector({ action }: { action: () => void }) {
 
     return (
         <div className="flex flex-col items-center justify-center h-screen gap-6">
-            <h1 className="text-3xl font-bold">
-                Page d{"'"}accueil du site
-            </h1>
-
             <button
                 onClick={() => setIsOpen(true)}
                 className="px-8 py-3 bg-blue-600 text-white rounded-xl"

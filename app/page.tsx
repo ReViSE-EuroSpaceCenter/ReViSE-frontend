@@ -11,5 +11,12 @@ export default function HomePage() {
         redirect(`/lobby/${lobbyCode}`);
     }
 
-    return <NumberTeamSelector action={handleCreateLobby} />;
+    return (
+        <div>
+        <h1 className="text-3xl font-bold">
+            Page d{"'"}accueil du site
+        </h1>
+    <NumberTeamSelector action={handleCreateLobby} />;
+        </div>
+)
 }
