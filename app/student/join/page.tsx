@@ -1,11 +1,17 @@
 import {joinLobby} from "@/api/lobbyApi";
 import {redirect} from "next/navigation";
+import {cookies} from "next/headers";
 
 async function handleJoin(formData: FormData) {
 	"use server";
 
-	await joinLobby(formData.get("lobbyCode") as string);
-	redirect(`/student/game/${formData.get("lobbyCode") as string}/team`);
+	const { clientId, availableTeams } = await joinLobby(formData.get("lobbyCode") as string);
+	(await cookies()).set("clientId", clientId, {
+		httpOnly: true,
+		path: "/",
+	});
+	const teamsParam = encodeURIComponent(JSON.stringify(availableTeams));
+	redirect(`/student/game/${formData.get("lobbyCode") as string}/team?teams=${teamsParam}`);
 }
 
 export default function JoinPage() {

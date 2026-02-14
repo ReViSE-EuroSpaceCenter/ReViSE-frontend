@@ -1,34 +1,42 @@
 "use client"
 
-import {useEffect} from "react";
-import {useRouter} from "next/navigation";
+import {useEffect, useState} from "react";
+import {useRouter, useSearchParams} from "next/navigation";
 import {useWebSocket} from "@/components/WebSocketProvider";
+import {LobbyEventType} from "@/types/LobbyEventType";
 
 export default function SetUpPage() {
 	const router = useRouter();
 	const { subscribe, connected } = useWebSocket();
+	const searchParams = useSearchParams();
+	const nbTeams = Number(searchParams.get("nbTeams"));
+	const [ joinedTeam, setJoinedTeam ] = useState(0);
 
 	useEffect(() => {
 		if (!connected) return;
 
-		const subscription = subscribe(
-			(message) => {
-				const event = JSON.parse(message.body);
+		const subscription = subscribe((message) => {
+			const event: LobbyEventType = JSON.parse(message.body);
 
-				if (event.type === "TEAM_JOINED") {
-					const teamLabel = event.payload.teamLabel;
-					console.log("joined team ", teamLabel);
-				}
+			switch (event.type) {
+				case "CLIENT_JOINED":
+					setJoinedTeam((prev) => prev + 1);
+					break;
 
-				if (event.type === "GAME_STARTED") {
+				case "TEAM_JOINED":
+					console.log("joined team", event.payload.teamLabel);
+					break;
+
+				case "GAME_STARTED":
 					router.push(`/intro/`);
-				}
-			}
-		);
+					break;
 
-		return () => {
-			subscription?.unsubscribe();
-		};
+				default:
+					break;
+			}
+		});
+
+		return () => subscription?.unsubscribe();
 	}, [router, subscribe, connected]);
 
 
@@ -38,6 +46,9 @@ export default function SetUpPage() {
 			<div>
 				<p>- Afficher un code de connexion</p>
 				<p>- Bouton Démarrer la partie</p>
+			</div>
+			<div>
+				<p className="text-lg font-bold m-2">Équipes connectées : {joinedTeam} / {nbTeams}</p>
 			</div>
 		</>
 	)

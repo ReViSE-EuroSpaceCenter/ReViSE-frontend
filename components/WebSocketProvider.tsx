@@ -13,15 +13,18 @@ import { Client, IMessage, StompSubscription } from "@stomp/stompjs";
 type WebSocketContextType = {
 	subscribe: (callback: (message: IMessage) => void) => StompSubscription | null;
 	connected: boolean;
+	id?: string;
 };
 
 const WebSocketContext = createContext<WebSocketContextType | null>(null);
 
 export function WebSocketProvider({
 																		lobbyCode,
+																		id,
 																		children,
 																	}: Readonly<{
 	lobbyCode: string;
+	id?: string;
 	children: React.ReactNode;
 }>) {
 	const clientRef = useRef<Client | null>(null);
@@ -67,15 +70,16 @@ export function WebSocketProvider({
 			const destination = `/topic/lobby/${lobbyCode}`;
 			return clientRef.current.subscribe(destination, callback);
 		},
-		[connected, lobbyCode]
+		[connected, lobbyCode, id]
 	);
 
 	const values = useMemo(
 		() => ({
 			subscribe,
 			connected,
+			id,
 		}),
-		[subscribe, connected]
+		[subscribe, connected, id]
 	);
 
 	return (
