@@ -1,15 +1,21 @@
 import { createLobby } from "@/api/lobbyApi";
 import { redirect } from "next/navigation";
 import NumberTeamSelector from "../components/numberTeamSelector";
+import { cookies } from "next/headers";
+
+async function handleCreateLobby(formData: FormData) {
+    "use server";
+
+    const nbTeams = Number(formData.get("nbTeams"));
+    const { lobbyCode, hostId } = await createLobby(nbTeams);
+    (await cookies()).set("hostId", hostId, {
+        httpOnly: true,
+        path: "/",
+    });
+
+    redirect(`/teacher/game/${lobbyCode}/setup?nbTeams=${nbTeams}`);
+}
 
 export default function HomePage() {
-
-    async function handleCreateLobby() {
-        "use server";
-
-        const lobbyCode = await createLobby();
-        redirect(`/lobby/${lobbyCode}`);
-    }
-
     return <NumberTeamSelector action={handleCreateLobby} />;
 }
