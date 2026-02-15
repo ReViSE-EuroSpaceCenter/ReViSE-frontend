@@ -11,21 +11,20 @@ export default function SetUpPage() {
 	const params = useParams();
 
 	const lobbyCode = params.gameId?.toString() as string;
+	const getInitialTeams = (searchParams: URLSearchParams): string[] => {
+		const teamsRaw = searchParams.get("teams");
+		if (!teamsRaw) return [];
+		try {
+			return JSON.parse(decodeURIComponent(teamsRaw));
+		} catch (e) {
+			console.error("Erreur de parsing des équipes", e);
+			return [];
+		}
+	};
 
-	// Pour recuperer le nom des equipes mais je n'ai pas su
-	const [teamNames, setTeamNames] = useState<string[]>([]);
+	const teamNames = getInitialTeams(searchParams);
 	const [joinedTeam, setJoinedTeam] = useState(0);
 
-	useEffect(() => {
-		const teamsRaw = searchParams.get("teams");
-		if (teamsRaw) {
-			try {
-				setTeamNames(JSON.parse(decodeURIComponent(teamsRaw)));
-			} catch (e) {
-				console.error("Erreur de parsing des équipes", e);
-			}
-		}
-	}, [searchParams]);
 
 	const nbTeams = teamNames.length || Number(searchParams.get("nbTeams")) || 0;
 
@@ -33,12 +32,28 @@ export default function SetUpPage() {
 
 	useEffect(() => {
 		if (!connected) return;
+
 		const subscription = subscribe((message) => {
 			const event: LobbyEventType = JSON.parse(message.body);
-			if (event.type === "CLIENT_JOINED") setJoinedTeam((prev) => prev + 1);
 
-			// Si un autre écran (ou le serveur) déclenche le démarrage
-			if (event.type === "GAME_STARTED") router.push(`/intro/`);
+
+			switch (event.type) {
+				case "CLIENT_JOINED":
+					setJoinedTeam((prev) => prev + 1);
+					break;
+
+				case "TEAM_JOINED":
+
+					console.log("Joined team:", event.payload?.teamLabel);
+					break;
+
+				case "GAME_STARTED":
+					router.push(`/intro/`);
+					break;
+
+				default:
+					break;
+			}
 		});
 		return () => subscription?.unsubscribe();
 	}, [router, subscribe, connected]);
