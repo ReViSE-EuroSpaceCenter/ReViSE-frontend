@@ -31,7 +31,7 @@ export function WebSocketProvider({
 	const [connected, setConnected] = useState(false);
 
 	useEffect(() => {
-		const socket = new SockJS(`/ws`);
+		const socket = new SockJS("/ws");
 
 		const client = new Client({
 			webSocketFactory: () => socket,
