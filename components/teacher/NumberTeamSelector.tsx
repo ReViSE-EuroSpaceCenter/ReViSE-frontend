@@ -9,18 +9,14 @@ export default function NumberTeamSelector({
 }>) {
   const [isOpen, setIsOpen] = useState(false);
 
-  return (
-    <div className="flex flex-col items-center justify-center h-screen gap-6">
-      <h1 className="text-3xl font-bold">
-        Page d{"'"}accueil du site
-      </h1>
-
-      <button
-        onClick={() => setIsOpen(true)}
-        className="px-8 py-3 bg-blue-600 text-white rounded-xl"
-      >
-        Créer une partie
-      </button>
+    return (
+        <div className="flex flex-col items-center justify-center h-screen gap-6">
+            <button
+                onClick={() => setIsOpen(true)}
+                className="px-8 py-3 bg-blue-600 text-white rounded-xl"
+            >
+                Créer une partie
+            </button>
 
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50">
