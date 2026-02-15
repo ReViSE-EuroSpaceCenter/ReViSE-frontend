@@ -1,65 +1,50 @@
 "use client";
 
-import { useState } from "react";
+type Props = {
+  isOpen: boolean;
+  onClose: () => void;
+  action: (formData: FormData) => void;
+}
 
-export default function NumberTeamSelector({
-                                             action
-                                           }: Readonly<{
-  action: (formData: FormData) => void
-}>) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function NumberTeamSelector({ isOpen, onClose, action }: Readonly<Props>) {
+  if (!isOpen) return null;
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen gap-6">
-      <h1 className="text-3xl font-bold">
-        Page d{"'"}accueil du site
-      </h1>
-
-      <button
-        onClick={() => setIsOpen(true)}
-        className="px-8 py-3 bg-blue-600 text-white rounded-xl"
+    <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+      <form
+        action={action}
+        className="bg-darkBlueReViSE border border-slate-700/50 rounded-2xl p-8 flex flex-col items-center gap-6 shadow-xl max-w-md w-full mx-4"
       >
-        Créer une partie
-      </button>
+        <h2 className="text-2xl font-semibold text-white">
+          Choisissez le nombre d{"'"}équipes
+        </h2>
 
-      {isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50">
-          <form
-            action={action}
-            className="bg-white rounded-2xl p-8 flex flex-col items-center gap-6 shadow-xl"
-          >
-            <h2 className="text-xl font-semibold">
-              Choisissez le nombre d{"'"}équipes
-            </h2>
+        <button
+          type="submit"
+          name="nbTeams"
+          value="4"
+          className="w-full px-6 py-4 bg-purpleReViSE hover:bg-purpleReViSE/80 text-white rounded-xl font-semibold transition-colors"
+        >
+          4 équipes
+        </button>
 
-            <button
-              type="submit"
-              name="nbTeams"
-              value="4"
-              className="px-6 py-3 bg-green-600 text-white rounded-xl"
-            >
-              4 équipes
-            </button>
+        <button
+          type="submit"
+          name="nbTeams"
+          value="6"
+          className="w-full px-6 py-4 bg-purpleReViSE hover:bg-purpleReViSE/80 text-white rounded-xl font-semibold transition-colors"
+        >
+          6 équipes
+        </button>
 
-            <button
-              type="submit"
-              name="nbTeams"
-              value="6"
-              className="px-6 py-3 bg-purple-600 text-white rounded-xl"
-            >
-              6 équipes
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setIsOpen(false)}
-              className="text-sm text-gray-500"
-            >
-              Annuler
-            </button>
-          </form>
-        </div>
-      )}
+        <button
+          type="button"
+          onClick={onClose}
+          className="text-sm text-slate-400 hover:text-white transition-colors"
+        >
+          Annuler
+        </button>
+      </form>
     </div>
   );
 }
