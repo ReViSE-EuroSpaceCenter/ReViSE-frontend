@@ -1,4 +1,4 @@
-"use client"; // pour afficher les erreurs sur le formulaire
+"use client";
 
 import { useState } from "react";
 import {joinLobby} from "@/api/lobbyApi";
@@ -30,8 +30,10 @@ export default function JoinPage() {
 			console.log("lobbyCode", lobbyCode);
 			router.push(`/student/game/${lobbyCode}/team?teams=${teamsParam}`);
 
-		} catch (error: any) {
-			setError(`${error.message || "Erreur"} : Code introuvable ou invalide.`);
+		} catch (error: unknown) { // On remplace any par unknown
+			if (error instanceof Error) {
+				setError(`${error.message || "Erreur"} : Code introuvable ou invalide.`);
+			}
 		} finally {
 			setIsLoading(false);
 		}
