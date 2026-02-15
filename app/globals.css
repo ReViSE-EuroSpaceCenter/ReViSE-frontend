@@ -9,6 +9,9 @@
 
 @theme {
   --color-purpleReViSE: #834291;
+  --color-darkBlueReViSE: #1C1830;
+  --color-greenReViSE: #519D60;
+  --color-blueReViSE: #2C7BAC;
 }
 
 @theme inline {
