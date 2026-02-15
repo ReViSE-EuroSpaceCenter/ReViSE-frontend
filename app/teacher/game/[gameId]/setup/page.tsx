@@ -49,7 +49,7 @@ export default function SetUpPage() {
 	return (
 		<main className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 ">
 			{/* Ajout de max-h-[90vh] et overflow-y-auto pour la hauteur */}
-			<div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-[#1e1b4b]/60 backdrop-blur-xl shadow-2xl rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-10 border border-orange-300/10 flex flex-col items-center gap-6 sm:gap-10 scrollbar-hide">
+			<div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-[#1e1b4b]/60 backdrop-blur-xl shadow-2xl rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-10 border border-orange-300/10 flex flex-col items-center gap-6 sm:gap-10 scrollbar-hide">
 
 				<header className="text-center shrink-0"> {/* shrink-0 évite que le titre ne s'écrase */}
 					<h1 className="text-2xl sm:text-4xl font-black text-white mb-1 sm:mb-2 tracking-tight">
@@ -86,7 +86,7 @@ export default function SetUpPage() {
 				</div>
 
 
-				<div className="w-full bg-orange-900/5 rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-8 border border-white/5 space-y-3 sm:space-y-5">
+				<div className="w-full bg-orange-900/5 rounded-3xl sm:rounded-4xl p-4 sm:p-8 border border-white/5 space-y-3 sm:space-y-5">
 					<div className="flex justify-between items-end px-1">
 						<h3 className="text-sm sm:text-lg text-orange-50/80 font-bold">Inscriptions</h3>
 						<div className="text-right">
@@ -97,7 +97,7 @@ export default function SetUpPage() {
 
 					<div className="w-full h-2 sm:h-4 bg-black/20 rounded-full overflow-hidden border border-white/5">
 						<div
-							className="h-full bg-gradient-to-r from-orange-400/60 to-orange-200/60 rounded-full transition-all duration-1000"
+							className="h-full bg-linear-to-r from-orange-400/60 to-orange-200/60 rounded-full transition-all duration-1000"
 							style={{ width: `${nbTeams > 0 ? (joinedTeam / nbTeams) * 100 : 0}%` }}
 						/>
 					</div>
