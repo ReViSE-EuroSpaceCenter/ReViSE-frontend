@@ -44,7 +44,7 @@ export default function TeamPage() {
 				}
 			});
 		return () => subscription?.unsubscribe();
-	}, [router, subscribe, connected]);
+	}, [router, subscribe, connected, lobbyCode]);
 
 	const handleJoinTeam = async (teamLabel: string) => {
 		await assignTeam(lobbyCode, id as string, teamLabel);
