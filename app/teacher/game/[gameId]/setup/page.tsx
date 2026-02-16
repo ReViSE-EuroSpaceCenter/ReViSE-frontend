@@ -62,7 +62,7 @@ export default function SetUpPage() {
 		router.push(`/teacher/game/${lobbyCode}/intro`);
 	};
 	return (
-		<div className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6">
+		<div className="flex flex-col items-center justify-center p-4 sm:p-6 w-full">
 			<div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-[#1e1b4b]/60 backdrop-blur-xl shadow-2xl rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-10 border border-orange-300/10 flex flex-col items-center gap-6 sm:gap-10 scrollbar-hide">
 
 				<header className="text-center shrink-0">
