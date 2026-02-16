@@ -62,30 +62,28 @@ export default function SetUpPage() {
 		router.push(`/teacher/game/${lobbyCode}/intro`);
 	};
 	return (
-		<main className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 ">
-			{/* Ajout de max-h-[90vh] et overflow-y-auto pour la hauteur */}
+		<div className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6">
 			<div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-[#1e1b4b]/60 backdrop-blur-xl shadow-2xl rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-10 border border-orange-300/10 flex flex-col items-center gap-6 sm:gap-10 scrollbar-hide">
 
-				<header className="text-center shrink-0"> {/* shrink-0 évite que le titre ne s'écrase */}
+				<header className="text-center shrink-0">
 					<h1 className="text-2xl sm:text-4xl font-black text-white mb-1 sm:mb-2 tracking-tight">
 						Configuration
 					</h1>
 					<div className="flex items-center justify-center gap-2">
-              <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-300 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-400"></span>
-              </span>
+                <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-300 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-400"></span>
+                </span>
 						<p className="text-orange-100/50 font-medium text-[9px] sm:text-xs uppercase tracking-[0.2em]">
 							En attente des joueurs
 						</p>
 					</div>
 				</header>
 
-				{/* AFFICHAGE DU CODE : Plus compact en hauteur */}
 				<div className="flex flex-col items-center gap-3 sm:gap-5 w-full shrink-0">
-          <span className="text-[9px] sm:text-[10px] font-bold text-orange-200/20 uppercase tracking-[0.4em]">
-              Code d&#39;accès session
-          </span>
+             <span className="text-[9px] sm:text-[10px] font-bold text-orange-200/20 uppercase tracking-[0.4em]">
+                 Code d&#39;accès session
+             </span>
 					<div className="flex flex-wrap justify-center gap-2 sm:gap-3">
 						{lobbyCode ? lobbyCode.toUpperCase().split("").map((char, i) => (
 							<div
@@ -99,7 +97,6 @@ export default function SetUpPage() {
 						)}
 					</div>
 				</div>
-
 
 				<div className="w-full bg-orange-900/5 rounded-3xl sm:rounded-4xl p-4 sm:p-8 border border-white/5 space-y-3 sm:space-y-5">
 					<div className="flex justify-between items-end px-1">
@@ -120,8 +117,8 @@ export default function SetUpPage() {
 					<div className="flex flex-wrap justify-center gap-1 sm:gap-2">
 						{teamNames.map((name, index) => (
 							<span key={index} className="px-2 py-0.5 sm:px-4 sm:py-1.5 bg-orange-200/5 text-orange-100/40 text-[8px] sm:text-[10px] font-bold rounded-full border border-orange-200/10">
-                      {name}
-                  </span>
+                     {name}
+                 </span>
 						))}
 					</div>
 				</div>
@@ -147,7 +144,6 @@ export default function SetUpPage() {
 					</button>
 				</div>
 			</div>
-		</main>
-
+		</div>
 	);
 }
