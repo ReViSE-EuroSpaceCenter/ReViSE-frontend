@@ -35,10 +35,9 @@ export default function TeamPage() {
 						setAvailableTeams((prev) => prev.filter((t) => t !== teamLabel));
 						break;
 					}
-
-					case "GAME_STARTED":
-						router.push(`/intro/`);
-						break;
+                    case "GAME_STARTED":
+                        router.push(`/student/game/${lobbyCode}/intro`);
+                        break;
 
 					default:
 						break;
