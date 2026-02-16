@@ -5,11 +5,14 @@ import { teams } from "@/types/Teams";
 import MissionBadge from "@/components/student/MissionBadge";
 import ChecklistModal from "@/components/student/ChecklistModal";
 import { defaultChecklist } from "@/types/Checklist";
+import {useParams} from "next/navigation";
 
 export default function MissionPage() {
-    const currentTeam = teams["MECA"]; // TODO: remplacer par l'équipe dynamique
-    const missions = currentTeam.missions;
+    const params = useParams();
+    const teamName = params.teamName as string;
+    const currentTeam = teams[teamName] ?? teams["MECA"];
 
+    const missions = currentTeam.missions;
 
     const [validatedMissions, setValidatedMissions] = useState<number[]>([]);
     const [activeMission, setActiveMission] = useState<number>(1); // la mission en cours
