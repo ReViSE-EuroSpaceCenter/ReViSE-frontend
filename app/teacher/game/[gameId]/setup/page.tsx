@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams, useParams } from "next/navigation";
 import { useWebSocket } from "@/components/WebSocketProvider";
 import { LobbyEventType } from "@/types/LobbyEventType";
+import { startLobby } from "@/api/lobbyApi";
 
 export default function SetUpPage() {
     const router = useRouter();
@@ -15,7 +16,7 @@ export default function SetUpPage() {
     const nbTeams = Number(searchParams.get("nbTeams"));
 
     const { subscribe, connected, id } = useWebSocket();
-    const [, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (!connected) return;
@@ -24,12 +25,8 @@ export default function SetUpPage() {
             const event: LobbyEventType = JSON.parse(message.body);
 
             switch (event.type) {
-                case "CLIENT_JOINED":
-                    setJoinedTeam((prev) => prev + 1);
-                    break;
-
                 case "TEAM_JOINED":
-                    console.log("joined team", event.payload.teamLabel);
+                    setJoinedTeam((prev) => prev + 1);
                     break;
 
                 case "GAME_STARTED":
@@ -54,23 +51,14 @@ export default function SetUpPage() {
 
         try {
             setLoading(true);
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/lobbies/${lobbyCode}/start`,
-                {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ hostId: id }),
-                }
-            );
-
-            if (!response.ok) throw new Error("Erreur lors du démarrage");
-
+            await startLobby(lobbyCode, id);
         } catch (err) {
             console.error(err);
         } finally {
             setLoading(false);
         }
     };
+
     return (
         <div className="flex items-center justify-center pt-16 sm:pt-24 p-4 sm:p-6 w-full">
             <div className="w-full max-w-2xl bg-slate-800/30 border border-slate-700/50 backdrop-blur-xl shadow-2xl rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-10 flex flex-col items-center gap-6 sm:gap-10">
@@ -112,7 +100,7 @@ export default function SetUpPage() {
 
                 <button
                     onClick={startGame}
-                    disabled={joinedTeam < nbTeams || joinedTeam === 0}
+                    disabled={joinedTeam < nbTeams || joinedTeam === 0 || loading}
                     className={`w-full py-3 sm:py-5 rounded-xl sm:rounded-2xl font-black text-sm sm:text-xl transition-all duration-500 flex items-center justify-center shadow-xl ${
                         joinedTeam >= nbTeams && joinedTeam > 0
                             ? "bg-purpleReViSE hover:bg-purpleReViSE/80 text-white cursor-pointer shadow-purpleReViSE/20"

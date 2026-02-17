@@ -16,3 +16,7 @@ export const assignTeam = async (
 ) => {
 	return await post(`/api/lobbies/${lobbyCode}/team`, { body: { clientId, teamLabel} });
 };
+
+export const startLobby = async (lobbyCode: string, hostId: string) => {
+    return await post(`/api/lobbies/${lobbyCode}/start`, {body: { hostId }});
+};
