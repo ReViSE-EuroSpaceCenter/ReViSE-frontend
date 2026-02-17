@@ -10,9 +10,7 @@ export const teams: Record<string, Team> = {
             { id: 4, title: "Bonus 1", badge: "/badges/meca/mecaBN1.png", bonus: true },
             { id: 5, title: "Mission 4", badge: "/badges/m4.png" },
             { id: 6, title: "Mission 5", badge: "/badges/m5.png" },
-            { id: 7, title: "Mission 6", badge: "/badges/m6.png" },
-            { id: 8, title: "Mission 7", badge: "/badges/m7.png" },
-            { id: 9, title: "Bonus 2", badge: "/badges/meca/mecaBN2.png", bonus: true },
+            { id: 7, title: "Bonus 2", badge: "/badges/meca/mecaBN2.png", bonus: true },
         ],
     },
 

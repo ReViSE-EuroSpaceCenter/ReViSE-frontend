@@ -6,18 +6,22 @@ import MissionBadge from "@/components/student/MissionBadge";
 import ChecklistModal from "@/components/student/ChecklistModal";
 import { defaultChecklist } from "@/types/Checklist";
 import {useParams} from "next/navigation";
+import { completeMission } from "@/api/lobbyApi";
+import {useWebSocket} from "@/components/WebSocketProvider";
 
 export default function MissionPage() {
     const params = useParams();
     const teamName = params.teamName as string;
+    const lobbyCode = params.gameId as string;
     const currentTeam = teams[teamName] ?? teams["MECA"];
+    const {id} = useWebSocket();
 
     const missions = currentTeam.missions;
 
     const [validatedMissions, setValidatedMissions] = useState<number[]>([]);
     const [activeMission, setActiveMission] = useState<number>(1); // la mission en cours
     const [selectedMission, setSelectedMission] = useState<number | null>(null);
-    const [modalSteps, setModalSteps] = useState(
+    const [modalSteps] = useState(
         defaultChecklist.map((step) => ({ ...step, completed: false }))
     );
 
@@ -42,23 +46,54 @@ export default function MissionPage() {
     };
 
     const openChecklist = (missionId: number) => {
-        if (missionId !== activeMission) return; // bloque les autres missions
+        if (missionId !== activeMission) return;
         setSelectedMission(missionId);
 
     };
 
+    // traduction de l'id de la mission en format backend (CLASSIC_1, BONUS_2, etc.)
+    const missionToBackendTraduction = (missionId: number, bonus?: boolean) => {
 
-    const handleValidateMission = () => {
+        if (bonus) {
+            const bonusMissions = missions.filter(m => m.bonus);
+            const bonusIndex = bonusMissions.findIndex(m => m.id === missionId);
+            return `BONUS_${bonusIndex + 1}`;
+        }
+        const classicMissions = missions.filter(m => !m.bonus);
+        const classicIndex = classicMissions.findIndex(m => m.id === missionId);
+        return `CLASSIC_${classicIndex + 1}`;
+    };
+    
+    const handleValidateMission = async () => {
         if (selectedMission === null) return;
 
-        setValidatedMissions((prev) => [...prev, selectedMission]);
+        const mission = missions.find(m => m.id === selectedMission);
+        if (!mission) return;
 
-        const nextMission = missions.find((m) => m.id === selectedMission + 1);
-        if (nextMission) setActiveMission(nextMission.id);
-        setModalSteps(defaultChecklist.map((step) => ({ ...step, completed: false })));
+        const missionNumber = missionToBackendTraduction(
+            mission.id,
+            mission.bonus
+        );
+
+        try {
+            await completeMission(
+                lobbyCode,
+                id as string,
+                missionNumber
+            );
+
+            setValidatedMissions((prev) => [...prev, selectedMission]);
+
+            const nextMission = missions.find((m) => m.id === selectedMission + 1);
+            if (nextMission) setActiveMission(nextMission.id);
+
+        } catch (error) {
+            console.error("Erreur validation mission", error);
+        }
 
         setSelectedMission(null);
     };
+
 
     return (
         <div className="p-8">
