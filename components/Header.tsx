@@ -55,13 +55,13 @@ export default function Header(props: Readonly<Props>) {
 							<>
 								<nav className="hidden md:flex items-center gap-3">
 									<button
-										className="px-4 py-2 bg-purpleReViSE hover:bg-purpleReViSE/80 cursor-pointer rounded-lg font-medium transition-colors"
+										className="px-4 py-2 border border-purpleReViSE hover:bg-purpleReViSE/20 rounded-lg cursor-pointer font-medium transition-colors"
 										onClick={() => setIsModalOpen(true)}
 									>
 										Créer une partie
 									</button>
 									<button
-										className="px-4 py-2 border border-purpleReViSE hover:bg-purpleReViSE/20 rounded-lg cursor-pointer font-medium transition-colors"
+										className="px-4 py-2 bg-purpleReViSE hover:bg-purpleReViSE/80 cursor-pointer rounded-lg font-medium transition-colors"
 										onClick={() => router.push('/student/join')}
 									>
 										Rejoindre une partie
@@ -101,7 +101,7 @@ export default function Header(props: Readonly<Props>) {
 					{isHomePage && isMenuOpen && (
 						<nav className="md:hidden mt-4 pt-4 border-t border-slate-700/30 flex flex-col gap-2">
 							<button
-								className="w-full px-4 py-2 bg-purpleReViSE hover:bg-purpleReViSE/80 rounded-lg font-medium transition-colors text-left"
+								className="w-full px-4 py-2 border border-purpleReViSE hover:bg-purpleReViSE/20 rounded-lg font-medium transition-colors text-left"
 								onClick={() => {
 									setIsMenuOpen(false);
 									setIsModalOpen(true);
@@ -110,7 +110,7 @@ export default function Header(props: Readonly<Props>) {
 								Créer une partie
 							</button>
 							<button
-								className="w-full px-4 py-2 border border-purpleReViSE hover:bg-purpleReViSE/20 rounded-lg font-medium transition-colors text-left"
+								className="w-full px-4 py-2 bg-purpleReViSE hover:bg-purpleReViSE/80 rounded-lg font-medium transition-colors text-left"
 								onClick={() => {
 									setIsMenuOpen(false);
 									router.push('/student/join');
