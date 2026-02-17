@@ -51,7 +51,6 @@ export default function SetUpPage() {
             console.error("hostId manquant, impossible de démarrer la partie");
             return;
         }
-        console.log("LobbyCode:", lobbyCode, "hostId:", id);
 
         try {
             setLoading(true);
@@ -66,7 +65,6 @@ export default function SetUpPage() {
 
             if (!response.ok) throw new Error("Erreur lors du démarrage");
 
-            console.log("Partie démarrée !");
         } catch (err) {
             console.error(err);
         } finally {
