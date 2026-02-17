@@ -40,7 +40,7 @@ function SubmitButton() {
 				<>
 					<span className="text-lg">REJOINDRE LA SESSION</span>
 					<span className="text-xl sm:text-2xl transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110">
-                   🎲
+                    🚀
              </span>
 				</>
 			)}
@@ -99,10 +99,16 @@ export default function JoinPage() {
 							placeholder="EX: XKABDE"
 							required
 							autoComplete="off"
+							onInput={(e) => {
+								const target = e.target as HTMLInputElement;
+								target.value = target.value.toUpperCase().replace(/[^A-Z]/g, '');
+							}}
+							pattern="[A-Z]+"
+							autoCapitalize="characters"
 							className={`w-full px-6 py-5 sm:py-6 bg-black/20 rounded-2xl border transition-all 
-                      outline-none text-2xl sm:text-3xl font-black tracking-[0.4em] 
-                      uppercase text-white placeholder:text-white/5 text-center 
-                      ${
+							outline-none text-2xl sm:text-3xl font-black tracking-[0.4em] 
+							uppercase text-white placeholder:text-white/5 text-center 
+							${
 								state?.error
 									? 'border-red-500/50 ring-2 ring-red-500/10'
 									: 'border-white/10 group-hover/input:border-purpleReViSE/50 focus:border-purpleReViSE focus:ring-4 focus:ring-purpleReViSE/10'
