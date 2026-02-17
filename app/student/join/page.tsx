@@ -5,13 +5,14 @@ import {cookies} from "next/headers";
 async function handleJoin(formData: FormData) {
 	"use server";
 
-	const { clientId, availableTeams } = await joinLobby(formData.get("lobbyCode") as string);
-	(await cookies()).set("clientId", clientId, {
-		httpOnly: true,
-		path: "/",
-	});
-	const teamsParam = encodeURIComponent(JSON.stringify(availableTeams));
-	redirect(`/student/game/${formData.get("lobbyCode") as string}/team?teams=${teamsParam}`);
+	const { clientId, availableTeams, allTeams } = await joinLobby(formData.get("lobbyCode") as string);
+	const cookieStore = await cookies();
+
+	cookieStore.set("clientId", clientId, { httpOnly: true, path: "/" });
+	cookieStore.set("availableTeams", JSON.stringify(availableTeams), { path: "/" });
+	cookieStore.set("allTeams", JSON.stringify(allTeams), { path: "/" });
+
+	redirect(`/student/game/${formData.get("lobbyCode") as string}/team`);
 }
 
 export default function JoinPage() {
