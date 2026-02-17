@@ -29,3 +29,8 @@ export const completeMission = async (lobbyCode: string, clientId: string, missi
         },
     });
 };
+
+
+export const startLobby = async (lobbyCode: string, hostId: string) => {
+    return await post(`/api/lobbies/${lobbyCode}/start`, {body: { hostId }});
+};
