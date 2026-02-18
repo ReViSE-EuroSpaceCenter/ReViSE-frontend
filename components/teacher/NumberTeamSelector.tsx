@@ -27,7 +27,7 @@ export default function NumberTeamSelector({ isOpen, onClose, action }: Readonly
           type="submit"
           name="nbTeams"
           value="4"
-          className="w-full px-4 py-4 bg-greenReViSE text-white rounded-xl font-semibold transition-all duration-200
+          className="w-full px-4 py-4 bg-orangeReViSE text-white rounded-xl font-semibold transition-all duration-200
                      hover:brightness-110 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
         >
           4 équipes
@@ -37,7 +37,7 @@ export default function NumberTeamSelector({ isOpen, onClose, action }: Readonly
           type="submit"
           name="nbTeams"
           value="6"
-          className="w-full px-4 py-4 bg-blueReViSE text-white rounded-xl font-semibold transition-all duration-200
+          className="w-full px-4 py-4 bg-orangeReViSE text-white rounded-xl font-semibold transition-all duration-200
                      hover:brightness-110 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
         >
           6 équipes
