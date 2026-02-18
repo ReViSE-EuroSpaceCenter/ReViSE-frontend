@@ -103,8 +103,9 @@ export default function JoinPage() {
 								const target = e.target as HTMLInputElement;
 								target.value = target.value.toUpperCase().replace(/[^A-Z]/g, '');
 							}}
-							pattern="[A-Z]+"
-							autoCapitalize="characters"
+							pattern="[A-Z]{6}"
+							minLength={6}
+							maxLength={6}
 							className={`w-full px-6 py-5 sm:py-6 bg-black/20 rounded-2xl border transition-all 
 							outline-none text-2xl sm:text-3xl font-black tracking-[0.4em] 
 							uppercase text-white placeholder:text-white/5 text-center 

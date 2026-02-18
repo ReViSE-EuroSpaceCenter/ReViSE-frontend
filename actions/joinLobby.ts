@@ -1,4 +1,3 @@
-// @/actions/joinLobby.ts
 "use server";
 
 import { redirect } from "next/navigation";
@@ -19,31 +18,28 @@ export async function handleJoin(_prevState: ActionState, formData: FormData) {
     }
 
     try {
-        const result = await joinLobby(lobbyCode);
-        const { clientId, availableTeams } = result;
+        const { clientId, availableTeams, allTeams } = await joinLobby(lobbyCode);
+        const cookieStore = await cookies();
 
-        (await cookies()).set("clientId", clientId, {
-            path: "/",
-            maxAge: 3600,
-            sameSite: "lax",
-        });
+        cookieStore.set("clientId", clientId, { httpOnly: true, path: "/" });
+        cookieStore.set("availableTeams", JSON.stringify(availableTeams), { path: "/" });
+        cookieStore.set("allTeams", JSON.stringify(allTeams), { path: "/" });
 
-        const teamsParam = encodeURIComponent(JSON.stringify(availableTeams));
-        redirect(`/student/game/${lobbyCode}/team?teams=${teamsParam}`);
+        redirect(`/student/game/${lobbyCode}/team`);
 
     } catch (error: unknown) {
         if (isRedirectError(error)) {
             throw error;
         }
+
         let errorMessage = "Code introuvable ou invalide";
 
         if (error instanceof Error) {
-            if (error.message.includes("404")) {
-                errorMessage = "Lobby introuvable";
-            } else {
-                errorMessage = error.message;
-            }
+            errorMessage = error.message.includes("404")
+              ? "Lobby introuvable"
+              : error.message;
         }
+
         return { error: errorMessage };
     }
 }
