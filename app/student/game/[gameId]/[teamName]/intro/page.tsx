@@ -6,10 +6,10 @@ export default function IntroPage() {
     const router = useRouter();
     const params = useParams();
     const gameId = params.gameId;
-    const teamId = params.teamId;
+    const teamName = params.teamName;
 
     const goToMission = () => {
-        router.push(`/student/game/${gameId}/${teamId}/mission`);
+        router.push(`/student/game/${gameId}/${teamName}/mission`);
     };
 
     return (
