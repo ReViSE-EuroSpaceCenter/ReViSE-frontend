@@ -1,8 +1,9 @@
 export type Mission = {
     id: number;
     title: string;
-    badge: string;
     bonus?: boolean;
+    projectId: number;
+    unlocks: number[];
 };
 
 export type Team = {
