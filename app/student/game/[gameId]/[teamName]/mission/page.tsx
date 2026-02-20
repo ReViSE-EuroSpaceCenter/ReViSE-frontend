@@ -1,141 +1,77 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
 import { teams } from "@/types/Teams";
-import MissionBadge from "@/components/student/MissionBadge";
-import ChecklistModal from "@/components/student/ChecklistModal";
-import { defaultChecklist } from "@/types/Checklist";
-import {useParams} from "next/navigation";
-import { completeMission } from "@/api/lobbyApi";
-import {useWebSocket} from "@/components/WebSocketProvider";
+import { useParams } from "next/navigation";
+import { MissionStructure } from "@/components/student/MissionStructure";
 
 export default function MissionPage() {
     const params = useParams();
     const teamName = params.teamName as string;
-    const lobbyCode = params.gameId as string;
-    const currentTeam = teams[teamName] ?? teams["MECA"];
-    const {id} = useWebSocket();
+    const currentTeam = teams[teamName];
 
-    const missions = currentTeam.missions;
+    if (!currentTeam) return <p>Équipe non trouvée</p>;
 
-    const [validatedMissions, setValidatedMissions] = useState<number[]>([]);
-    const [activeMission, setActiveMission] = useState<number>(1); // la mission en cours
-    const [selectedMission, setSelectedMission] = useState<number | null>(null);
-    const [modalSteps] = useState(
-        defaultChecklist.map((step) => ({ ...step, completed: false }))
+    const missionMap = Object.fromEntries(
+        currentTeam.missions.map((m) => [m.id, m])
     );
 
-    const missionRefs = useRef<(HTMLDivElement | null)[]>([]);
+    const projectIds = [...new Set(currentTeam.missions.map(m => m.projectId))].sort((a, b) => a - b);
 
-    // centrage de la mission actuelle
-    useEffect(() => {
-        const index = missions.findIndex((m) => m.id === activeMission);
-        missionRefs.current[index]?.scrollIntoView({
-            behavior: "smooth",
-            inline: "center",
-            block: "nearest",
-        });
-    }, [activeMission, missions]);
-
-    // missions bloquées si la précédente n'est pas validée
-    const isLocked = (missionId: number, bonus?: boolean) => {
-        if (bonus) return false;
-        const previous = missionId - 1;
-        if (previous <= 0) return false;
-        return !validatedMissions.includes(previous);
+    const teamColorMap: Record<string, string> = {
+        MEDI: "--color-teamMEDI",
+        COOP: "--color-teamCOOP",
+        AERO: "--color-teamAERO",
+        MECA: "--color-teamMECA",
+        EXPE: "--color-teamEXPE",
+        GECO: "--color-teamGECO",
     };
 
-    const openChecklist = (missionId: number) => {
-        if (missionId !== activeMission) return;
-        setSelectedMission(missionId);
-
-    };
-
-    // traduction de l'id de la mission en format backend (CLASSIC_1, BONUS_2, etc.)
-    const missionToBackendTraduction = (missionId: number, bonus?: boolean) => {
-
-        if (bonus) {
-            const bonusMissions = missions.filter(m => m.bonus);
-            const bonusIndex = bonusMissions.findIndex(m => m.id === missionId);
-            return `BONUS_${bonusIndex + 1}`;
-        }
-        const classicMissions = missions.filter(m => !m.bonus);
-        const classicIndex = classicMissions.findIndex(m => m.id === missionId);
-        return `CLASSIC_${classicIndex + 1}`;
-    };
-    
-    const handleValidateMission = async () => {
-        if (selectedMission === null) return;
-
-        const mission = missions.find(m => m.id === selectedMission);
-        if (!mission) return;
-
-        const missionNumber = missionToBackendTraduction(
-            mission.id,
-            mission.bonus
-        );
-
-        try {
-            await completeMission(
-                lobbyCode,
-                id as string,
-                missionNumber
-            );
-
-            setValidatedMissions((prev) => [...prev, selectedMission]);
-
-            const nextMission = missions.find((m) => m.id === selectedMission + 1);
-            if (nextMission) setActiveMission(nextMission.id);
-
-        } catch (error) {
-            console.error("Erreur validation mission", error);
-        }
-
-        setSelectedMission(null);
-    };
-
+    const teamColor = teamColorMap[teamName];
 
     return (
-        <div className="p-8">
+        <div className="min-h-[calc(100vh-80px)]">
+            <div className="px-6 lg:px-12 py-6 lg:py-12 space-y-16">
+                <h1
+                    className="text-4xl font-bold"
+                    style={{ color: `var(${teamColor})` }}
+                >
+                    {teamName} Missions
+                </h1>
 
-            <h1 className="text-3xl font-bold mb-10 text-center">
-                Missions équipe {currentTeam.name}
-            </h1>
+                {projectIds.map(projectId => {
+                    const missions = currentTeam.missions.filter(
+                        m => m.projectId === projectId
+                    );
 
-            <div className="relative w-full overflow-hidden">
-                <div className="flex gap-16 overflow-x-auto snap-x snap-mandatory scroll-smooth px-[40vw] no-scrollbar">
-                    {missions.map((mission, index) => {
-                        const locked = isLocked(mission.id, mission.bonus);
-                        const validated = validatedMissions.includes(mission.id);
+                    const unlockedIds = new Set(missions.flatMap(m => m.unlocks));
+                    const roots = missions.filter(m => !unlockedIds.has(m.id));
 
-                        return (
-                            <div
-                                key={mission.id}
-                                ref={(el) => { missionRefs.current[index] = el; }}
-                                className={`
-                  snap-center flex-shrink-0 transition-all duration-300
-                  ${activeMission === mission.id ? "scale-110 opacity-100" : "scale-90 opacity-50"}
-                  ${locked || validated ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
-                `}
-                                onClick={() => openChecklist(mission.id)}
-                            >
-                                <MissionBadge
-                                    mission={mission}
-                                    isLocked={locked || validated}
-                                    isCompleted={validated}
-                                />
+                    return (
+                        <div
+                            key={projectId}
+                            className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-8 items-center"
+                        >
+                            <div className="min-w-[150px]">
+                                <h2 className="text-3xl">
+                                    Projet {projectId}
+                                </h2>
                             </div>
-                        );
-                    })}
-                </div>
-            </div>
 
-            <ChecklistModal
-                isOpen={selectedMission !== null}
-                onClose={() => setSelectedMission(null)}
-                onValidate={handleValidateMission}
-                initialSteps={modalSteps}
-            />
+                            <div className="flex flex-col gap-6">
+                                {roots.map(root => (
+                                    <MissionStructure
+                                        key={root.id}
+                                        mission={root}
+                                        missionMap={missionMap}
+                                        teamColor={teamColor}
+                                    />
+                                ))}
+                            </div>
+
+                        </div>
+                    );
+                })}
+            </div>
         </div>
     );
 }
