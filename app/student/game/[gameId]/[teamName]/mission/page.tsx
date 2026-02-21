@@ -57,13 +57,14 @@ export default function MissionPage() {
                                 </h2>
                             </div>
 
-                            <div className="flex flex-col gap-6">
+                            <div className="flex flex-row items-center gap-0 w-full pr-6">
                                 {roots.map(root => (
                                     <MissionStructure
                                         key={root.id}
                                         mission={root}
                                         missionMap={missionMap}
                                         teamColor={teamColor}
+                                        teamName={teamName}
                                     />
                                 ))}
                             </div>

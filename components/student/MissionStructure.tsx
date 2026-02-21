@@ -4,22 +4,26 @@ export function MissionStructure({
                                      mission,
                                      missionMap,
                                      teamColor,
+                                     teamName,
                                  }: {
     mission: Mission;
     missionMap: Record<number, Mission>;
     teamColor: string;
+    teamName: string;
 }) {
     const children = mission.unlocks
         .map((id) => missionMap[id])
         .filter(Boolean);
+
+    const isDarkText = teamName === "MECA" || teamName === "MEDI" || teamName === "EXPE";
+    const textColorClass = isDarkText ? "text-black" : "text-white";
 
     return (
         <>
             <div className="flex md:hidden flex-col items-center gap-3 w-full">
                 <button
                     style={{ backgroundColor: `var(${teamColor})` }}
-                    className="px-4 py-3 text-white rounded-2xl border-2 border-black shadow-md active:scale-95 transition text-center whitespace-nowrap"
-                >
+                    className={`px-4 py-3 ${textColorClass} rounded-2xl border-2 border-black shadow-md active:scale-95 transition text-center whitespace-nowrap`}                >
                     {mission.title}
                 </button>
 
@@ -31,6 +35,7 @@ export function MissionStructure({
                                     mission={child}
                                     missionMap={missionMap}
                                     teamColor={teamColor}
+                                    teamName={teamName}
                                 />
                             </div>
                         ))}
@@ -41,8 +46,7 @@ export function MissionStructure({
             <div className="hidden md:flex flex-row items-center ">
                 <button
                     style={{ backgroundColor: `var(${teamColor})` }}
-                    className="shrink-0 px-4 py-3 text-white rounded-2xl border-2 border-black shadow-md hover:scale-105 transition text-center whitespace-nowrap"
-                >
+                    className={`shrink-0 px-4 py-3 ${textColorClass} rounded-2xl border-2 border-black shadow-md hover:scale-105 transition text-center whitespace-nowrap`}                >
                     {mission.title}
                 </button>
 
@@ -53,6 +57,7 @@ export function MissionStructure({
                             mission={children[0]}
                             missionMap={missionMap}
                             teamColor={teamColor}
+                            teamName={teamName}
                         />
                     </>
                 )}
@@ -75,6 +80,7 @@ export function MissionStructure({
                                         mission={child}
                                         missionMap={missionMap}
                                         teamColor={teamColor}
+                                        teamName={teamName}
                                     />
                                 </div>
                             ))}
