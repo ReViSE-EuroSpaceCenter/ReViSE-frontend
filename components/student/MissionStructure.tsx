@@ -52,7 +52,7 @@ export function MissionStructure({
 
                 {children.length === 1 && (
                     <>
-                        <div className="shrink-0 w-8 h-0.5 bg-white/40" />
+                        <div className="shrink-0 w-10 h-0.5 bg-white/40" />
                         <MissionStructure
                             mission={children[0]}
                             missionMap={missionMap}
@@ -64,7 +64,7 @@ export function MissionStructure({
 
                 {children.length > 1 && (
                     <div className="flex flex-row items-center">
-                        <div className="shrink-0 w-8 h-0.5 bg-white/40" />
+                        <div className="shrink-0 w-10 h-0.5 bg-white/40" />
                         <div className="relative flex flex-col ">
                             {children.map((child, i) => (
                                 <div key={child.id} className="relative flex flex-row items-center py-3">
@@ -75,7 +75,7 @@ export function MissionStructure({
                                             bottom: i === children.length - 1 ? '50%' : '0',
                                         }}
                                     />
-                                    <div className="shrink-0 w-8 h-0.5 bg-white/40" />
+                                    <div className="shrink-0 w-10 h-0.5 bg-white/40" />
                                     <MissionStructure
                                         mission={child}
                                         missionMap={missionMap}

@@ -28,15 +28,45 @@ export default function MissionPage() {
 
     const teamColor = teamColorMap[teamName];
 
+
+    const normalMissions = currentTeam.missions.filter(m => !m.bonus);
+
+    const completedCount = 3;
+
+    const totalCount = normalMissions.length;
+
+    const progress = totalCount > 0
+        ? Math.round((completedCount / totalCount) * 100)
+        : 0;
+
     return (
         <div className="min-h-[calc(100vh-80px)]">
             <div className="px-6 lg:px-12 py-6 lg:py-12 space-y-16">
-                <h1
-                    className="text-4xl font-bold"
-                    style={{ color: `var(${teamColor})` }}
-                >
-                    {teamName} Missions
-                </h1>
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                    <h1
+                        className="text-4xl font-bold"
+                        style={{ color: `var(${teamColor})` }}
+                    >
+                        {teamName} Missions
+                    </h1>
+
+                    <div className="w-full lg:w-80">
+                        <div className="flex justify-between text-sm mb-2">
+                            <span>Progression</span>
+                            <span>{completedCount} / {totalCount}</span>
+                        </div>
+
+                        <div className="w-full h-3 bg-white/20 rounded-full overflow-hidden">
+                            <div
+                                className="h-full rounded-full transition-all duration-500"
+                                style={{
+                                    width: `${progress}%`,
+                                    backgroundColor: `var(${teamColor})`,
+                                }}
+                            />
+                        </div>
+                    </div>
+                </div>
 
                 {projectIds.map(projectId => {
                     const missions = currentTeam.missions.filter(

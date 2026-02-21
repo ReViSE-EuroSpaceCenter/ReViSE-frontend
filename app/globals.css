@@ -5,7 +5,13 @@
   --foreground: #fff;
   --font-geist-sans: ui-sans-serif, system-ui, sans-serif;
   --font-geist-mono: ui-monospace, SFMono-Regular, monospace;
-}
+
+  --color-teamMEDI: #a2d49f;
+  --color-teamCOOP: #1783c2;
+  --color-teamAERO: #84298e;
+  --color-teamMECA: #e4dec8;
+  --color-teamEXPE: #da5437;
+  --color-teamGECO: #234e6f;}
 
 @theme {
   --color-purpleReViSE: #834291;
@@ -13,12 +19,6 @@
   --color-greenReViSE: #519D60;
   --color-blueReViSE: #2C7BAC;
   --color-orangeReViSE: #CD5741;
-  --color-teamMEDI: #a2d49f;
-  --color-teamCOOP: #1783c2;
-  --color-teamAERO: #84298e;
-  --color-teamMECA: #e4dec8;
-  --color-teamEXPE: #da5437;
-  --color-teamGECO: #234e6f;
 }
 
 @theme inline {
