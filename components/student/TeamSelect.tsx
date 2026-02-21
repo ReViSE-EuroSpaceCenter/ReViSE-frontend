@@ -47,7 +47,7 @@ export default function TeamSelect({
 					break;
 
 				case "GAME_STARTED":
-					router.push("/intro/");
+					router.push(`/${chosenTeam}/intro/`);
 					break;
 			}
 		});
