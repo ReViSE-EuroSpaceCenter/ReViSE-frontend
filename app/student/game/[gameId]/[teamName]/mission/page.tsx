@@ -1,11 +1,12 @@
 "use client";
 
 import { teams } from "@/types/Teams";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { MissionStructure } from "@/components/student/MissionStructure";
 
 export default function MissionPage() {
     const params = useParams();
+    const router = useRouter();
     const teamName = params.teamName as string;
     const currentTeam = teams[teamName];
 
@@ -42,13 +43,22 @@ export default function MissionPage() {
     return (
         <div className="min-h-[calc(100vh-80px)]">
             <div className="px-6 lg:px-12 py-6 lg:py-12 space-y-16">
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                    <h1
-                        className="text-4xl font-bold"
-                        style={{ color: `var(${teamColor})` }}
-                    >
-                        {teamName} Missions
-                    </h1>
+                <div className="flex items-center justify-between gap-6">
+                    <div className="flex items-center gap-6">
+                        <button
+                            onClick={() => router.back()}
+                            className="px-4 py-2 rounded-xl bg-purpleReViSE hover:bg-purpleReViSE/80 cursor-pointer transition text-sm"
+                        >
+                            ← Retour
+                        </button>
+
+                        <h1
+                            className="text-4xl font-bold"
+                            style={{ color: `var(${teamColor})` }}
+                        >
+                            {teamName} Missions
+                        </h1>
+                    </div>
 
                     <div className="w-full lg:w-80">
                         <div className="flex justify-between text-sm mb-2">
