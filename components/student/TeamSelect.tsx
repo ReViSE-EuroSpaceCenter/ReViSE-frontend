@@ -47,13 +47,13 @@ export default function TeamSelect({
 					break;
 
 				case "GAME_STARTED":
-					router.push(`/${chosenTeam}/intro/`);
+                    router.push(`/student/game/${lobbyCode}/${chosenTeam}/intro`);
 					break;
 			}
 		});
 
 		return () => subscription?.unsubscribe();
-	}, [connected, subscribe, router, chosenTeam]);
+	}, [connected, subscribe, router, chosenTeam, lobbyCode]);
 
 	const handleJoinTeam = async (teamLabel: string) => {
 		if (takenTeams.has(teamLabel)) return;

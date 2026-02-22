@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter, usePathname } from "next/navigation";
-import NumberTeamSelector from "@/components/numberTeamSelector";
+import NumberTeamSelector from "@/components/teacher/NumberTeamSelector";
 
 type Props = {
 	createLobbyAction: (formData: FormData) => void;
