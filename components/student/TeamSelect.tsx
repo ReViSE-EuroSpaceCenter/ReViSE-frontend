@@ -53,7 +53,7 @@ export default function TeamSelect({
 		});
 
 		return () => subscription?.unsubscribe();
-	}, [connected, subscribe, router, lobbyCode, chosenTeam]);
+	}, [connected, subscribe, router, chosenTeam, lobbyCode]);
 
 	const handleJoinTeam = async (teamLabel: string) => {
 		if (takenTeams.has(teamLabel)) return;
