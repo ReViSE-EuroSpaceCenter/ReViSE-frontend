@@ -30,10 +30,10 @@ export default function Checklist() {
 
     return (
         <>
-            <div className="fixed bottom-6 right-6 z-50">
+            <div className="fixed bottom-10 right-8 z-50">
                 <button
                     onClick={() => setIsOpen(true)}
-                    className="px-5 py-3 bg-purpleReViSE text-white rounded-lg shadow-lg hover:bg-purple-600 transition"
+                    className="px-10 py-3 bg-purpleReViSE text-white rounded-lg shadow-lg hover:bg-purple-600 transition"
                 >
                     Rappel des règles
                 </button>
@@ -44,7 +44,7 @@ export default function Checklist() {
                     <div className="absolute inset-0 bg-black/30 backdrop-blur-md"></div>
 
                     <div
-                        className="relative bg-darkBlueReViSE text-foreground rounded-xl shadow-2xl w-96 p-6"
+                        className="relative bg-darkBlueReViSE text-foreground rounded-xl shadow-2xl w-175 p-10"
                         style={{ fontFamily: "var(--font-geist-sans)" }}
                     >
                         <h2 className="text-xl font-bold mb-4 text-purpleReViSE">
