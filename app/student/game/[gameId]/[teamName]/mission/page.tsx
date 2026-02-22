@@ -3,14 +3,16 @@
 import { teams } from "@/types/Teams";
 import { useParams, useRouter } from "next/navigation";
 import { MissionStructure } from "@/components/student/MissionStructure";
+import { useEffect, useState} from "react";
+import { useWebSocket } from "@/components/WebSocketProvider";
+import { ProgressionBar } from "@/components/student/PogressionBar";
+import { MissionHeader } from "@/components/student/MissionHeader";
 
 export default function MissionPage() {
     const params = useParams();
     const router = useRouter();
     const teamName = params.teamName as string;
     const currentTeam = teams[teamName];
-
-    if (!currentTeam) return <p>Équipe non trouvée</p>;
 
     const missionMap = Object.fromEntries(
         currentTeam.missions.map((m) => [m.id, m])
@@ -19,63 +21,68 @@ export default function MissionPage() {
     const projectIds = [...new Set(currentTeam.missions.map(m => m.projectId))].sort((a, b) => a - b);
 
     const teamColorMap: Record<string, string> = {
-        MEDI: "--color-teamMEDI",
-        COOP: "--color-teamCOOP",
-        AERO: "--color-teamAERO",
-        MECA: "--color-teamMECA",
-        EXPE: "--color-teamEXPE",
-        GECO: "--color-teamGECO",
+        MEDI: "#a2d49f",
+        COOP: "#1783c2",
+        AERO: "#84298e",
+        MECA: "#e4dec8",
+        EXPE: "#da5437",
+        GECO: "#234e6f",
     };
-
     const teamColor = teamColorMap[teamName];
 
+    const teamBadgeMap: Record<string, string[]> = {
+        MEDI: ["/badges/MEDI.png"],
+        COOP: ["/badges/COOP.png"],
+        AERO: ["/badges/AERO.png"],
+        MECA: ["/badges/MECA.png"],
+        EXPE: ["/badges/EXPE.png"],
+        GECO: ["/badges/GECO.png"],
+    };
+
+    const {subscribe ,connected} = useWebSocket();
+    const [progression, setProgression] = useState<number>(0);
+
+    useEffect(() => {
+        if (!connected) return;
+
+        const subscription = subscribe((message) => {
+            const data = JSON.parse(message.body) as {
+                teamName: string;
+                classicMissionPercentage: number;
+                firstBonusMissionCompleted: boolean;
+                secondBonusMissionCompleted: boolean;
+            };
+
+            if (data.teamName === teamName) {
+                setProgression(data.classicMissionPercentage);
+            }
+        });
+
+        return () => subscription?.unsubscribe();
+    }, [connected, subscribe, teamName]);
 
     const normalMissions = currentTeam.missions.filter(m => !m.bonus);
-
-    const completedCount = 3;
-
-    const totalCount = normalMissions.length;
-
-    const progress = totalCount > 0
-        ? Math.round((completedCount / totalCount) * 100)
-        : 0;
+    const totalMissionCount = normalMissions.length;
+    const completedMissionCount = Math.round((progression / 100) * totalMissionCount);
 
     return (
         <div className="min-h-[calc(100vh-80px)]">
             <div className="px-6 lg:px-12 py-6 lg:py-12 space-y-16">
-                <div className="flex items-center justify-between gap-6">
-                    <div className="flex items-center gap-6">
-                        <button
-                            onClick={() => router.back()}
-                            className="px-4 py-2 rounded-xl bg-purpleReViSE hover:bg-purpleReViSE/80 cursor-pointer transition text-sm"
-                        >
-                            ← Retour
-                        </button>
+                <div className="flex flex-col lg:flex-row items-center justify-between gap-6 w-full">
 
-                        <h1
-                            className="text-4xl font-bold"
-                            style={{ color: `var(${teamColor})` }}
-                        >
-                            {teamName} Missions
-                        </h1>
-                    </div>
+                    <MissionHeader
+                        teamName={teamName}
+                        color={teamColor}
+                        badges={teamBadgeMap[teamName] || []}
+                        onBack={() => router.back()}
+                    />
 
-                    <div className="w-full lg:w-80">
-                        <div className="flex justify-between text-sm mb-2">
-                            <span>Progression</span>
-                            <span>{completedCount} / {totalCount}</span>
-                        </div>
-
-                        <div className="w-full h-3 bg-white/20 rounded-full overflow-hidden">
-                            <div
-                                className="h-full rounded-full transition-all duration-500"
-                                style={{
-                                    width: `${progress}%`,
-                                    backgroundColor: `var(${teamColor})`,
-                                }}
-                            />
-                        </div>
-                    </div>
+                    <ProgressionBar
+                        progression={progression}
+                        completed={completedMissionCount}
+                        totalMission={totalMissionCount}
+                        color={teamColor}
+                    />
                 </div>
 
                 {projectIds.map(projectId => {
@@ -108,7 +115,6 @@ export default function MissionPage() {
                                     />
                                 ))}
                             </div>
-
                         </div>
                     );
                 })}

@@ -22,7 +22,7 @@ export function MissionStructure({
         <>
             <div className="flex md:hidden flex-col items-center gap-3 w-full">
                 <button
-                    style={{ backgroundColor: `var(${teamColor})` }}
+                    style={{ backgroundColor: teamColor }}
                     className={`px-4 py-3 ${textColorClass} rounded-2xl border-2 border-black shadow-md active:scale-95 transition text-center whitespace-nowrap`}                >
                     {mission.title}
                 </button>
@@ -45,8 +45,8 @@ export function MissionStructure({
 
             <div className="hidden md:flex flex-row items-center ">
                 <button
-                    style={{ backgroundColor: `var(${teamColor})` }}
-                    className={`shrink-0 px-4 py-3 ${textColorClass} rounded-2xl border-2 border-black shadow-md hover:scale-105 transition text-center whitespace-nowrap`}                >
+                    style={{ backgroundColor: teamColor }}
+                    className={`shrink-0 px-4 py-3 ${textColorClass} rounded-2xl border-2 border-black shadow-md hover:scale-115 transition text-center whitespace-nowrap`}                >
                     {mission.title}
                 </button>
 
