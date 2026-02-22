@@ -57,7 +57,7 @@ export const teams: Record<string, Team> = {
             { id: 6, title: "Mission 6", projectId: 3, unlocks: [] },
             { id: 7, title: "Mission 7", projectId: 4, unlocks: [9] },
             { id: 8, title: "Mission Bonus 1", projectId: 1, bonus: true, unlocks: [] },
-            { id: 9, title: "Mission Bonus 2", projectId: 2, bonus: true, unlocks: [] },
+            { id: 9, title: "Mission Bonus 2", projectId: 4, bonus: true, unlocks: [] },
         ],
     },
 
