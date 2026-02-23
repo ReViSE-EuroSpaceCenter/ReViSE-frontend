@@ -5,8 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { MissionStructure } from "@/components/student/MissionStructure";
 import { useEffect, useState} from "react";
 import { useWebSocket } from "@/components/WebSocketProvider";
-import { ProgressionBar } from "@/components/student/PogressionBar";
-import { MissionHeader } from "@/components/student/MissionHeader";
+import {ProgressionBar} from "@/components/student/PogressionBar";
 
 export default function MissionPage() {
     const params = useParams();
@@ -30,15 +29,6 @@ export default function MissionPage() {
     };
     const teamColor = teamColorMap[teamName];
 
-    const teamBadgeMap: Record<string, string[]> = {
-        MEDI: ["/badges/MEDI.png"],
-        COOP: ["/badges/COOP.png"],
-        AERO: ["/badges/AERO.png"],
-        MECA: ["/badges/MECA.png"],
-        EXPE: ["/badges/EXPE.png"],
-        GECO: ["/badges/GECO.png"],
-    };
-
     const {subscribe ,connected} = useWebSocket();
     const [progression, setProgression] = useState<number>(0);
 
@@ -46,16 +36,18 @@ export default function MissionPage() {
         if (!connected) return;
 
         const subscription = subscribe((message) => {
-            const data = JSON.parse(message.body) as {
-                teamName: string;
-                classicMissionPercentage: number;
-                firstBonusMissionCompleted: boolean;
-                secondBonusMissionCompleted: boolean;
+            const event = JSON.parse(message.body) as {
+                type: string;
+                payload: {
+                    teamLabel: string;
+                    classicMissionPercentage: number;
+                };
             };
 
-            if (data.teamName === teamName) {
-                setProgression(data.classicMissionPercentage);
-            }
+            if (event.type !== "TEAM_PROGRESSION") return;
+            if (event.payload.teamLabel !== teamName) return;
+
+            setProgression(event.payload.classicMissionPercentage);
         });
 
         return () => subscription?.unsubscribe();
@@ -67,22 +59,23 @@ export default function MissionPage() {
 
     return (
         <div className="min-h-[calc(100vh-80px)]">
-            <div className="px-6 lg:px-12 py-6 lg:py-12 space-y-16">
-                <div className="flex flex-col lg:flex-row items-center justify-between gap-6 w-full">
+            <div className="px-6 lg:px-12 py-6 lg:py-12 space-y-16 justify-between item-center">
+                <div className="flex items-center justify-between mb-6">
+                    <button
+                        onClick={() => router.back()}
+                        className="px-4 py-2 rounded-lg border border-slate-600 text-slate-300 hover:border-purpleReViSE hover:text-white transition text-sm cursor-pointer"
+                    >
+                        ← Retour
+                    </button>
 
-                    <MissionHeader
-                        teamName={teamName}
-                        color={teamColor}
-                        badges={teamBadgeMap[teamName] || []}
-                        onBack={() => router.back()}
-                    />
-
-                    <ProgressionBar
-                        progression={progression}
-                        completed={completedMissionCount}
-                        totalMission={totalMissionCount}
-                        color={teamColor}
-                    />
+                    <div className="flex flex-col gap-6 ">
+                        <ProgressionBar
+                            progression={progression}
+                            completed={completedMissionCount}
+                            totalMission={totalMissionCount}
+                            color={teamColor}
+                        />
+                    </div>
                 </div>
 
                 {projectIds.map(projectId => {
