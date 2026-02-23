@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+type Props = {
+    isOpen: boolean;
+    setIsOpen: (isOpen: boolean) => void;
+}
 
-export default function Checklist() {
-    const [isOpen, setIsOpen] = useState(false);
+export default function Checklist({ isOpen, setIsOpen }: Readonly<Props>) {
 
     const steps = [
         {
@@ -30,22 +32,17 @@ export default function Checklist() {
 
     return (
         <>
-            <div className="fixed bottom-10 right-8 z-50">
-                <button
-                    onClick={() => setIsOpen(true)}
-                    className="px-10 py-3 bg-purpleReViSE text-white rounded-lg shadow-lg hover:bg-purple-600 transition"
-                >
-                    Rappel des règles
-                </button>
-            </div>
-
             {isOpen && (
-                <div className="fixed inset-0 flex items-center justify-center z-50">
+                <div
+                  className="fixed inset-0 flex items-center justify-center z-50"
+                  onClick={() => setIsOpen(false)}
+                >
                     <div className="absolute inset-0 bg-black/30 backdrop-blur-md"></div>
 
                     <div
                         className="relative bg-darkBlueReViSE text-foreground rounded-xl shadow-2xl w-175 p-10"
                         style={{ fontFamily: "var(--font-geist-sans)" }}
+                        onClick={(e) => e.stopPropagation()}
                     >
                         <h2 className="text-xl font-bold mb-4 text-purpleReViSE">
                             Rappel des règles

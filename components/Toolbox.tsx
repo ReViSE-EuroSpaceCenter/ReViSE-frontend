@@ -27,21 +27,21 @@ export default function Toolbox({ centerContent, actions }: RadialMenuProps) {
 	const cy = S / 2;
 	const innerR = 72;
 	const outerR = 200;
-	const gap = 8;
 	const count = actions.length;
+	const gap = count < 4 ? 16 : 8;
 
-	const offsetDeg = -135;
+	const offsetDeg = count < 4 ? 90 : -135;
 
-	function deg2rad(d: number) {
+	const deg2rad = (d: number) => {
 		return (d * Math.PI) / 180;
 	}
 
-	function polar(r: number, angleDeg: number) {
+	const polar = (r: number, angleDeg: number) => {
 		const a = deg2rad(angleDeg);
 		return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
 	}
 
-	function petalPath(i: number) {
+	const petalPath = (i: number) => {
 		const step = 360 / count;
 		const startDeg = offsetDeg + i * step + gap / 2;
 		const endDeg = offsetDeg + (i + 1) * step - gap / 2;
@@ -53,7 +53,7 @@ export default function Toolbox({ centerContent, actions }: RadialMenuProps) {
 		return `M ${p1.x} ${p1.y} L ${p2.x} ${p2.y} A ${outerR} ${outerR} 0 ${large} 1 ${p3.x} ${p3.y} L ${p4.x} ${p4.y} A ${innerR + 4} ${innerR + 4} 0 ${large} 0 ${p1.x} ${p1.y} Z`;
 	}
 
-	function textArcPath(i: number) {
+	const textArcPath = (i: number) => {
 		const step = 360 / count;
 		const startDeg = offsetDeg + i * step + gap / 2;
 		const endDeg = offsetDeg + (i + 1) * step - gap / 2;
@@ -63,7 +63,7 @@ export default function Toolbox({ centerContent, actions }: RadialMenuProps) {
 		return `M ${p1.x} ${p1.y} A ${r} ${r} 0 0 1 ${p2.x} ${p2.y}`;
 	}
 
-	function petalMidAngle(i: number) {
+	const petalMidAngle = (i: number) => {
 		const step = 360 / count;
 		return offsetDeg + i * step + step / 2;
 	}
@@ -103,11 +103,9 @@ export default function Toolbox({ centerContent, actions }: RadialMenuProps) {
 				))}
 			</defs>
 
-			{/* Atmosphere */}
 			<circle cx={cx} cy={cy} r={outerR + 60} fill="rgba(131,66,145,0.04)" />
 			<circle cx={cx} cy={cy} r={outerR + 30} fill="rgba(131,66,145,0.06)" />
 
-			{/* Petals */}
 			{actions.map((action, i) => {
 				const color = COLORS[i % COLORS.length];
 				const isHov =  hovered === i;
@@ -140,7 +138,7 @@ export default function Toolbox({ centerContent, actions }: RadialMenuProps) {
 						/>
 						<path d={petalPath(i)} fill="none" stroke="white" strokeWidth={0.5} strokeOpacity={isHov ? 0.2 : 0.07} />
 						<text
-							fontSize={isHov ? "16" : "14"}
+							fontSize={count < 4 ? (isHov ? "22": "20") : (isHov ? "17" : "16")}
 							fill="white"
 							fontWeight={isHov ? "700" : "600"}
 							letterSpacing="0.06em"
@@ -166,7 +164,6 @@ export default function Toolbox({ centerContent, actions }: RadialMenuProps) {
 				textAnchor="middle"
 				dominantBaseline="middle"
 				fontSize="15"
-				fontFamily="'Segoe UI', system-ui, sans-serif"
 				fontWeight="700"
 				fill="white"
 				letterSpacing="0.04em"
