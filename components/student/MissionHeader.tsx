@@ -19,7 +19,7 @@ export function MissionHeader({ teamName, color, badges }: TeamHeaderProps) {
                         alt={`${teamName} badge ${index + 1}`}
                         width={140}
                         height={140}
-                        className="w-20 h-20 object-contain"
+                        className="w-10 h-10 object-contain"
                     />
                 ))}
             </div>
