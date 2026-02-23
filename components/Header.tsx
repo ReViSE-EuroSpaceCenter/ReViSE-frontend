@@ -19,8 +19,8 @@ export default function Header(props: Readonly<Props>) {
 
 	const isHomePage = pathname === '/';
 
-    const teamPageMatch = pathname?.match(/^\/student\/game\/[^/]+\/([^/]+)\/(intro|mission)$/);
-    const teamName = teamPageMatch ? teamPageMatch[1] : null;
+    const teamPageMatch = pathname?.match(/^\/student\/game\/[^/]+\/([^/]+)(?:\/(intro|mission))?$/);
+    const teamName = teamPageMatch && teamPageMatch[1] !== "team" ? teamPageMatch[1] : null;
 
     const teamColorMap: Record<string, string> = {
         MEDI: "#a2d49f",
