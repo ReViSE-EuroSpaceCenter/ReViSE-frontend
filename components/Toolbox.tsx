@@ -60,6 +60,11 @@ export default function Toolbox({ centerContent, actions }: Readonly<RadialMenuP
 		const r = (innerR + 4 + outerR) / 2;
 		const p1 = polar(r, startDeg);
 		const p2 = polar(r, endDeg);
+
+		if (count == 4 && i == 2 || count == 3 && i !== 1) {
+			return `M ${p2.x} ${p2.y} A ${r} ${r} 0 0 0 ${p1.x} ${p1.y}`;
+		}
+
 		return `M ${p1.x} ${p1.y} A ${r} ${r} 0 0 1 ${p2.x} ${p2.y}`;
 	}
 
@@ -150,7 +155,11 @@ export default function Toolbox({ centerContent, actions }: Readonly<RadialMenuP
 							letterSpacing="0.06em"
 							opacity={isHov ? 1 : 0.9}
 						>
-							<textPath href={`#tb-arc-${i}`} startOffset="50%" textAnchor="middle">
+							<textPath
+								href={`#tb-arc-${i}`}
+								startOffset="50%"
+								textAnchor="middle"
+							>
 								{action.label}
 							</textPath>
 						</text>
