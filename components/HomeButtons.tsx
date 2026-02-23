@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import NumberTeamSelector from "@/components/numberTeamSelector";
+import NumberTeamSelector from "@/components/teacher/NumberTeamSelector";
 
 type Props = {
 	action: (formData: FormData) => void

@@ -3,7 +3,8 @@
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter, usePathname } from "next/navigation";
-import NumberTeamSelector from "@/components/numberTeamSelector";
+import NumberTeamSelector from "@/components/teacher/NumberTeamSelector";
+import { MissionHeader } from "@/components/student/MissionHeader";
 
 type Props = {
 	createLobbyAction: (formData: FormData) => void;
@@ -18,6 +19,26 @@ export default function Header(props: Readonly<Props>) {
 
 	const isHomePage = pathname === '/';
 
+    const teamPageMatch = pathname?.match(/^\/student\/game\/[^/]+\/([^/]+)(?:\/(intro|mission))?$/);
+    const teamName = teamPageMatch && teamPageMatch[1] !== "team" ? teamPageMatch[1] : null;
+
+    const teamColorMap: Record<string, string> = {
+        MEDI: "#a2d49f",
+        COOP: "#1783c2",
+        AERO: "#84298e",
+        MECA: "#e4dec8",
+        EXPE: "#da5437",
+        GECO: "#234e6f",
+    };
+
+    const teamBadgeMap: Record<string, string[]> = {
+        MEDI: ["/badges/MEDI.png"],
+        COOP: ["/badges/COOP.png"],
+        AERO: ["/badges/AERO.png"],
+        MECA: ["/badges/MECA.png"],
+        EXPE: ["/badges/EXPE.png"],
+        GECO: ["/badges/GECO.png"],
+    };
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -50,7 +71,13 @@ export default function Header(props: Readonly<Props>) {
                             Recherche de Vie Sur Europe
                         </span>
 						</div>
-
+                        {teamName && (
+                            <MissionHeader
+                                teamName={teamName}
+                                color={teamColorMap[teamName]}
+                                badges={teamBadgeMap[teamName]}
+                            />
+                        )}
 						{isHomePage && (
 							<>
 								<nav className="hidden md:flex items-center gap-3">
