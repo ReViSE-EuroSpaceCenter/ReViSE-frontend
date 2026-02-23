@@ -30,7 +30,7 @@ export default function SetUpPage() {
                     break;
 
                 case "GAME_STARTED":
-                    router.push(`/teacher/game/${lobbyCode}/intro`);
+                    router.push(`/teacher/game/${lobbyCode}`);
                     break;
 
 
