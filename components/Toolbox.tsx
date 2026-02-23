@@ -13,13 +13,13 @@ type RadialMenuProps = {
 };
 
 const COLORS = [
-	{ base: "#834291", light: "#b05ec0", glow: "rgba(131,66,145,0.5)" },
-	{ base: "#2C7BAC", light: "#3da0e0", glow: "rgba(44,123,172,0.5)" },
-	{ base: "#519D60", light: "#6abf7a", glow: "rgba(81,157,96,0.5)" },
-	{ base: "#CD5741", light: "#e8705a", glow: "rgba(205,87,65,0.5)" },
+	{ id: "purple", base: "#834291", light: "#b05ec0", glow: "rgba(131,66,145,0.5)" },
+	{ id: "blue", base: "#2C7BAC", light: "#3da0e0", glow: "rgba(44,123,172,0.5)" },
+	{ id: "green", base: "#519D60", light: "#6abf7a", glow: "rgba(81,157,96,0.5)" },
+	{ id: "orange", base: "#CD5741", light: "#e8705a", glow: "rgba(205,87,65,0.5)" },
 ];
 
-export default function Toolbox({ centerContent, actions }: RadialMenuProps) {
+export default function Toolbox({ centerContent, actions }: Readonly<RadialMenuProps>) {
 	const [hovered, setHovered] = useState<number | null>(null);
 
 	const S = 600;
@@ -93,13 +93,13 @@ export default function Toolbox({ centerContent, actions }: RadialMenuProps) {
 					</feMerge>
 				</filter>
 				{COLORS.map((c, i) => (
-					<radialGradient key={`tg-${i}`} id={`tb-petal-grad-${i}`} cx="50%" cy="100%" r="100%">
+					<radialGradient key={`tg-${c.id}`} id={`tb-petal-grad-${i}`} cx="50%" cy="100%" r="100%">
 						<stop offset="0%" stopColor={c.light} stopOpacity="0.95" />
 						<stop offset="100%" stopColor={c.base} stopOpacity="0.8" />
 					</radialGradient>
 				))}
-				{actions.map((_, i) => (
-					<path key={`ta-${i}`} id={`tb-arc-${i}`} d={textArcPath(i)} fill="none" />
+				{actions.map((action, i) => (
+					<path key={`ta-${action.label}`} id={`tb-arc-${i}`} d={textArcPath(i)} fill="none" />
 				))}
 			</defs>
 
@@ -113,10 +113,16 @@ export default function Toolbox({ centerContent, actions }: RadialMenuProps) {
 				const nudge = isHov ? 8 : 0;
 				const tx = Math.cos(mid) * nudge;
 				const ty = Math.sin(mid) * nudge;
+				let fontSizeValue: string;
+				if (count < 4) {
+					fontSizeValue = isHov ? "22" : "20";
+				} else {
+					fontSizeValue = isHov ? "17" : "16";
+				}
 
 				return (
 					<g
-						key={`petal-${i}`}
+						key={`petal-${action.label}`}
 						onClick={action.onClick}
 						onMouseEnter={() => setHovered(i)}
 						onMouseLeave={() => setHovered(null)}
@@ -138,7 +144,7 @@ export default function Toolbox({ centerContent, actions }: RadialMenuProps) {
 						/>
 						<path d={petalPath(i)} fill="none" stroke="white" strokeWidth={0.5} strokeOpacity={isHov ? 0.2 : 0.07} />
 						<text
-							fontSize={count < 4 ? (isHov ? "22": "20") : (isHov ? "17" : "16")}
+							fontSize={fontSizeValue}
 							fill="white"
 							fontWeight={isHov ? "700" : "600"}
 							letterSpacing="0.06em"
