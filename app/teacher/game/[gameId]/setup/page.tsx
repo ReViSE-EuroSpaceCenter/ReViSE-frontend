@@ -30,7 +30,7 @@ export default function SetUpPage() {
                     break;
 
                 case "GAME_STARTED":
-                    router.push(`/teacher/game/${lobbyCode}`);
+                    router.push(`/teacher/game/${lobbyCode}?nbTeams=${nbTeams}`);
                     break;
 
 
@@ -40,7 +40,7 @@ export default function SetUpPage() {
         });
 
         return () => subscription?.unsubscribe();
-    }, [router, subscribe, connected, lobbyCode]);
+    }, [router, subscribe, connected, lobbyCode, nbTeams]);
 
 
     const startGame = async () => {
