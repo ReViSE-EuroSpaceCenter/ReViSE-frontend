@@ -6,6 +6,7 @@ import { MissionStructure } from "@/components/student/MissionStructure";
 import { useEffect, useState} from "react";
 import { useWebSocket } from "@/components/WebSocketProvider";
 import {ProgressionBar} from "@/components/student/PogressionBar";
+import { calculate } from "@/utils/ProgressionCalcul";
 
 export default function MissionPage() {
     const params = useParams();
@@ -55,7 +56,7 @@ export default function MissionPage() {
 
     const normalMissions = currentTeam.missions.filter(m => !m.bonus);
     const totalMissionCount = normalMissions.length;
-    const completedMissionCount = Math.round((progression / 100) * totalMissionCount);
+    const completedMissionCount = calculate(progression, totalMissionCount);
 
     return (
         <div className="min-h-[calc(100vh-80px)]">
