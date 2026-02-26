@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams, useParams } from "next/navigation";
 import { useWebSocket } from "@/components/WebSocketProvider";
 import Image from "next/image";
-import { assignTeam } from "@/api/lobbyApi";
+import { assignTeam, getLobbyInfo } from "@/api/lobbyApi";
 import { LobbyEventType } from "@/types/LobbyEventType";
 
 type Props = {
@@ -31,6 +31,23 @@ export default function TeamSelect({
 	const chosenTeam = searchParams.get("chosenTeam");
 	const waitForStart = chosenTeam !== null;
 
+    useEffect(() => {
+        if (!connected) return;
+
+        void (async () => {
+            try {
+                const lobby = await getLobbyInfo(lobbyCode);
+                const taken = lobby.allTeams.filter(
+                    (team: string) => !lobby.availableTeams.includes(team)
+                );
+
+                setTakenTeams(new Set(taken));
+            } catch (err) {
+                console.error("Erreur sync lobby :", err);
+            }
+        })();
+    }, [lobbyCode, connected]);
+
 	useEffect(() => {
 		if (!connected) return;
 
@@ -42,7 +59,7 @@ export default function TeamSelect({
 					setTakenTeams((prev) => {
 						const next = new Set(prev);
 						next.add(event.payload.teamLabel);
-						return next;
+                        return next;
 					});
 					break;
 
