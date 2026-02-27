@@ -16,7 +16,6 @@ export default function Dashboard() {
 		<div className="min-h-[calc(100vh-120px)] flex items-center justify-center p-4">
 			<div className="w-full max-w-[min(600px,calc(100vh-160px))]">
 				<Toolbox
-					centerContent={"Boîte à outils"}
 					actions={[
 						{ label: "Fin du tour", onClick: () => setIsChecklistOpen(true) },
 						{ label: "Etat mission", onClick: () => router.push(`${pathname}/mission`), },
