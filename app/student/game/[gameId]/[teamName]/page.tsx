@@ -18,8 +18,8 @@ export default function Dashboard() {
 				<Toolbox
 					actions={[
 						{ label: "Fin du tour", onClick: () => setIsChecklistOpen(true) },
-						{ label: "Etat mission", onClick: () => router.push(`${pathname}/mission`), },
-						{ label: "Technologies d'IA", onClick: () => setIsIAOpen(true) },
+						{ label: "État des mission", onClick: () => router.push(`${pathname}/mission`), },
+						{ label: "Aide\nTechnologies IA", onClick: () => setIsIAOpen(true) },
 					]}
 				/>
 				<Checklist isOpen={isChecklistOpen} setIsOpen={setIsChecklistOpen} />
