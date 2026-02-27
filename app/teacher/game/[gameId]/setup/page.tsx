@@ -5,6 +5,8 @@ import { useRouter, useSearchParams, useParams } from "next/navigation";
 import { useWebSocket } from "@/components/WebSocketProvider";
 import { LobbyEventType } from "@/types/LobbyEventType";
 import { startLobby } from "@/api/lobbyApi";
+import { showError } from "@/errors/getErrorMessage";
+import { ApiError } from "@/api/apiError";
 
 export default function SetUpPage() {
     const router = useRouter();
@@ -45,7 +47,7 @@ export default function SetUpPage() {
 
     const startGame = async () => {
         if (!id) {
-            console.error("hostId manquant, impossible de démarrer la partie");
+            showError("", "Identifiant de connexion manquant, impossible de démarrer la partie");
             return;
         }
 
@@ -53,7 +55,7 @@ export default function SetUpPage() {
             setLoading(true);
             await startLobby(lobbyCode, id);
         } catch (err) {
-            console.error(err);
+            showError(err instanceof ApiError ? err.key : "");
         } finally {
             setLoading(false);
         }
