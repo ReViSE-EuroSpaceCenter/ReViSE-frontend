@@ -14,7 +14,6 @@ function checkStatus(response: Response) {
 	}
 	return response
 }
-
 function buildQueryString(params?: Record<string, string | number | boolean>) {
 	if (!params || Object.keys(params).length === 0) return ''
 	return `?${new URLSearchParams(params as Record<string, string>).toString()}`
@@ -53,4 +52,29 @@ export const post = async (endpoint: EndPoint, options: PostOptions) => {
 	}
 
 	return response.json()
+}
+
+interface PutOptions extends RequestOptions {
+    body?: unknown
+}
+
+export const put = async (endpoint: EndPoint, options?: PutOptions) => {
+    const url = `${process.env.NEXT_PUBLIC_API_URL}${endpoint}${buildQueryString(options?.params)}`
+
+    const response = await fetch(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: options?.body ? JSON.stringify(options.body) : undefined,
+    })
+
+    checkStatus(response)
+
+    const contentType = response.headers.get('content-type')
+    if (response.status === 204 || !contentType?.includes('application/json')) {
+        return true
+    }
+
+    return response.json()
 }

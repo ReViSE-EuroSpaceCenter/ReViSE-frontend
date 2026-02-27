@@ -12,6 +12,7 @@ import { Client, IMessage, StompSubscription } from "@stomp/stompjs";
 
 type WebSocketContextType = {
 	subscribe: (callback: (message: IMessage) => void) => StompSubscription | null;
+    subscribeGame: (callback: (message: IMessage) => void) => StompSubscription | null;
 	connected: boolean;
 	id?: string;
 };
@@ -73,13 +74,27 @@ export function WebSocketProvider({
 		[connected, lobbyCode, id]
 	);
 
+    const subscribeGame = useCallback(
+        (callback: (message: IMessage) => void) => {
+            if (!clientRef.current || !connected) {
+                console.warn("Cannot subscribe to GAME: WebSocket not connected");
+                return null;
+            }
+            const destination = `/topic/game/${lobbyCode}`;
+            console.log("Subscribing to GAME topic:", destination);
+            return clientRef.current.subscribe(destination, callback);
+        },
+        [connected, lobbyCode]
+    );
+
 	const values = useMemo(
 		() => ({
 			subscribe,
+            subscribeGame,
 			connected,
 			id,
 		}),
-		[subscribe, connected, id]
+		[subscribe, subscribeGame, connected, id]
 	);
 
 	return (

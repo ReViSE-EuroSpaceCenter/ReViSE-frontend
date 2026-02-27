@@ -5,19 +5,24 @@ import { useParams, useRouter } from "next/navigation";
 import { MissionStructure } from "@/components/student/MissionStructure";
 import { useEffect, useState} from "react";
 import { useWebSocket } from "@/components/WebSocketProvider";
-import {ProgressionBar} from "@/components/student/PogressionBar";
+import { ProgressionBar } from "@/components/student/PogressionBar";
 
 export default function MissionPage() {
     const params = useParams();
     const router = useRouter();
     const teamName = params.teamName as string;
+    const lobbyCode = params.gameId as string;
     const currentTeam = teams[teamName];
-
+    const { id } = useWebSocket();
+    const clientId = id as string;
     const missionMap = Object.fromEntries(
         currentTeam.missions.map((m) => [m.id, m])
     );
 
-    const projectIds = [...new Set(currentTeam.missions.map(m => m.projectId))].sort((a, b) => a - b);
+    const normalMissions = currentTeam.missions.filter(m => !m.bonus).sort((a, b) => a.id - b.id);
+
+    const projectIds = [...new Set(normalMissions.map(m => m.projectId))]
+        .sort((a, b) => a - b);
 
     const teamColorMap: Record<string, string> = {
         MEDI: "#a2d49f",
@@ -29,33 +34,45 @@ export default function MissionPage() {
     };
     const teamColor = teamColorMap[teamName];
 
-    const {subscribe ,connected} = useWebSocket();
     const [progression, setProgression] = useState<number>(0);
+    const { subscribeGame, connected } = useWebSocket();
+
+    const [isBonus1Completed, setIsBonus1Completed] = useState(false);
+    const [isBonus2Completed, setIsBonus2Completed] = useState(false);
 
     useEffect(() => {
         if (!connected) return;
 
-        const subscription = subscribe((message) => {
-            const event = JSON.parse(message.body) as {
-                type: string;
-                payload: {
-                    teamLabel: string;
-                    classicMissionPercentage: number;
-                };
-            };
 
-            if (event.type !== "TEAM_PROGRESSION") return;
-            if (event.payload.teamLabel !== teamName) return;
+        const sub = subscribeGame((message) => {
+            const event = JSON.parse(message.body);
 
-            setProgression(event.payload.classicMissionPercentage);
+            if (event.type !== "TEAM_PROGRESSION" || event.payload.teamLabel !== teamName) return;
+
+            if (event.type === "TEAM_PROGRESSION" && event.payload.teamLabel === teamName) {
+                const progressionValue = event.payload.teamProgression.classicMissionPercentage;
+
+                setProgression(progressionValue);
+                const isBonus1Completed = event.payload.teamProgression.firstBonusMissionCompleted;
+                const isBonus2Completed = event.payload.teamProgression.secondBonusMissionCompleted;
+                setIsBonus1Completed(isBonus1Completed);
+                setIsBonus2Completed(isBonus2Completed);
+            }
         });
 
-        return () => subscription?.unsubscribe();
-    }, [connected, subscribe, teamName]);
+        return () => sub?.unsubscribe();
+    }, [connected, subscribeGame, teamName]);
 
-    const normalMissions = currentTeam.missions.filter(m => !m.bonus);
     const totalMissionCount = normalMissions.length;
     const completedMissionCount = Math.round((progression / 100) * totalMissionCount);
+
+    const completedMissionsSet = new Set<number>(
+        normalMissions
+            .slice(0, completedMissionCount)
+            .map(m => m.id)
+    );
+
+
 
     return (
         <div className="min-h-[calc(100vh-80px)]">
@@ -105,6 +122,12 @@ export default function MissionPage() {
                                         missionMap={missionMap}
                                         teamColor={teamColor}
                                         teamName={teamName}
+                                        lobbyCode={lobbyCode}
+                                        clientId={clientId}
+                                        completedMissionCount={completedMissionCount}
+                                        isBonus1Completed={isBonus1Completed}
+                                        isBonus2Completed={isBonus2Completed}
+                                        completedMissionsSet={completedMissionsSet}
                                     />
                                 ))}
                             </div>
