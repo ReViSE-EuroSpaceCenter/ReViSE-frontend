@@ -3,9 +3,11 @@
 import { teams } from "@/types/Teams";
 import { useParams, useRouter } from "next/navigation";
 import { MissionStructure } from "@/components/student/MissionStructure";
-import { useEffect, useState} from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useWebSocket } from "@/components/WebSocketProvider";
 import { ProgressionBar } from "@/components/student/PogressionBar";
+import { getTeamMissionsState } from "@/api/lobbyApi";
+import { missionNameTraduction } from "@/utils/MissionName";
 
 export default function MissionPage() {
     const params = useParams();
@@ -19,10 +21,50 @@ export default function MissionPage() {
         currentTeam.missions.map((m) => [m.id, m])
     );
 
-    const normalMissions = currentTeam.missions.filter(m => !m.bonus).sort((a, b) => a.id - b.id);
+    const missions = currentTeam.missions;
+    const [progression, setProgression] = useState<number>(0);
+    const { subscribeGame, connected } = useWebSocket();
 
-    const projectIds = [...new Set(normalMissions.map(m => m.projectId))]
+    const [isBonus1Completed, setIsBonus1Completed] = useState(false);
+    const [isBonus2Completed, setIsBonus2Completed] = useState(false);
+    const [completedMissions, setCompletedMissions] = useState<Record<string, boolean>>({});
+
+    const projectIds = [...new Set(missions.map(m => m.projectId))]
         .sort((a, b) => a - b);
+
+    const projectCompletionMap = projectIds.reduce<Record<number, boolean>>(
+        (acc, projectId) => {
+            const projectMissions = missions.filter(
+                m => m.projectId === projectId && !m.bonus
+            );
+
+            acc[projectId] = projectMissions.every(m => {
+                const missionNumber = missionNameTraduction(m, teamName);
+                return completedMissions[missionNumber];
+            });
+            return acc;
+        },
+        {}
+    );
+
+    const projectUnlockedMap = useMemo(() => {
+        const map: Record<number, boolean> = {};
+        let previousUnlocked = true;
+
+        for (let i = 0; i < projectIds.length; i++) {
+            const projectId = projectIds[i];
+            if (!previousUnlocked) {
+                map[projectId] = false;
+            } else {
+                map[projectId] = true;
+                previousUnlocked = projectCompletionMap[projectId];
+            }
+        }
+
+        return map;
+    }, [projectIds, projectCompletionMap]);
+
+
 
     const teamColorMap: Record<string, string> = {
         MEDI: "#a2d49f",
@@ -34,15 +76,19 @@ export default function MissionPage() {
     };
     const teamColor = teamColorMap[teamName];
 
-    const [progression, setProgression] = useState<number>(0);
-    const { subscribeGame, connected } = useWebSocket();
-
-    const [isBonus1Completed, setIsBonus1Completed] = useState(false);
-    const [isBonus2Completed, setIsBonus2Completed] = useState(false);
+    const fetchMissions = async () => {
+        try {
+            const data = await getTeamMissionsState(lobbyCode, clientId);
+            setCompletedMissions(data.completedMissions);
+            setProgression(data.teamProgression.classicMissionPercentage);
+            setIsBonus1Completed(data.teamProgression.firstBonusMissionCompleted);
+            setIsBonus2Completed(data.teamProgression.secondBonusMissionCompleted);
+        } catch (error) {
+            console.error(error);
+        }};
 
     useEffect(() => {
         if (!connected) return;
-
 
         const sub = subscribeGame((message) => {
             const event = JSON.parse(message.body);
@@ -63,16 +109,8 @@ export default function MissionPage() {
         return () => sub?.unsubscribe();
     }, [connected, subscribeGame, teamName]);
 
-    const totalMissionCount = normalMissions.length;
+    const totalMissionCount = missions.filter(m => !m.bonus).length;
     const completedMissionCount = Math.round((progression / 100) * totalMissionCount);
-
-    const completedMissionsSet = new Set<number>(
-        normalMissions
-            .slice(0, completedMissionCount)
-            .map(m => m.id)
-    );
-
-
 
     return (
         <div className="min-h-[calc(100vh-80px)]">
@@ -96,12 +134,13 @@ export default function MissionPage() {
                 </div>
 
                 {projectIds.map(projectId => {
-                    const missions = currentTeam.missions.filter(
+                    const isProjectUnlocked = projectUnlockedMap[projectId];
+                    const missionFilters = currentTeam.missions.filter(
                         m => m.projectId === projectId
                     );
 
-                    const unlockedIds = new Set(missions.flatMap(m => m.unlocks));
-                    const roots = missions.filter(m => !unlockedIds.has(m.id));
+                    const unlockedIds = new Set(missionFilters.flatMap(m => m.unlocks));
+                    const roots = missionFilters.filter(m => !unlockedIds.has(m.id));
 
                     return (
                         <div
@@ -124,10 +163,11 @@ export default function MissionPage() {
                                         teamName={teamName}
                                         lobbyCode={lobbyCode}
                                         clientId={clientId}
-                                        completedMissionCount={completedMissionCount}
                                         isBonus1Completed={isBonus1Completed}
                                         isBonus2Completed={isBonus2Completed}
-                                        completedMissionsSet={completedMissionsSet}
+                                        completedMissions={completedMissions}
+                                        onMissionUpdated={fetchMissions}
+                                        isUnlocked={isProjectUnlocked}
                                     />
                                 ))}
                             </div>

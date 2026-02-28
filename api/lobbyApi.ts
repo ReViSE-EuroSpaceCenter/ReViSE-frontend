@@ -1,4 +1,4 @@
-import { post, put } from './apiClient'
+import { post, put, get } from './apiClient'
 
 
 export const createLobby = async (numberOfTeams: number) => {
@@ -23,4 +23,8 @@ export const startLobby = async (lobbyCode: string, hostId: string) => {
 
 export const changeTeamMissionState = async (lobbyCode: string, clientId: string, missionNumber: string) => {
     return await put(`/api/games/${lobbyCode}/missions`, { body: { clientId, missionNumber }});
+};
+
+export const getTeamMissionsState = async (lobbyCode: string, clientId: string)=> {
+    return get(`/api/games/${lobbyCode}/${clientId}/missions`);
 };

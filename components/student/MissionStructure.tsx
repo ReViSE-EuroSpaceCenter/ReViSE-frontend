@@ -4,7 +4,7 @@ import { Mission } from "@/types/Mission";
 import { changeTeamMissionState } from "@/api/lobbyApi";
 import { missionNameTraduction } from "@/utils/MissionName";
 import { ValidationMissionModal } from "@/components/student/ValidationMission";
-import { useState } from "react";
+import React, { useState } from "react";
 
 export function MissionStructure({
                                      mission,
@@ -13,10 +13,11 @@ export function MissionStructure({
                                      teamName,
                                      lobbyCode,
                                      clientId,
-                                     completedMissionCount,
                                      isBonus1Completed,
                                      isBonus2Completed,
-                                     completedMissionsSet,
+                                     completedMissions,
+                                     onMissionUpdated,
+                                     isUnlocked,
                                  }: {
     mission: Mission;
     missionMap: Record<number, Mission>;
@@ -24,11 +25,11 @@ export function MissionStructure({
     teamName: string;
     lobbyCode: string;
     clientId: string;
-    completedMissionCount: number;
     isBonus1Completed: boolean;
     isBonus2Completed: boolean;
-    completedMissionsSet: Set<number>;
-
+    completedMissions: Record<string, boolean>;
+    onMissionUpdated: () => Promise<void>;
+    isUnlocked: boolean;
 }) {
     const children = mission.unlocks
         .map((id) => missionMap[id])
@@ -39,25 +40,25 @@ export function MissionStructure({
 
     const [showModal, setShowModal] = useState(false);
 
-    const isNormalMissionCompleted = !mission.bonus && completedMissionsSet.has(mission.id);
+    const missionNumber = missionNameTraduction(mission, teamName);
 
-    let message: string;
+    let isCompleted: boolean;
+
     if (mission.bonus) {
-        const bonusCompleted =
-            (mission.id === 8 || (mission.id === 9 && teamName === "MECA"))
+        isCompleted =
+            missionNumber === "BONUS_1"
                 ? isBonus1Completed
-                : (mission.id === 9 || (mission.id === 10 && teamName === "MECA"))
-                    ? isBonus2Completed
-                    : false;
-
-        message = bonusCompleted
-            ? "Voulez-vous invalider cette mission bonus ?"
-            : "Voulez-vous valider cette mission bonus ?";
+                : isBonus2Completed;
     } else {
-        message = isNormalMissionCompleted
+        isCompleted = completedMissions[missionNumber];
+    }
+    const message = mission.bonus
+        ? isCompleted
+            ? "Voulez-vous invalider cette mission bonus ?"
+            : "Voulez-vous valider cette mission bonus ?"
+        : isCompleted
             ? "Voulez-vous invalider cette mission ?"
             : "Voulez-vous valider cette mission ?";
-    }
 
     const handleMissionClick = () => setShowModal(true);
     const handleConfirm = async () => {
@@ -65,6 +66,7 @@ export function MissionStructure({
         try {
             const missionNumber = missionNameTraduction(mission, teamName);
             await changeTeamMissionState(lobbyCode, clientId, missionNumber);
+            await onMissionUpdated();
         } catch (error) {
             console.error(error);
             alert("Erreur lors de la mise à jour");
@@ -72,14 +74,30 @@ export function MissionStructure({
     };
     const handleCancel = () => setShowModal(false);
 
+    const childUnlocked = isUnlocked && isCompleted;
+    let displayText: React.ReactNode = mission.title;
+    if (mission.bonus) {
+        const parts = mission.title.split(" ");
+        if (parts.length >= 2) {
+            displayText = (
+                <>
+                    {parts[0]}<br />{parts.slice(1).join("")}
+                </>
+            );
+        }
+    }
     return (
         <>
             <div className="flex md:hidden flex-col items-center gap-3 w-full">
                 <button
                     onClick={handleMissionClick}
-                    style={{ backgroundColor: teamColor }}
-                    className={`px-4 py-3 ${textColorClass} rounded-2xl border-2 border-black shadow-md active:scale-95 transition text-center whitespace-nowrap cursor-pointer`}                >
-                    {mission.title}
+                    disabled={!isUnlocked}
+                    style={{
+                        backgroundColor: isUnlocked ? teamColor : "#555"
+                    }}
+                    className={`px-4 py-3 rounded-2xl border-2 border-black shadow-md ${textColorClass} disabled:opacity-50 disabled:cursor-not-allowed`}
+                >
+                    {displayText}
                 </button>
 
                 {children.length > 0 && (
@@ -93,10 +111,11 @@ export function MissionStructure({
                                     teamName={teamName}
                                     lobbyCode={lobbyCode}
                                     clientId={clientId}
-                                    completedMissionCount={completedMissionCount}
                                     isBonus1Completed={isBonus1Completed}
                                     isBonus2Completed={isBonus2Completed}
-                                    completedMissionsSet={completedMissionsSet}
+                                    completedMissions={completedMissions}
+                                    onMissionUpdated={onMissionUpdated}
+                                    isUnlocked={childUnlocked}
                                 />
                             </div>
                         ))}
@@ -107,9 +126,13 @@ export function MissionStructure({
             <div className="hidden md:flex flex-row items-center">
                 <button
                     onClick={handleMissionClick}
-                    style={{ backgroundColor: teamColor }}
-                    className={`shrink-0 px-4 py-3 ${textColorClass} rounded-2xl border-2 border-black shadow-md hover:scale-115 transition text-center whitespace-nowrap cursor-pointer`}                >
-                    {mission.title}
+                    disabled={!isUnlocked}
+                    style={{
+                        backgroundColor: isUnlocked ? teamColor : "#555"
+                    }}
+                    className={`px-4 py-3 rounded-2xl border-2 border-black shadow-md ${textColorClass} disabled:opacity-50 disabled:cursor-not-allowed`}
+                >
+                    {displayText}
                 </button>
 
                 {children.length === 1 && (
@@ -122,10 +145,11 @@ export function MissionStructure({
                             teamName={teamName}
                             lobbyCode={lobbyCode}
                             clientId={clientId}
-                            completedMissionCount={completedMissionCount}
                             isBonus1Completed={isBonus1Completed}
                             isBonus2Completed={isBonus2Completed}
-                            completedMissionsSet={completedMissionsSet}
+                            completedMissions={completedMissions}
+                            onMissionUpdated={onMissionUpdated}
+                            isUnlocked={childUnlocked}
                         />
                     </>
                 )}
@@ -151,10 +175,11 @@ export function MissionStructure({
                                         teamName={teamName}
                                         lobbyCode={lobbyCode}
                                         clientId={clientId}
-                                        completedMissionCount={completedMissionCount}
                                         isBonus1Completed={isBonus1Completed}
                                         isBonus2Completed={isBonus2Completed}
-                                        completedMissionsSet={completedMissionsSet}
+                                        completedMissions={completedMissions}
+                                        onMissionUpdated={onMissionUpdated}
+                                        isUnlocked={childUnlocked}
                                     />
                                 </div>
                             ))}
