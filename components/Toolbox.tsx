@@ -149,7 +149,7 @@ export default function Toolbox({ actions }: Readonly<RadialMenuProps>) {
 						/>
 
                         {lines.map((line, lineIndex) => (
-                            <text fontSize={count == 4 ? 17 : 22} fill="white" fontWeight="600">
+                            <text key={action.label+`-`+{lineIndex}} fontSize={count == 4 ? 17 : 22} fill="white" fontWeight="600">
                                 <textPath href={`#tb-arc-${i}-${lineIndex}`} startOffset="50%" textAnchor="middle">
                                     {line}
                                 </textPath>
