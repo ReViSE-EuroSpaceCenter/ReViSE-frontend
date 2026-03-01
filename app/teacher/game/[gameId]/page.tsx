@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams, useParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useWebSocket } from "@/components/WebSocketProvider";
 import { LobbyEventType } from "@/types/LobbyEventType";
 import { getTeamsProgression } from "@/api/lobbyApi";
@@ -11,6 +11,7 @@ import Checklist from "@/components/Checklist";
 import IATech from "@/components/IATech";
 import SideRow from "@/components/SideRow";
 import {StompSubscription} from "@stomp/stompjs";
+import {showError} from "@/errors/getErrorMessage";
 
 type TeamData = {
 	id: number;
@@ -21,10 +22,8 @@ type TeamData = {
 };
 
 export default function Dashboard() {
-	const searchParams = useSearchParams();
 	const params = useParams();
 	const lobbyCode = params.gameId as string;
-	const nbTeams = Number(searchParams.get("nbTeams")) || 6;
 	const [isChecklistOpen, setIsChecklistOpen] = useState(false);
 	const [isIAOpen, setIsIAOpen] = useState(false);
 	const { subscribe, connected } = useWebSocket();
@@ -32,29 +31,34 @@ export default function Dashboard() {
 	const [teamsData, setTeamsData] = useState<TeamData[]>([]);
 
 	useEffect(() => {
-		try {
-			const match = document.cookie.match(/(^| )allTeams=([^;]+)/);
-			const allRaw = match ? decodeURIComponent(match[2]) : null;
-			const parsedCookie = allRaw ? JSON.parse(allRaw) : [];
-			const allTeams: string[] = Array.isArray(parsedCookie) ? parsedCookie : [];
+		const initializeTeams = async () => {
+			try {
+				const match = document.cookie.match(/(^| )allTeams=([^;]+)/);
+				const allRaw = match ? decodeURIComponent(match[2]) : null;
 
-			if (allTeams.length > 0) {
-				const formattedData: TeamData[] = allTeams.map((teamName: string, index: number) => {
-					return {
+				if (!allRaw) return;
+
+				const parsedCookie = JSON.parse(allRaw);
+				const allTeams: string[] = Array.isArray(parsedCookie) ? parsedCookie : [];
+
+				if (allTeams.length > 0) {
+					const formattedData: TeamData[] = allTeams.map((teamName, index) => ({
 						id: index + 1,
 						team: teamName,
 						label_mission: "",
 						percent: 0,
 						mission1_check: false,
 						mission2_check: false
-					};
-				});
-				// eslint-disable-next-line react-hooks/set-state-in-effect
-				setTeamsData(formattedData);
+					}));
+					setTeamsData(formattedData);
+				}
+			} catch (error) {
+				const message = error instanceof Error ? error.message : "Erreur inconnue";
+				showError("Erreur cookie :", `Erreur cookie : ${message}`);
 			}
-		} catch (error) {
-			console.error("Erreur cookie :", error);
-		}
+		};
+
+		void initializeTeams();
 	}, []);
 
 	useEffect(() => {
@@ -78,8 +82,9 @@ export default function Dashboard() {
 						return t;
 					})
 				);
-			} catch (err) {
-				console.error("Erreur API:", err);
+			} catch (error) {
+				const message = error instanceof Error ? error.message : "Erreur inconnue";
+				showError("Erreur API:", `Erreur API: ${message}`) ;
 			}
 		};
 
@@ -107,7 +112,9 @@ export default function Dashboard() {
 				}
 			});
 		} catch (error) {
-			console.warn("La connexion STOMP n'était pas tout à fait prête :", error);
+			const message = error instanceof Error ? error.message : "Erreur inconnue";
+			showError("La connexion STOMP n'était pas tout à fait prête :",
+				`La connexion STOMP n'était pas tout à fait prête : ${message}`);
 		}
 
 		return () => {
@@ -116,10 +123,10 @@ export default function Dashboard() {
 			}
 		};
 	}, [connected, subscribe, lobbyCode]);
-	const activeTeamsData = teamsData.slice(0, nbTeams);
-	const half = Math.ceil(nbTeams / 2);
-	const leftTeams = activeTeamsData.slice(0, half);
-	const rightTeams = activeTeamsData.slice(half, nbTeams);
+
+	const half = Math.ceil(teamsData.length / 2);
+	const leftTeams = teamsData.slice(0, half);
+	const rightTeams = teamsData.slice(half);
 
 	return (
 		<div className="min-h-[calc(100vh-120px)] w-full max-w-450 mx-auto flex flex-wrap xl:flex-nowrap items-center justify-center px-8 md:px-26 gap-8 xl:gap-0 overflow-x-hidden py-10 xl:py-4">
