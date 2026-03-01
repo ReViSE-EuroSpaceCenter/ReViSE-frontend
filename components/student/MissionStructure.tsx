@@ -95,7 +95,7 @@ export function MissionStructure({
                     style={{
                         backgroundColor: isUnlocked ? teamColor : "#555"
                     }}
-                    className={`px-4 py-3 rounded-2xl border-2 border-black shadow-md ${textColorClass} disabled:opacity-50 disabled:cursor-not-allowed`}
+                    className={`px-4 py-3 rounded-2xl border-2 border-black shadow-md ${textColorClass} disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer`}
                 >
                     {displayText}
                 </button>
@@ -130,7 +130,7 @@ export function MissionStructure({
                     style={{
                         backgroundColor: isUnlocked ? teamColor : "#555"
                     }}
-                    className={`px-4 py-3 rounded-2xl border-2 border-black shadow-md ${textColorClass} disabled:opacity-50 disabled:cursor-not-allowed`}
+                    className={`px-4 py-3 rounded-2xl border-2 border-black shadow-md ${textColorClass} disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer`}
                 >
                     {displayText}
                 </button>

@@ -21,13 +21,13 @@ export function ValidationMissionModal({ title, message, isOpen, onConfirm, onCa
                 <div className="flex justify-end gap-4">
                     <button
                         onClick={onCancel}
-                        className="px-4 py-2 rounded border border-gray-400 hover:bg-gray-100 transition"
+                        className="px-4 py-2 rounded border border-gray-400 hover:bg-gray-500 transition cursor-pointer"
                     >
                         Annuler
                     </button>
                     <button
                         onClick={onConfirm}
-                        className="px-4 py-2 rounded bg-purpleReViSE text-white hover:bg-purple-700 transition"
+                        className="px-4 py-2 rounded bg-purpleReViSE text-white hover:bg-purple-700 transition cursor-pointer"
                     >
                         Confirmer
                     </button>
