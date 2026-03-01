@@ -1,5 +1,7 @@
 "use client";
 
+import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+
 type Props = {
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
@@ -31,51 +33,51 @@ export default function Checklist({ isOpen, setIsOpen }: Readonly<Props>) {
     ];
 
     return (
-        <>
-            {isOpen && (
-                <div
-                  className="fixed inset-0 flex items-center justify-center z-50"
-                  onClick={() => setIsOpen(false)}
-                >
-                    <div className="absolute inset-0 bg-black/30 backdrop-blur-md"></div>
+      <Dialog
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
+        className="relative z-50"
+      >
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-md" aria-hidden="true" />
 
-                    <div
-                        className="relative bg-darkBlueReViSE text-foreground rounded-xl shadow-2xl w-175 p-10"
-                        style={{ fontFamily: "var(--font-geist-sans)" }}
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <h2 className="text-xl font-bold mb-4 text-purpleReViSE">
-                            Rappel des règles
-                        </h2>
+          <div className="fixed inset-0 flex items-center justify-center">
+              <DialogPanel
+                className="relative bg-darkBlueReViSE text-foreground rounded-xl shadow-2xl w-175 p-10"
+                style={{ fontFamily: "var(--font-geist-sans)" }}
+              >
+                  <DialogTitle className="text-xl font-bold mb-4 text-purpleReViSE">
+                      Rappel des règles
+                  </DialogTitle>
 
-                        <ul className="space-y-3 list-disc list-inside text-white">
-                            {steps.map((step) => (
-                                <li
-                                    key={step.id}
-                                    className="flex justify-between items-start gap-2 hover:bg-gray-700/20 p-2 rounded transition"
-                                >
-                                    <span>{step.title}</span>
-                                    {step.hint && (
-                                        <button
-                                            className="text-sm text-orangeReViSE underline hover:text-orange-400"
-                                            onClick={() => alert(step.hint)}
-                                        >
-                                            ?
-                                        </button>
-                                    )}
-                                </li>
-                            ))}
-                        </ul>
-
-                        <button
-                            onClick={() => setIsOpen(false)}
-                            className="absolute top-3 right-3 text-gray-300 hover:text-white text-lg"
+                  <ul className="space-y-3 list-disc list-inside text-white">
+                      {steps.map((step) => (
+                        <li
+                          key={step.id}
+                          className="flex justify-between items-start gap-2 p-2 rounded"
                         >
-                            ✕
-                        </button>
-                    </div>
-                </div>
-            )}
-        </>
+                            <span>{step.title}</span>
+                            {step.hint && (
+                              <button
+                                className="text-sm text-orangeReViSE underline hover:text-orange-400"
+                                aria-label={`Indice : ${step.title}`}
+                                onClick={() => alert(step.hint)}
+                              >
+                                  ?
+                              </button>
+                            )}
+                        </li>
+                      ))}
+                  </ul>
+
+                  <button
+                    onClick={() => setIsOpen(false)}
+                    aria-label="Fermer"
+                    className="absolute top-3 right-3 text-gray-300 hover:text-white text-lg"
+                  >
+                      ✕
+                  </button>
+              </DialogPanel>
+          </div>
+      </Dialog>
     );
 }
