@@ -3,7 +3,8 @@
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { joinLobby } from "@/api/lobbyApi";
-import {isRedirectError} from "next/dist/client/components/redirect-error";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
+import { ApiError } from "@/api/apiError";
 
 export type ActionState = {
     error?: string;
@@ -18,7 +19,8 @@ export async function handleJoin(_prevState: ActionState, formData: FormData) {
     }
 
     try {
-        const { clientId, availableTeams, allTeams } = await joinLobby(lobbyCode);
+        const result = await joinLobby(lobbyCode);
+        const { clientId, availableTeams, allTeams } = result;
         const cookieStore = await cookies();
 
         cookieStore.set("clientId", clientId, { httpOnly: true, path: "/" });
@@ -27,19 +29,8 @@ export async function handleJoin(_prevState: ActionState, formData: FormData) {
 
         redirect(`/student/game/${lobbyCode}/team`);
 
-    } catch (error: unknown) {
-        if (isRedirectError(error)) {
-            throw error;
-        }
-
-        let errorMessage = "Code introuvable ou invalide";
-
-        if (error instanceof Error) {
-            errorMessage = error.message.includes("404")
-              ? "Lobby introuvable"
-              : error.message;
-        }
-
-        return { error: errorMessage };
+    } catch (error) {
+        if (isRedirectError(error)) throw error;
+        return { errorKey: error instanceof ApiError ? error.key : "" };
     }
 }
