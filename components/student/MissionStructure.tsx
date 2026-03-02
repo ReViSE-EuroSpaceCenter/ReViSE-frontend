@@ -17,7 +17,7 @@ export function MissionStructure({
                                      completedMissions,
                                      onMissionUpdated,
                                      isUnlocked,
-                                 }: {
+                                 }: Readonly<{
     mission: Mission;
     missionMap: Record<number, Mission>;
     isBonus1Completed: boolean;
@@ -25,7 +25,7 @@ export function MissionStructure({
     completedMissions: Record<string, boolean>;
     onMissionUpdated: () => Promise<void>;
     isUnlocked: boolean;
-}) {
+}>) {
 
     const {
         lobbyCode,

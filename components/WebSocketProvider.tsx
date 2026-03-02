@@ -39,17 +39,11 @@ export function WebSocketProvider({
 			reconnectDelay: 5000,
 
 			onConnect: () => {
-				console.log("WebSocket connected");
 				setConnected(true);
 			},
 
 			onDisconnect: () => {
-				console.log("WebSocket disconnected");
 				setConnected(false);
-			},
-
-			onStompError: (frame) => {
-				console.error("STOMP error:", frame);
 			},
 		});
 
@@ -64,14 +58,13 @@ export function WebSocketProvider({
 	const subscribe = useCallback(
 		(callback: (message: IMessage) => void) => {
 			if (!clientRef.current || !connected) {
-				console.warn("Cannot subscribe: WebSocket not connected");
 				return null;
 			}
 
 			const destination = `/topic/lobby/${lobbyCode}`;
 			return clientRef.current.subscribe(destination, callback);
 		},
-		[connected, lobbyCode, id]
+		[connected, lobbyCode]
 	);
 
     const subscribeGame = useCallback(

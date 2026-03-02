@@ -7,7 +7,7 @@ type ProgressionBarProps = {
     color: string;
 }
 
-export function ProgressionBar({ progression, completed, totalMission, color }: ProgressionBarProps) {
+export function ProgressionBar({ progression, completed, totalMission, color }: Readonly<ProgressionBarProps>) {
     return (
         <div className="flex flex-col gap-1 w-48 sm:w-64 lg:w-80">
             <div className="text-sm text-right">

@@ -1,8 +1,9 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { useFormStatus } from "react-dom";
 import { handleJoin } from "@/actions/joinLobby";
+import { showError } from "@/errors/getErrorMessage";
 
 function SubmitButton() {
 	const { pending } = useFormStatus();
@@ -50,6 +51,13 @@ function SubmitButton() {
 
 export default function JoinPage() {
 	const [state, formAction] = useActionState(handleJoin, null);
+
+	useEffect(() => {
+		if (!state) return;
+		if (state?.errorKey) {
+			showError(state?.errorKey);
+		}
+	}, [state]);
 
 	return (
 		<div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-4 sm:p-6 bg-[#0f0e1c]">
@@ -101,7 +109,7 @@ export default function JoinPage() {
 							autoComplete="off"
 							onInput={(e) => {
 								const target = e.target as HTMLInputElement;
-								target.value = target.value.toUpperCase().replace(/[^A-Z]/g, '');
+								target.value = target.value.toUpperCase().replaceAll(/[^A-Z]/g, '');
 							}}
 							pattern="[A-Z]{6}"
 							minLength={6}
