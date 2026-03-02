@@ -33,7 +33,7 @@ export default function SetUpPage() {
                 setJoinedTeam(joined);
 
             } catch (err) {
-                console.error("Erreur sync lobby :", err);
+                showError(err instanceof ApiError ? err.key : "");
             }
         })();
     }, [connected, lobbyCode]);
