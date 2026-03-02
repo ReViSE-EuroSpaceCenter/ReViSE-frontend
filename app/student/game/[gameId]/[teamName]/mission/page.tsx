@@ -10,6 +10,8 @@ import { getTeamMissionsState } from "@/api/missionApi";
 import { missionNameTraduction } from "@/utils/MissionName";
 import { teamColorMap } from "@/utils/TeamColor";
 import { MissionProvider } from "@/contexts/MissionContext";
+import { showError } from "@/errors/getErrorMessage";
+import {ApiError} from "@/api/apiError";
 
 export default function MissionPage() {
     const params = useParams();
@@ -73,9 +75,11 @@ export default function MissionPage() {
             setProgression(data.teamFullProgression.teamProgression.classicMissionPercentage);
             setIsBonus1Completed(data.teamFullProgression.teamProgression.firstBonusMissionCompleted);
             setIsBonus2Completed(data.teamFullProgression.teamProgression.secondBonusMissionCompleted);
-        } catch (error) {
-            console.error(error);
-        }};
+        } catch (err) {
+            showError(err instanceof ApiError ? err.key : "");
+
+        }
+    };
 
     useEffect(() => {
         if (!connected) return;
@@ -87,7 +91,7 @@ export default function MissionPage() {
                 setIsBonus1Completed(data.teamFullProgression.teamProgression.firstBonusMissionCompleted);
                 setIsBonus2Completed(data.teamFullProgression.teamProgression.secondBonusMissionCompleted);
             } catch (err) {
-                console.error("Erreur lors de la récupération des missions :", err);
+                showError(err instanceof ApiError ? err.key : "");
             }
         })();
     }, [connected, lobbyCode, clientId]);

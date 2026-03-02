@@ -8,6 +8,8 @@ import React, { useState } from "react";
 import { MissionButton } from "@/components/student/MissionButton";
 import { useMissionContext } from "@/contexts/MissionContext";
 import  getMissionModalMessage  from "@/utils/MissionButtonMessage";
+import {showError} from "@/errors/getErrorMessage";
+import {ApiError} from "@/api/apiError";
 
 export function MissionStructure({
                                      mission,
@@ -68,9 +70,8 @@ export function MissionStructure({
             const missionNumber = missionNameTraduction(mission, teamName);
             await changeTeamMissionState(lobbyCode, clientId, missionNumber);
             await onMissionUpdated();
-        } catch (error) {
-            console.error(error);
-            alert("Erreur lors de la mise à jour");
+        } catch (err) {
+            showError(err instanceof ApiError ? err.key : "");
         }
     };
     const handleCancel = () => setShowModal(false);
