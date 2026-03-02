@@ -12,23 +12,28 @@
   },
   "dependencies": {
     "next": "16.1.0",
-    "react": "19.2.1",
-    "react-dom": "19.2.1"
+    "@headlessui/react": "^2.2.9",
+    "@stomp/stompjs": "^7.3.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "sockjs-client": "^1.6.1",
+    "sweetalert2": "^11.26.20"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.28.5",
     "@babel/preset-react": "^7.28.5",
     "@babel/preset-typescript": "^7.28.5",
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/node": "^25",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/sockjs-client": "^1.5.4",
     "babel-jest": "^30.2.0",
     "eslint": "^9",
     "eslint-config-next": "16.0.7",
     "jest": "^30.2.0",
-    "react-test-renderer": "^19.2.1",
-    "tailwindcss": "^4",
+    "react-test-renderer": "^19.2.4",
+    "tailwindcss": "^4.1.18",
     "typescript": "^5"
   }
 }
