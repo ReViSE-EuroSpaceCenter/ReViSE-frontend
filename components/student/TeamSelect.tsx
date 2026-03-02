@@ -6,6 +6,8 @@ import { useWebSocket } from "@/components/WebSocketProvider";
 import Image from "next/image";
 import { assignTeam, getLobbyInfo } from "@/api/lobbyApi";
 import { LobbyEventType } from "@/types/LobbyEventType";
+import { showError } from "@/errors/getErrorMessage";
+import { ApiError } from "@/api/apiError";
 
 type Props = {
 	allTeams: string[];
@@ -24,8 +26,6 @@ export default function TeamSelect({
 	const [takenTeams, setTakenTeams] = useState(
 		new Set(initialTakenTeams)
 	);
-
-	const [error, setError] = useState<string | null>(null);
 
 	const lobbyCode = params.gameId as string;
 	const chosenTeam = searchParams.get("chosenTeam");
@@ -64,7 +64,7 @@ export default function TeamSelect({
 					break;
 
 				case "GAME_STARTED":
-                    router.push(`/student/game/${lobbyCode}/${chosenTeam}`);
+					router.push(`/student/game/${lobbyCode}/${chosenTeam}`);
 					break;
 			}
 		});
@@ -76,13 +76,10 @@ export default function TeamSelect({
 		if (takenTeams.has(teamLabel)) return;
 
 		try {
-			setError(null);
-			await assignTeam(lobbyCode, id as string, teamLabel);
-			router.replace(`?chosenTeam=${teamLabel}`);
-		} catch {
-			setError(
-				"Cette équipe a déjà été choisie. Veuillez en sélectionner une autre."
-			);
+			 await assignTeam(lobbyCode, id as string, teamLabel);
+			 router.replace(`?chosenTeam=${teamLabel}`);
+		} catch (err) {
+			showError(err instanceof ApiError ? err.key : "");
 		}
 	};
 
@@ -128,12 +125,6 @@ export default function TeamSelect({
 						Chaque équipe joue un rôle clé dans l{"'"}expédition vers Europe. Choisissez la vôtre.
 					</p>
 				</div>
-
-				{error && (
-					<div className="max-w-2xl mx-auto mb-8 bg-red-900/20 border border-red-500/50 rounded-lg p-4">
-						<p className="text-red-200 text-center">{error}</p>
-					</div>
-				)}
 
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
 					{allTeams.map((team) => {
