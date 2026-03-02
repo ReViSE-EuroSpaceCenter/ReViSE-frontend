@@ -23,7 +23,7 @@ export function ValidationMissionModal({ title, message, isOpen, onConfirm, onCa
             />
             <div className="fixed inset-0 flex items-center justify-center p-4">
                 <DialogPanel
-                    className="bg-white dark:bg-slate-800 rounded-lg p-6 w-[90%] max-w-md shadow-lg"
+                    className="bg-slate-800 rounded-lg p-6 w-[90%] max-w-md shadow-lg"
                 >
                     {title && (
                         <DialogTitle className="text-xl font-bold mb-4">
