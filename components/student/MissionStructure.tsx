@@ -1,7 +1,7 @@
 "use client";
 
 import { Mission } from "@/types/Mission";
-import { changeTeamMissionState } from "@/api/lobbyApi";
+import { changeTeamMissionState } from "@/api/missionApi";
 import { missionNameTraduction } from "@/utils/MissionName";
 import { ValidationMissionModal } from "@/components/student/ValidationMission";
 import React, { useState } from "react";

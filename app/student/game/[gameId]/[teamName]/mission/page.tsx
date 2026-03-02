@@ -6,7 +6,7 @@ import { MissionStructure } from "@/components/student/MissionStructure";
 import { useEffect, useMemo, useState } from "react";
 import { useWebSocket } from "@/components/WebSocketProvider";
 import { ProgressionBar } from "@/components/student/PogressionBar";
-import { getTeamMissionsState } from "@/api/lobbyApi";
+import { getTeamMissionsState } from "@/api/missionApi";
 import { missionNameTraduction } from "@/utils/MissionName";
 import { teamColorMap } from "@/utils/TeamColor";
 import { MissionProvider } from "@/contexts/MissionContext";
