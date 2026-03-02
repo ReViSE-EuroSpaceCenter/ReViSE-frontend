@@ -5,12 +5,12 @@ export function MissionStructure({
                                      missionMap,
                                      teamColor,
                                      teamName,
-                                 }: {
+                                 }: Readonly<{
     mission: Mission;
     missionMap: Record<number, Mission>;
     teamColor: string;
     teamName: string;
-}) {
+}>) {
     const children = mission.unlocks
         .map((id) => missionMap[id])
         .filter(Boolean);
