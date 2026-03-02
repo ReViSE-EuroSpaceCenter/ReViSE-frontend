@@ -21,7 +21,10 @@ If not, please create one.
     [optional footer(s)]
   ```
   The type is: **fix**, **feat**, **breaking change** depending on the type of the issue. Nomenclature must be respected to allow automatic changlog generation.
-  
+  The git commit message template can be found in [commit message template](../.github/gitmessage) and enforce with:
+  ```bash
+  git config commit.template .gitmessage
+  ```
 6. Open a **Pull Request**, and **link it to the related issue**
 
 ## ✔️ Pull Request Rules
@@ -31,7 +34,12 @@ If not, please create one.
 - All the tests must pass and the coverage must be of 80% or higher
 - If you corrected a bug, add a test
 - The check must pass
+- The code must follow the code convention defined by Next.js
 
-A non-blaming approach will be applied to avoid conflict and allow open, respectful communication and more focus on root cause analysis.
+
+## Additional info
+- This repository uses a non-blaming approach to avoid conflict and allow open, respectful communication and more focus on root cause analysis
+- This repository uses the GitHub flow strategy as a branch system
+___
 
 Thanks for helping improve the project!
