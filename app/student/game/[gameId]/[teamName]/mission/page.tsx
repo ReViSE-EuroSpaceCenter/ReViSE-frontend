@@ -71,10 +71,10 @@ export default function MissionPage() {
     const fetchMissions = async () => {
         try {
             const data = await getTeamMissionsState(lobbyCode, clientId);
-            setCompletedMissions(data.completedMissions);
-            setProgression(data.teamProgression.classicMissionPercentage);
-            setIsBonus1Completed(data.teamProgression.firstBonusMissionCompleted);
-            setIsBonus2Completed(data.teamProgression.secondBonusMissionCompleted);
+            setCompletedMissions(data.teamFullProgression.completedMissions);
+            setProgression(data.teamFullProgression.teamProgression.classicMissionPercentage);
+            setIsBonus1Completed(data.teamFullProgression.teamProgression.firstBonusMissionCompleted);
+            setIsBonus2Completed(data.teamFullProgression.teamProgression.secondBonusMissionCompleted);
         } catch (error) {
             console.error(error);
         }};
@@ -95,7 +95,6 @@ export default function MissionPage() {
                 const isBonus2Completed = event.payload.teamProgression.secondBonusMissionCompleted;
                 setIsBonus1Completed(isBonus1Completed);
                 setIsBonus2Completed(isBonus2Completed);
-                console.log(event.payload.teamLabel, teamName);
             }
         });
 
