@@ -17,7 +17,7 @@ export default function MissionPage() {
     const teamName = params.teamName as string;
     const lobbyCode = params.gameId as string;
     const currentTeam = teams[teamName];
-    const { id } = useWebSocket();
+    const { subscribeGame, connected, id } = useWebSocket();
     const clientId = id as string;
     const missionMap = Object.fromEntries(
         currentTeam.missions.map((m) => [m.id, m])
@@ -25,8 +25,6 @@ export default function MissionPage() {
 
     const missions = currentTeam.missions;
     const [progression, setProgression] = useState<number>(0);
-    const { subscribeGame, connected } = useWebSocket();
-
     const [isBonus1Completed, setIsBonus1Completed] = useState(false);
     const [isBonus2Completed, setIsBonus2Completed] = useState(false);
     const [completedMissions, setCompletedMissions] = useState<Record<string, boolean>>({});
