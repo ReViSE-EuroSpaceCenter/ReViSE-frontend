@@ -10,8 +10,8 @@ import Toolbox from "@/components/Toolbox";
 import Checklist from "@/components/Checklist";
 import IATech from "@/components/IATech";
 import SideRow from "@/components/SideRow";
-import {StompSubscription} from "@stomp/stompjs";
 import {showError} from "@/errors/getErrorMessage";
+import {ApiError} from "@/api/apiError";
 
 type TeamData = {
 	id: number;
@@ -29,100 +29,69 @@ export default function Dashboard() {
 	const { subscribe, connected } = useWebSocket();
 
 	const [teamsData, setTeamsData] = useState<TeamData[]>([]);
+	const isMounted = useHasMounted();
+	function useHasMounted() {
+		const [hasMounted, setHasMounted] = useState(false);
+		useEffect(() => {
+			setHasMounted(true);
+		}, []);
+		return hasMounted;
+	}
 
-	useEffect(() => {
-		const initializeTeams = async () => {
-			try {
-				const match = document.cookie.match(/(^| )allTeams=([^;]+)/);
-				const allRaw = match ? decodeURIComponent(match[2]) : null;
-
-				if (!allRaw) return;
-
-				const parsedCookie = JSON.parse(allRaw);
-				const allTeams: string[] = Array.isArray(parsedCookie) ? parsedCookie : [];
-
-				if (allTeams.length > 0) {
-					const formattedData: TeamData[] = allTeams.map((teamName, index) => ({
-						id: index + 1,
-						team: teamName,
-						label_mission: "",
-						percent: 0,
-						mission1_check: false,
-						mission2_check: false
-					}));
-					setTeamsData(formattedData);
-				}
-			} catch (error) {
-				const message = error instanceof Error ? error.message : "Erreur inconnue";
-				showError("Erreur cookie :", `Erreur cookie : ${message}`);
-			}
-		};
-
-		void initializeTeams();
-	}, []);
+	interface TeamStats {
+		classicMissionPercentage: number;
+		firstBonusMissionCompleted: boolean;
+		secondBonusMissionCompleted: boolean;
+	}
 
 	useEffect(() => {
 		const fetchProgression = async () => {
 			if (!lobbyCode) return;
 			try {
 				const data = await getTeamsProgression(lobbyCode);
-				const progression = data.teamsProgression;
+				const progression = data.teamsProgression as Record<string, TeamStats>;
 
-				setTeamsData((prevTeams) =>
-					prevTeams.map((t) => {
-						const stats = progression[t.team];
-						if (stats) {
-							return {
-								...t,
-								percent: stats.classicMissionPercentage,
-								mission1_check: stats.firstBonusMissionCompleted,
-								mission2_check: stats.secondBonusMissionCompleted,
-							};
-						}
-						return t;
+				const formattedTeams: TeamData[] = Object.entries(progression).map(
+					([teamName, stats], index) => ({
+						id: index,
+						team: teamName,
+						percent: stats.classicMissionPercentage,
+						mission1_check: stats.firstBonusMissionCompleted,
+						mission2_check: stats.secondBonusMissionCompleted,
 					})
 				);
+
+				setTeamsData(formattedTeams);
 			} catch (error) {
 				const message = error instanceof Error ? error.message : "Erreur inconnue";
-				showError("Erreur API:", `Erreur API: ${message}`) ;
+				showError(error instanceof ApiError ? error.key : "", `Erreur API: ${message}`);
 			}
 		};
-
-		void fetchProgression();
-	}, [lobbyCode]);
+		if (isMounted) void fetchProgression();
+	}, [lobbyCode, isMounted]);
 
 	useEffect(() => {
 		if (!connected || !lobbyCode) return;
+		const subscription = subscribe((message) => {
+			if (!message?.body) return;
 
-		let subscription: StompSubscription | null = null;
-		try {
-			subscription = subscribe((message) => {
-				if (!message?.body) return;
-				const event: LobbyEventType = JSON.parse(message.body);
+			const event: LobbyEventType = JSON.parse(message.body);
 
-				if (event.type === "TEAM_PROGRESSION") {
-					setTeamsData((prevTeams) =>
-						prevTeams.map((t) => {
-							if (t.team === event.payload.teamLabel) {
-								return { ...t, percent: event.payload.percent };
-							}
-							return t;
-						})
-					);
-				}
-			});
-		} catch (error) {
-			const message = error instanceof Error ? error.message : "Erreur inconnue";
-			showError("La connexion STOMP n'était pas tout à fait prête :",
-				`La connexion STOMP n'était pas tout à fait prête : ${message}`);
-		}
-
-		return () => {
-			if (subscription && typeof subscription.unsubscribe === 'function') {
-				subscription.unsubscribe();
+			if (event.type === "TEAM_PROGRESSION") {
+				setTeamsData((prevTeams) =>
+					prevTeams.map((t) =>
+						t.team === event.payload.teamLabel
+							? { ...t, percent: event.payload.percent }
+							: t
+					)
+				);
 			}
-		};
+		});
+
+		return () => subscription?.unsubscribe();
 	}, [connected, subscribe, lobbyCode]);
+
+	if (!isMounted) return null;
 
 	const half = Math.ceil(teamsData.length / 2);
 	const leftTeams = teamsData.slice(0, half);
@@ -131,11 +100,10 @@ export default function Dashboard() {
 	return (
 		<div className="min-h-[calc(100vh-120px)] w-full max-w-450 mx-auto flex flex-wrap xl:flex-nowrap items-center justify-center px-8 md:px-26 gap-8 xl:gap-0 overflow-x-hidden py-10 xl:py-4">
 
-
 			<div className="flex flex-col gap-12 xl:gap-28 w-full md:w-[calc(50%-1rem)] xl:flex-1 order-2 xl:order-1 items-center xl:items-start xl:pr-12">
 				{leftTeams.map((data) => (
 					<SideRow
-						key={data.id}
+						key={`left-${data.team}`}
 						percent={data.percent}
 						team={data.team}
 						mission1_check={data.mission1_check}
@@ -143,7 +111,6 @@ export default function Dashboard() {
 					/>
 				))}
 			</div>
-
 
 			<div className="w-full max-w-[min(600px,calc(100vh-160px))] shrink-0 order-1 xl:order-2 flex justify-center px-4 xl:px-12">
 				<Toolbox
@@ -158,11 +125,10 @@ export default function Dashboard() {
 				<IATech isOpen={isIAOpen} setIsOpen={setIsIAOpen} />
 			</div>
 
-
 			<div className="flex flex-col gap-12 xl:gap-28 w-full md:w-[calc(50%-1rem)] xl:flex-1 order-3 items-center xl:items-end xl:pl-12">
 				{rightTeams.map((data) => (
 					<SideRow
-						key={data.id}
+						key={`right-${data.team}`}
 						percent={data.percent}
 						team={data.team}
 						mission1_check={data.mission1_check}

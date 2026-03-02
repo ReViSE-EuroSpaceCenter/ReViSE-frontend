@@ -148,13 +148,13 @@ export default function Toolbox({ actions }: Readonly<RadialMenuProps>) {
 							strokeOpacity={isHov ? 0.9 : 0.5}
 						/>
 
-                        {lines.map((line, lineIndex) => (
-                            <text key={action.label+`-`+{lineIndex}} fontSize={count == 4 ? 17 : 22} fill="white" fontWeight="600">
-                                <textPath href={`#tb-arc-${i}-${lineIndex}`} startOffset="50%" textAnchor="middle">
-                                    {line}
-                                </textPath>
-                            </text>
-                        ))}
+						{lines.map((line, lineIndex) => (
+							<text key={`text-${i}-${lineIndex}`} fontSize={count === 4 ? 17 : 22} fill="white" fontWeight="600">
+								<textPath href={`#tb-arc-${i}-${lineIndex}`} startOffset="50%" textAnchor="middle">
+									{line}
+								</textPath>
+							</text>
+						))}
 					</g>
 				);
 			})}
