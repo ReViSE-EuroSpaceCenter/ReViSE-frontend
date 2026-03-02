@@ -109,7 +109,7 @@ export default function JoinPage() {
 							autoComplete="off"
 							onInput={(e) => {
 								const target = e.target as HTMLInputElement;
-								target.value = target.value.toUpperCase().replace(/[^A-Z]/g, '');
+								target.value = target.value.toUpperCase().replaceAll(/[^A-Z]/g, '');
 							}}
 							pattern="[A-Z]{6}"
 							minLength={6}

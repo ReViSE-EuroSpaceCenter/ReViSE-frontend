@@ -147,11 +147,10 @@ export default function Dashboard() {
 
 			<div className="w-full max-w-[min(600px,calc(100vh-160px))] shrink-0 order-1 xl:order-2 flex justify-center px-4 xl:px-12">
 				<Toolbox
-					centerContent={"Boîte à outils"}
 					actions={[
 						{ label: "Missions terminées", onClick: () => console.log("4") },
 						{ label: "Fin du tour", onClick: () => setIsChecklistOpen(true) },
-						{ label: "Aide technologies IA", onClick: () => setIsIAOpen(true) },
+						{ label: "Aide\nTechnologies IA", onClick: () => setIsIAOpen(true) },
 						{ label: "Tutoriel", onClick: () => console.log("3") },
 					]}
 				/>
