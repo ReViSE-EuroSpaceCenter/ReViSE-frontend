@@ -81,6 +81,21 @@ export default function MissionPage() {
 
     useEffect(() => {
         if (!connected) return;
+        void (async () => {
+            try {
+                const data = await getTeamMissionsState(lobbyCode, clientId);
+                setCompletedMissions(data.teamFullProgression.completedMissions);
+                setProgression(data.teamFullProgression.teamProgression.classicMissionPercentage);
+                setIsBonus1Completed(data.teamFullProgression.teamProgression.firstBonusMissionCompleted);
+                setIsBonus2Completed(data.teamFullProgression.teamProgression.secondBonusMissionCompleted);
+            } catch (err) {
+                console.error("Erreur lors de la récupération des missions :", err);
+            }
+        })();
+    }, [connected, lobbyCode, clientId]);
+
+    useEffect(() => {
+        if (!connected) return;
 
         const sub = subscribeGame((message) => {
             const event = JSON.parse(message.body);
