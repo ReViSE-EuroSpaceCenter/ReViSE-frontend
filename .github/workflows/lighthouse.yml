@@ -80,6 +80,10 @@ jobs:
               rows += `| URL | Perf | A11y | Best Practices | SEO |\n`;
               rows += `| --- | ---- | ---- | -------------- | --- |\n`;
 
+              const sorted = [...manifest].sort(
+                (a, b) => a.summary.performance - b.summary.performance
+              );
+  
               for (const entry of sorted) {
                 const url = entry.url;
                 const s = entry.summary;
