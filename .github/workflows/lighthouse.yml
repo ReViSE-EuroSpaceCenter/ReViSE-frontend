@@ -27,15 +27,19 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build project
         run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: https://test-revise.org
 
       - name: Start server
         run: |
           npm run start & 
           npx wait-on http://localhost:3000
+        env:
+          NEXT_PUBLIC_API_URL: https://test-revise.org
 
       - name: Set test URL
         id: test_url
@@ -46,8 +50,6 @@ jobs:
         id: lhci_mobile
         uses: treosh/lighthouse-ci-action@v12
         with:
-          #urls: ${{ steps.netlify.outputs.url }}
-          urls: ${{ steps.test_url.outputs.url }}
           uploadArtifacts: true
           artifactName: lhci-mobile
           configPath: ./lhci.mobile.json
@@ -56,8 +58,6 @@ jobs:
         id: lhci_desktop
         uses: treosh/lighthouse-ci-action@v12
         with:
-          #urls: ${{ steps.netlify.outputs.url }}
-          urls: ${{ steps.test_url.outputs.url }}
           uploadArtifacts: true
           artifactName: lhci-desktop
           configPath: ./lhci.desktop.json
@@ -79,8 +79,8 @@ jobs:
               let rows = `### ${label}\n\n`;
               rows += `| URL | Perf | A11y | Best Practices | SEO |\n`;
               rows += `| --- | ---- | ---- | -------------- | --- |\n`;
-    
-              for (const entry of manifest) {
+
+              for (const entry of sorted) {
                 const url = entry.url;
                 const s = entry.summary;
     
@@ -94,12 +94,23 @@ jobs:
               }
               return rows + "\n";
             }
-    
-            let body = `## 🚦 Lighthouse Results\n`;
+
+            let body = `## 🚦 Lighthouse Results\n\n`;
             body += `Preview URL: ${previewUrl}\n\n`;
-            body += rowsFromManifest(manifestMobile, "📱 Mobile");
-            body += rowsFromManifest(manifestDesktop, "🖥 Desktop");
-    
+
+            body += `### 📊 Average Scores\n`;
+            body += `**Mobile:** Perf ${averageScore(manifestMobile,"performance")}, A11y ${averageScore(manifestMobile,"accessibility")}, Best Practices ${averageScore(manifestMobile,"best-practices")}, SEO ${averageScore(manifestMobile,"seo")}\n`;
+            body += `**Desktop:** Perf ${averageScore(manifestDesktop,"performance")}, A11y ${averageScore(manifestDesktop,"accessibility")}, Best Practices ${averageScore(manifestDesktop,"best-practices")}, SEO ${averageScore(manifestDesktop,"seo")}\n\n`;
+
+            body += `<details><summary>📱 Mobile Details</summary>\n\n`;
+            body += rowsFromManifest(manifestMobile);
+            body += `</details>\n\n`;
+
+            body += `<details><summary>🖥 Desktop Details</summary>\n\n`;
+            body += rowsFromManifest(manifestDesktop);
+            body += `</details>\n\n`;
+
+            // Vérifie si un commentaire existe déjà
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
