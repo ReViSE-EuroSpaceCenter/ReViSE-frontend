@@ -75,7 +75,7 @@ export const put = async (endpoint: EndPoint, options?: PutOptions) => {
         body: options?.body ? JSON.stringify(options.body) : undefined,
     })
 
-    checkStatus(response)
+    await checkStatus(response)
 
     const contentType = response.headers.get('content-type')
     if (response.status === 204 || !contentType?.includes('application/json')) {
