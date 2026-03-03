@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import {useState, useEffect} from "react";
 import { useParams } from "next/navigation";
 import { useWebSocket } from "@/components/WebSocketProvider";
 import { LobbyEventType } from "@/types/LobbyEventType";
@@ -21,6 +21,12 @@ type TeamData = {
 	mission2_check: boolean;
 };
 
+type TeamStats = {
+	classicMissionPercentage: number;
+	firstBonusMissionCompleted: boolean;
+	secondBonusMissionCompleted: boolean;
+}
+
 export default function Dashboard() {
 	const params = useParams();
 	const lobbyCode = params.gameId as string;
@@ -29,20 +35,8 @@ export default function Dashboard() {
 	const { subscribe, connected } = useWebSocket();
 
 	const [teamsData, setTeamsData] = useState<TeamData[]>([]);
-	const isMounted = useHasMounted();
-	function useHasMounted() {
-		const [hasMounted, setHasMounted] = useState(false);
-		useEffect(() => {
-			setHasMounted(true);
-		}, []);
-		return hasMounted;
-	}
 
-	interface TeamStats {
-		classicMissionPercentage: number;
-		firstBonusMissionCompleted: boolean;
-		secondBonusMissionCompleted: boolean;
-	}
+
 
 	useEffect(() => {
 		const fetchProgression = async () => {
@@ -67,8 +61,8 @@ export default function Dashboard() {
 				showError(error instanceof ApiError ? error.key : "", `Erreur API: ${message}`);
 			}
 		};
-		if (isMounted) void fetchProgression();
-	}, [lobbyCode, isMounted]);
+		void fetchProgression();
+	}, [lobbyCode]);
 
 	useEffect(() => {
 		if (!connected || !lobbyCode) return;
@@ -91,7 +85,7 @@ export default function Dashboard() {
 		return () => subscription?.unsubscribe();
 	}, [connected, subscribe, lobbyCode]);
 
-	if (!isMounted) return null;
+
 
 	const half = Math.ceil(teamsData.length / 2);
 	const leftTeams = teamsData.slice(0, half);
