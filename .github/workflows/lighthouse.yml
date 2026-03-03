@@ -27,7 +27,7 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --ignore-scripts
 
       - name: Build project
         run: npm run build
@@ -98,10 +98,6 @@ jobs:
             let body = `## 🚦 Lighthouse Results\n\n`;
             body += `Preview URL: ${previewUrl}\n\n`;
 
-            body += `### 📊 Average Scores\n`;
-            body += `**Mobile:** Perf ${averageScore(manifestMobile,"performance")}, A11y ${averageScore(manifestMobile,"accessibility")}, Best Practices ${averageScore(manifestMobile,"best-practices")}, SEO ${averageScore(manifestMobile,"seo")}\n`;
-            body += `**Desktop:** Perf ${averageScore(manifestDesktop,"performance")}, A11y ${averageScore(manifestDesktop,"accessibility")}, Best Practices ${averageScore(manifestDesktop,"best-practices")}, SEO ${averageScore(manifestDesktop,"seo")}\n\n`;
-
             body += `<details><summary>📱 Mobile Details</summary>\n\n`;
             body += rowsFromManifest(manifestMobile);
             body += `</details>\n\n`;
@@ -110,7 +106,6 @@ jobs:
             body += rowsFromManifest(manifestDesktop);
             body += `</details>\n\n`;
 
-            // Vérifie si un commentaire existe déjà
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
