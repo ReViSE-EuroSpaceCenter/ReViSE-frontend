@@ -42,8 +42,8 @@ export default function TeamSelect({
                 );
 
                 setTakenTeams(new Set(taken));
-            } catch (err) {
-                console.error("Erreur sync lobby :", err);
+            } catch {
+                showError("", "Echec du refresh");
             }
         })();
     }, [lobbyCode, connected]);
