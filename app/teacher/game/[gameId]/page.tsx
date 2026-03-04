@@ -3,7 +3,7 @@
 import {useState, useEffect} from "react";
 import { useParams } from "next/navigation";
 import { useWebSocket } from "@/components/WebSocketProvider";
-import { getTeamProgression} from "@/api/lobbyApi";
+import { } from "@/api/lobbyApi";
 
 import Toolbox from "@/components/Toolbox";
 import Checklist from "@/components/Checklist";
@@ -11,6 +11,7 @@ import IATech from "@/components/IATech";
 import SideRow from "@/components/SideRow";
 import {showError} from "@/errors/getErrorMessage";
 import {ApiError} from "@/api/apiError";
+import {getTeamProgression} from "@/api/missionApi";
 
 type TeamData = {
 	id: number;
@@ -32,7 +33,6 @@ export default function Dashboard() {
 	const [isChecklistOpen, setIsChecklistOpen] = useState(false);
 	const [isIAOpen, setIsIAOpen] = useState(false);
 	const { connected,subscribeGame } = useWebSocket();
-
 	const [teamsData, setTeamsData] = useState<TeamData[]>([]);
 
 
@@ -66,9 +66,7 @@ export default function Dashboard() {
 		if (!connected || !lobbyCode) return;
 		const subscription = subscribeGame((message) => {
 			if (!message?.body) return;
-
 			const event = JSON.parse(message.body);
-			console.log("event", event.type);
 			if (event.type === "TEAM_PROGRESSION") {
 				setTeamsData((prevTeams) =>
 					prevTeams.map((t) =>

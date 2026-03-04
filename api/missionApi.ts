@@ -7,3 +7,7 @@ export const changeTeamMissionState = async (lobbyCode: string, clientId: string
 export const getTeamMissionsState = async (lobbyCode: string, clientId: string)=> {
     return get(`/api/games/${lobbyCode}/${clientId}/missions`);
 };
+
+export const getTeamProgression = async (lobbyCode: string) => {
+    return await get(`/api/games/${lobbyCode}`);
+};
