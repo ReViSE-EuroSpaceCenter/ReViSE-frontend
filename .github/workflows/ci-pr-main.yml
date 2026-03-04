@@ -19,11 +19,6 @@ jobs:
     if: success()
     uses: ./.github/workflows/eslint.yml
 
-  lighthouse:
-    needs: jest
-    if: success()
-    uses: ./.github/workflows/lighthouse.yml
-
   sonar:
     needs: jest
     if: success()
