@@ -3,8 +3,7 @@
 import {useState, useEffect} from "react";
 import { useParams } from "next/navigation";
 import { useWebSocket } from "@/components/WebSocketProvider";
-import { LobbyEventType } from "@/types/LobbyEventType";
-import {getLobbyInfo} from "@/api/lobbyApi";
+import { getTeamProgression} from "@/api/lobbyApi";
 
 import Toolbox from "@/components/Toolbox";
 import Checklist from "@/components/Checklist";
@@ -32,7 +31,7 @@ export default function Dashboard() {
 	const lobbyCode = params.gameId as string;
 	const [isChecklistOpen, setIsChecklistOpen] = useState(false);
 	const [isIAOpen, setIsIAOpen] = useState(false);
-	const { subscribe, connected } = useWebSocket();
+	const { connected,subscribeGame } = useWebSocket();
 
 	const [teamsData, setTeamsData] = useState<TeamData[]>([]);
 
@@ -42,14 +41,13 @@ export default function Dashboard() {
 		const fetchProgression = async () => {
 			if (!lobbyCode) return;
 			try {
-				const data = await getLobbyInfo(lobbyCode);
+				const data = await getTeamProgression(lobbyCode);
 				const progression = data.teamsProgression as Record<string, TeamStats>;
-
 				const formattedTeams: TeamData[] = Object.entries(progression).map(
 					([teamName, stats], index) => ({
 						id: index,
 						team: teamName,
-						percent: stats.classicMissionPercentage,
+						percent: Math.round(stats.classicMissionPercentage * 100) / 100,
 						mission1_check: stats.firstBonusMissionCompleted,
 						mission2_check: stats.secondBonusMissionCompleted,
 					})
@@ -66,16 +64,18 @@ export default function Dashboard() {
 
 	useEffect(() => {
 		if (!connected || !lobbyCode) return;
-		const subscription = subscribe((message) => {
+		const subscription = subscribeGame((message) => {
 			if (!message?.body) return;
 
-			const event: LobbyEventType = JSON.parse(message.body);
-
+			const event = JSON.parse(message.body);
+			console.log("event", event.type);
 			if (event.type === "TEAM_PROGRESSION") {
 				setTeamsData((prevTeams) =>
 					prevTeams.map((t) =>
 						t.team === event.payload.teamLabel
-							? { ...t, percent: event.payload.percent }
+							? { ...t, percent: Math.round(event.payload.teamProgression.classicMissionPercentage * 100) / 100 ,
+							mission1_check: event.payload.teamProgression.firstBonusMissionCompleted ,
+							mission2_check: event.payload.teamProgression.secondBonusMissionCompleted,}
 							: t
 					)
 				);
@@ -83,7 +83,7 @@ export default function Dashboard() {
 		});
 
 		return () => subscription?.unsubscribe();
-	}, [connected, subscribe, lobbyCode]);
+	}, [connected, subscribeGame, lobbyCode]);
 
 
 

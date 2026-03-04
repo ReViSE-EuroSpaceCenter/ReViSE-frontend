@@ -25,3 +25,7 @@ export const startLobby = async (lobbyCode: string, hostId: string) => {
 export const getLobbyInfo = async (lobbyCode: string) => {
     return await get(`/api/lobbies/${lobbyCode}`);
 };
+
+export const getTeamProgression = async (lobbyCode: string) => {
+	return await get(`/api/games/${lobbyCode}`);
+};
