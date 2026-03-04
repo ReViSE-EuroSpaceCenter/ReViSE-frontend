@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams, useParams } from "next/navigation";
 import { useWebSocket } from "@/components/WebSocketProvider";
 import { LobbyEventType } from "@/types/LobbyEventType";
-import { startLobby } from "@/api/lobbyApi";
+import { getLobbyInfo, startLobby } from "@/api/lobbyApi";
 import { showError } from "@/errors/getErrorMessage";
 import { ApiError } from "@/api/apiError";
 
@@ -23,6 +23,24 @@ export default function SetUpPage() {
     useEffect(() => {
         if (!connected) return;
 
+        void (async () => {
+            try {
+                const lobby = await getLobbyInfo(lobbyCode);
+
+                const joined =
+                    lobby.allTeams.length - lobby.availableTeams.length;
+
+                setJoinedTeam(joined);
+
+            } catch (err) {
+                showError(err instanceof ApiError ? err.key : "");
+            }
+        })();
+    }, [connected, lobbyCode]);
+
+    useEffect(() => {
+        if (!connected) return;
+
         const subscription = subscribe((message) => {
             const event: LobbyEventType = JSON.parse(message.body);
 
@@ -34,7 +52,6 @@ export default function SetUpPage() {
                 case "GAME_STARTED":
                     router.push(`/teacher/game/${lobbyCode}`);
                     break;
-
 
                 default:
                     break;
