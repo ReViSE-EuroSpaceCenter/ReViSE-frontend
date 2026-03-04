@@ -4,7 +4,7 @@ import {useState, useEffect} from "react";
 import { useParams } from "next/navigation";
 import { useWebSocket } from "@/components/WebSocketProvider";
 import { LobbyEventType } from "@/types/LobbyEventType";
-import { getTeamsProgression } from "@/api/lobbyApi";
+import {getLobbyInfo} from "@/api/lobbyApi";
 
 import Toolbox from "@/components/Toolbox";
 import Checklist from "@/components/Checklist";
@@ -42,7 +42,7 @@ export default function Dashboard() {
 		const fetchProgression = async () => {
 			if (!lobbyCode) return;
 			try {
-				const data = await getTeamsProgression(lobbyCode);
+				const data = await getLobbyInfo(lobbyCode);
 				const progression = data.teamsProgression as Record<string, TeamStats>;
 
 				const formattedTeams: TeamData[] = Object.entries(progression).map(
