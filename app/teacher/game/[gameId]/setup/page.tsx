@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams, useParams } from "next/navigation";
-import { useWebSocket } from "@/components/WebSocketProvider";
+import { useWebSocket } from "@/contexts/WebSocketProvider";
 import { LobbyEventType } from "@/types/LobbyEventType";
 import { getLobbyInfo, startLobby } from "@/api/lobbyApi";
 import { showError } from "@/errors/getErrorMessage";

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams, useParams } from "next/navigation";
-import { useWebSocket } from "@/components/WebSocketProvider";
+import { useWebSocket } from "@/contexts/WebSocketProvider";
 import Image from "next/image";
 import { assignTeam, getLobbyInfo } from "@/api/lobbyApi";
 import { LobbyEventType } from "@/types/LobbyEventType";
