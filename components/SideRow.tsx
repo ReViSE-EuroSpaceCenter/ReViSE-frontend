@@ -7,7 +7,7 @@ type StatRowProps = {
     mission2_check: boolean;
 };
 
-export default function SideRow({percent, team , mission2_check , mission1_check}: StatRowProps) {
+export default function SideRow({percent, team , mission2_check , mission1_check}: Readonly<StatRowProps>) {
     const teamColors: Record<string, string> = {
         GECO: "from-emerald-600 via-green-400 to-lime-300",
         EXPE: "from-red-600 via-orange-500 to-yellow-400",

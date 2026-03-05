@@ -27,6 +27,29 @@ type TeamStats = {
 	secondBonusMissionCompleted: boolean;
 }
 
+interface GameEvent {
+	type: string;
+	payload: {
+		teamLabel: string;
+		teamProgression: TeamStats;
+	};
+}
+
+
+const formatTeamStats = (stats: TeamStats) => ({
+	percent: Math.round(stats.classicMissionPercentage * 100) / 100,
+	mission1_check: stats.firstBonusMissionCompleted,
+	mission2_check: stats.secondBonusMissionCompleted,
+});
+
+const updateTeamList = (prevTeams: TeamData[], event: GameEvent): TeamData[] => {
+	return prevTeams.map((t) =>
+		t.team === event.payload.teamLabel
+			? { ...t, ...formatTeamStats(event.payload.teamProgression) }
+			: t
+	);
+};
+
 export default function Dashboard() {
 	const params = useParams();
 	const lobbyCode = params.gameId as string;
@@ -47,9 +70,7 @@ export default function Dashboard() {
 					([teamName, stats], index) => ({
 						id: index,
 						team: teamName,
-						percent: Math.round(stats.classicMissionPercentage * 100) / 100,
-						mission1_check: stats.firstBonusMissionCompleted,
-						mission2_check: stats.secondBonusMissionCompleted,
+						...formatTeamStats(stats),
 					})
 				);
 
@@ -64,22 +85,15 @@ export default function Dashboard() {
 
 	useEffect(() => {
 		if (!connected || !lobbyCode) return;
-		const subscription = subscribeGame((message) => {
+		const handleMessage = (message: { body: string }) => {
 			if (!message?.body) return;
-			const event = JSON.parse(message.body);
+			const event = JSON.parse(message.body) as GameEvent;
 			if (event.type === "TEAM_PROGRESSION") {
-				setTeamsData((prevTeams) =>
-					prevTeams.map((t) =>
-						t.team === event.payload.teamLabel
-							? { ...t, percent: Math.round(event.payload.teamProgression.classicMissionPercentage * 100) / 100 ,
-							mission1_check: event.payload.teamProgression.firstBonusMissionCompleted ,
-							mission2_check: event.payload.teamProgression.secondBonusMissionCompleted,}
-							: t
-					)
-				);
+				setTeamsData((prev) => updateTeamList(prev, event));
 			}
-		});
+		};
 
+		const subscription = subscribeGame(handleMessage);
 		return () => subscription?.unsubscribe();
 	}, [connected, subscribeGame, lobbyCode]);
 
@@ -91,16 +105,9 @@ export default function Dashboard() {
 
 	return (
 		<div className="min-h-[calc(100vh-120px)] w-full max-w-450 mx-auto flex flex-wrap xl:flex-nowrap items-center justify-center px-8 md:px-26 gap-8 xl:gap-0 overflow-x-hidden py-10 xl:py-4">
-
 			<div className="flex flex-col gap-12 xl:gap-28 w-full md:w-[calc(50%-1rem)] xl:flex-1 order-2 xl:order-1 items-center xl:items-start xl:pr-12">
 				{leftTeams.map((data) => (
-					<SideRow
-						key={`left-${data.team}`}
-						percent={data.percent}
-						team={data.team}
-						mission1_check={data.mission1_check}
-						mission2_check={data.mission2_check}
-					/>
+					<SideRow key={`left-${data.team}`} {...data} />
 				))}
 			</div>
 
@@ -119,13 +126,7 @@ export default function Dashboard() {
 
 			<div className="flex flex-col gap-12 xl:gap-28 w-full md:w-[calc(50%-1rem)] xl:flex-1 order-3 items-center xl:items-end xl:pl-12">
 				{rightTeams.map((data) => (
-					<SideRow
-						key={`right-${data.team}`}
-						percent={data.percent}
-						team={data.team}
-						mission1_check={data.mission1_check}
-						mission2_check={data.mission2_check}
-					/>
+					<SideRow key={`right-${data.team}`} {...data} />
 				))}
 			</div>
 		</div>
