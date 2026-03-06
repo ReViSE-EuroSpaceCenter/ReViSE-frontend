@@ -59,7 +59,7 @@ export default function SetUpPage() {
         });
 
         return () => subscription?.unsubscribe();
-    }, [router, subscribe, connected, lobbyCode]);
+    }, [router, subscribe, connected, lobbyCode, nbTeams]);
 
 
     const startGame = async () => {

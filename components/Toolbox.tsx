@@ -21,6 +21,9 @@ const COLORS = [
 export default function Toolbox({ actions }: Readonly<RadialMenuProps>) {
 	const [hovered, setHovered] = useState<number | null>(null);
 
+	// j'ai ajouté ça pour Arrondir à 3 décimales pour éviter les écarts de précision entre Node et Browser
+	const round3 = (n: number) => Math.round(n * 1000) / 1000;
+
 	const S = 520;
 	const cx = S / 2;
 	const cy = S / 2;
@@ -34,14 +37,13 @@ export default function Toolbox({ actions }: Readonly<RadialMenuProps>) {
     const deg2rad = (d: number) => (d * Math.PI) / 180;
     const rad2deg = (r: number) => (r * 180) / Math.PI;
 
-	const polar = (r: number, angleDeg: number) => {
+	const polar = (radius: number, angleDeg: number) => {
 		const a = deg2rad(angleDeg);
-		return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
+		return { x: round3(cx + radius * Math.cos(a)), y: round3(cy + radius * Math.sin(a)) };
 	}
 
 	const petalPath = (i: number) => {
 		const step = 360 / count;
-
 		const innerOffset = rad2deg(gapPx / (innerR + 4));
 		const outerOffset = rad2deg(gapPx / outerR);
 		const startBase = offsetDeg + i * step;
@@ -148,13 +150,13 @@ export default function Toolbox({ actions }: Readonly<RadialMenuProps>) {
 							strokeOpacity={isHov ? 0.9 : 0.5}
 						/>
 
-                        {lines.map((line, lineIndex) => (
-                            <text key={action.label+`-`+{lineIndex}} fontSize={count == 4 ? 17 : 22} fill="white" fontWeight="600">
-                                <textPath href={`#tb-arc-${i}-${lineIndex}`} startOffset="50%" textAnchor="middle">
-                                    {line}
-                                </textPath>
-                            </text>
-                        ))}
+						{lines.map((line, lineIndex) => (
+							<text key={`text-${i}-${lineIndex}`} fontSize={count === 4 ? 17 : 22} fill="white" fontWeight="600">
+								<textPath href={`#tb-arc-${i}-${lineIndex}`} startOffset="50%" textAnchor="middle">
+									{line}
+								</textPath>
+							</text>
+						))}
 					</g>
 				);
 			})}
