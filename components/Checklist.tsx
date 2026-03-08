@@ -19,7 +19,7 @@ export default function Checklist({ isOpen, setIsOpen }: Readonly<Props>) {
         },
         {
             id: 2,
-            title: "Déplacez le marqueur de temps sur la ligne verticale située juste après le dernier.",
+            title: "Déplacez le marqueur de temps sur la ligne verticale située juste après le dernier domino.",
             hint: "",
         },
         {
