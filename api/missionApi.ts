@@ -2,14 +2,14 @@ import { put, get } from './apiClient'
 import { TeamMissionsState } from "@/types/TeamMissionState";
 
 export const changeTeamMissionState = async (lobbyCode: string, clientId: string, updateMissions: string[]) => {
-    return await put(`/api/games/${lobbyCode}/missions`, { body: { clientId, updateMissions }});
+    return await put(`/api/missions/${lobbyCode}`, { body: { clientId, updateMissions }});
 };
 
 export const getTeamMissionsState = async (
   lobbyCode: string,
   clientId: string
 ): Promise<TeamMissionsState> => {
-    const response = await get(`/api/games/${lobbyCode}/${clientId}/missions`);
+    const response = await get(`/api/missions/${lobbyCode}/${clientId}`);
 
     if (!response) {
         return {
@@ -28,5 +28,5 @@ export const getTeamMissionsState = async (
 };
 
 export const getTeamProgression = async (lobbyCode: string) => {
-    return await get(`/api/games/${lobbyCode}`);
+    return await get(`/api/missions/${lobbyCode}`);
 };
