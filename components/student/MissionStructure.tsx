@@ -10,6 +10,7 @@ import { useMissionContext } from "@/contexts/MissionContext";
 import  getMissionModalMessage  from "@/utils/missionButtonMessage";
 import {showError} from "@/errors/getErrorMessage";
 import {ApiError} from "@/api/apiError";
+import { getProjectMissionsToUpdate } from "@/utils/missionUpdate";
 
 export function MissionStructure({
                                      mission,
@@ -67,8 +68,15 @@ export function MissionStructure({
     const handleConfirm = async () => {
         setShowModal(false);
         try {
-            const missionNumber = missionNameTraduction(mission, teamName);
-            await changeTeamMissionState(lobbyCode, clientId, missionNumber);
+            const missionsToUpdate = getProjectMissionsToUpdate(
+                mission,
+                missionMap,
+                completedMissions,
+                teamName,
+                isBonus1Completed,
+                isBonus2Completed
+            );
+            await changeTeamMissionState(lobbyCode, clientId, missionsToUpdate);
             await onMissionUpdated();
         } catch (err) {
             showError(err instanceof ApiError ? err.key : "");
@@ -87,6 +95,7 @@ export function MissionStructure({
                     teamColor={teamColor}
                     textColorClass={textColorClass}
                     onClick={handleMissionClick}
+                    isCompleted={isCompleted}
                 />
 
                 {children.length > 0 && (
@@ -115,6 +124,7 @@ export function MissionStructure({
                     teamColor={teamColor}
                     textColorClass={textColorClass}
                     onClick={handleMissionClick}
+                    isCompleted={isCompleted}
                 />
 
                 {children.length === 1 && (
