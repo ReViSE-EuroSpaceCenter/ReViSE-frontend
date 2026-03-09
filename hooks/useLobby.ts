@@ -3,9 +3,11 @@ import {assignTeam, getLobbyInfo} from "@/api/lobbyApi";
 import {showError} from "@/errors/getErrorMessage";
 import {ApiError} from "@/api/apiError";
 import {TeamInfo} from "@/types/TeamInfo";
+import {useRouter} from "next/navigation";
 
 export const useLobby = (lobbyCode: string) => {
 	const queryClient = useQueryClient();
+	const router = useRouter();
 
 	const lobbyQuery = useQuery<TeamInfo>({
 		queryKey: ["lobbyInfo", lobbyCode],
@@ -21,6 +23,7 @@ export const useLobby = (lobbyCode: string) => {
 				if (!oldData) return oldData;
 				return { ...oldData, availableTeams: oldData.availableTeams.filter(t => t !== teamLabel) };
 			});
+			router.replace(`?chosenTeam=${teamLabel}`);
 		},
 		onError: (err) => showError(err instanceof ApiError ? err.key : ""),
 	});
