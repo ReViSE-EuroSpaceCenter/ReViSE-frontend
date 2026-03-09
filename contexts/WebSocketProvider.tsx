@@ -10,9 +10,10 @@ import React, {
 import SockJS from "sockjs-client";
 import { Client, IMessage, StompSubscription } from "@stomp/stompjs";
 
+export type UrlDestination = "lobby" | "game";
+
 type WebSocketContextType = {
-	subscribe: (callback: (message: IMessage) => void) => StompSubscription | null;
-    subscribeGame: (callback: (message: IMessage) => void) => StompSubscription | null;
+	subscribe: (destinationType: UrlDestination, callback: (message: IMessage) => void) => StompSubscription | null;
 	connected: boolean;
 	id?: string;
 };
@@ -56,38 +57,24 @@ export function WebSocketProvider({
 	}, []);
 
 	const subscribe = useCallback(
-		(callback: (message: IMessage) => void) => {
+		(destinationType: UrlDestination, callback: (message: IMessage) => void) => {
 			if (!clientRef.current || !connected) {
 				return null;
 			}
 
-			const destination = `/topic/lobby/${lobbyCode}`;
+			const destination = `/topic/${destinationType}/${lobbyCode}`;
 			return clientRef.current.subscribe(destination, callback);
 		},
 		[connected, lobbyCode]
 	);
 
-    const subscribeGame = useCallback(
-        (callback: (message: IMessage) => void) => {
-            if (!clientRef.current || !connected) {
-                console.warn("Cannot subscribe to GAME: WebSocket not connected");
-                return null;
-            }
-            const destination = `/topic/game/${lobbyCode}`;
-            console.log("Subscribing to GAME topic:", destination);
-            return clientRef.current.subscribe(destination, callback);
-        },
-        [connected, lobbyCode]
-    );
-
 	const values = useMemo(
 		() => ({
 			subscribe,
-            subscribeGame,
 			connected,
 			id,
 		}),
-		[subscribe, subscribeGame, connected, id]
+		[subscribe, connected, id]
 	);
 
 	return (

@@ -7,8 +7,8 @@ import {useEffect} from "react";
 import {useWebSocket} from "@/contexts/WebSocketProvider";
 import {ProgressionBar} from "@/components/student/PogressionBar";
 import {getTeamMissionsState} from "@/api/missionApi";
-import {missionNameTraduction} from "@/utils/MissionName";
-import {teamColorMap} from "@/utils/TeamColor";
+import {missionNameTraduction} from "@/utils/missionName";
+import {teamColorMap} from "@/utils/teamColor";
 import {MissionProvider} from "@/contexts/MissionContext";
 import {showError} from "@/errors/getErrorMessage";
 import {ApiError} from "@/api/apiError";
@@ -23,7 +23,7 @@ export default function MissionPage() {
     const teamName = params.teamName as string;
     const lobbyCode = params.gameId as string;
     const currentTeam = teams[teamName];
-    const { subscribeGame, connected, id } = useWebSocket();
+    const { subscribe, connected, id } = useWebSocket();
     const clientId = id as string;
     const missions = currentTeam.missions;
 
@@ -48,7 +48,7 @@ export default function MissionPage() {
     useEffect(() => {
         if (!connected) return;
 
-        const sub = subscribeGame((message) => {
+        const sub = subscribe("game", (message) => {
             const event = JSON.parse(message.body);
             if (event.type !== "TEAM_PROGRESSION" || event.payload.teamLabel !== teamName) return;
             queryClient.setQueryData<TeamMissionsState>(
@@ -68,7 +68,7 @@ export default function MissionPage() {
         });
 
         return () => sub?.unsubscribe();
-    }, [connected, subscribeGame, teamName, lobbyCode, clientId, queryClient]);
+    }, [connected, subscribe, teamName, lobbyCode, clientId, queryClient]);
 
     if (isLoading || !data) return <LoadingPage />;
 

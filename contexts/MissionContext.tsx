@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext } from "react";
+import React, {createContext, useContext, useMemo} from "react";
 
 interface MissionContextType {
     teamColor: string;
@@ -18,8 +18,14 @@ export const MissionProvider = ({
                                     clientId,
                                     children
                                 }: React.PropsWithChildren<MissionContextType>) => {
+
+    const values = useMemo(
+        () => ({ teamColor, teamName, lobbyCode, clientId }),
+        [teamColor, teamName, lobbyCode, clientId]
+    );
+
     return (
-        <MissionContext.Provider value={{ teamColor, teamName, lobbyCode, clientId }}>
+        <MissionContext.Provider value={values}>
             {children}
         </MissionContext.Provider>
     );

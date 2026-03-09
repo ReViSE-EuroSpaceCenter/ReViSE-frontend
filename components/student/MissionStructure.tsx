@@ -2,12 +2,12 @@
 
 import { Mission } from "@/types/Mission";
 import { changeTeamMissionState } from "@/api/missionApi";
-import { missionNameTraduction } from "@/utils/MissionName";
+import { missionNameTraduction } from "@/utils/missionName";
 import { ValidationMissionModal } from "@/components/student/ValidationMission";
 import React, { useState } from "react";
 import { MissionButton } from "@/components/student/MissionButton";
 import { useMissionContext } from "@/contexts/MissionContext";
-import  getMissionModalMessage  from "@/utils/MissionButtonMessage";
+import  getMissionModalMessage  from "@/utils/missionButtonMessage";
 import {showError} from "@/errors/getErrorMessage";
 import {ApiError} from "@/api/apiError";
 

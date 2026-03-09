@@ -51,7 +51,7 @@ export default function TeamSelect({
 	useEffect(() => {
 		if (!connected) return;
 
-		const subscription = subscribe((message) => {
+		const subscription = subscribe("lobby", (message) => {
 			const event: LobbyEventType = JSON.parse(message.body);
 
 			switch (event.type) {

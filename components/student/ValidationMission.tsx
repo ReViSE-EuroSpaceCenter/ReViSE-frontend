@@ -10,7 +10,7 @@ interface ModalProps {
     onCancel: () => void;
 }
 
-export function ValidationMissionModal({ title, message, isOpen, onConfirm, onCancel }: ModalProps) {
+export function ValidationMissionModal({ title, message, isOpen, onConfirm, onCancel }: Readonly<ModalProps>) {
     return (
         <Dialog
             open={isOpen}

@@ -15,7 +15,7 @@ export function MissionButton({
                                   teamColor,
                                   textColorClass,
                                   onClick
-                              }: Props) {
+                              }: Readonly<Props>) {
 
     let displayText: React.ReactNode = mission.title;
 
