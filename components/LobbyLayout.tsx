@@ -1,6 +1,7 @@
 import React from "react";
-import { WebSocketProvider } from "@/components/WebSocketProvider";
+import { WebSocketProvider } from "@/contexts/WebSocketProvider";
 import { cookies } from "next/headers";
+import QueryProvider from "@/contexts/QueryProvider";
 
 type LobbyLayoutProps = {
 	children: React.ReactNode;
@@ -13,8 +14,10 @@ export default async function LobbyLayout({ children, params, cookieKey }: Reado
 	const id = (await cookies()).get(cookieKey)?.value;
 
 	return (
-		<WebSocketProvider lobbyCode={gameId} id={id}>
-			{children}
-		</WebSocketProvider>
+		<QueryProvider>
+			<WebSocketProvider lobbyCode={gameId} id={id}>
+				{children}
+			</WebSocketProvider>
+		</QueryProvider>
 	);
 }

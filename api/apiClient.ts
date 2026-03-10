@@ -10,6 +10,10 @@ interface PostOptions extends RequestOptions {
 	body: unknown
 }
 
+interface PutOptions extends RequestOptions {
+	body?: unknown
+}
+
 async function checkStatus(response: Response) {
 	if (response.ok) return;
 
@@ -58,10 +62,6 @@ export const post = async (endpoint: EndPoint, options: PostOptions) => {
 		return true
 	}
 	return response.json()
-}
-
-interface PutOptions extends RequestOptions {
-    body?: unknown
 }
 
 export const put = async (endpoint: EndPoint, options?: PutOptions) => {

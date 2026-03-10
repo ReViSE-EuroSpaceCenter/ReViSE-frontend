@@ -1,4 +1,4 @@
-import {missionNameTraduction} from "@/utils/MissionName";
+import {missionNameTraduction} from "@/utils/missionName";
 import {Mission} from "@/types/Mission";
 
 export function getProjectMissionsToUpdate(

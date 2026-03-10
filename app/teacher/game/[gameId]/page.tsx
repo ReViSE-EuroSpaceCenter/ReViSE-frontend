@@ -2,9 +2,6 @@
 
 import {useState, useEffect} from "react";
 import { useParams } from "next/navigation";
-import { useWebSocket } from "@/components/WebSocketProvider";
-
-
 import Toolbox from "@/components/Toolbox";
 import Checklist from "@/components/Checklist";
 import IATech from "@/components/IATech";
@@ -12,6 +9,7 @@ import SideRow from "@/components/SideRow";
 import {showError} from "@/errors/getErrorMessage";
 import {ApiError} from "@/api/apiError";
 import {getTeamProgression} from "@/api/missionApi";
+import {useWebSocket} from "@/contexts/WebSocketProvider";
 
 type TeamData = {
 	id: number;
@@ -55,7 +53,7 @@ export default function Dashboard() {
 	const lobbyCode = params.gameId as string;
 	const [isChecklistOpen, setIsChecklistOpen] = useState(false);
 	const [isIAOpen, setIsIAOpen] = useState(false);
-	const { connected,subscribeGame } = useWebSocket();
+	const { connected, subscribe } = useWebSocket();
 	const [teamsData, setTeamsData] = useState<TeamData[]>([]);
 
 
@@ -93,9 +91,9 @@ export default function Dashboard() {
 			}
 		};
 
-		const subscription = subscribeGame(handleMessage);
+		const subscription = subscribe("game", handleMessage);
 		return () => subscription?.unsubscribe();
-	}, [connected, subscribeGame, lobbyCode]);
+	}, [connected, subscribe, lobbyCode]);
 
 
 

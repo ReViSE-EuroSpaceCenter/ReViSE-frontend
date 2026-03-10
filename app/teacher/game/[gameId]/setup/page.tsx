@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams, useParams } from "next/navigation";
-import { useWebSocket } from "@/components/WebSocketProvider";
+import { useWebSocket } from "@/contexts/WebSocketProvider";
 import { LobbyEventType } from "@/types/LobbyEventType";
 import { getLobbyInfo, startLobby } from "@/api/lobbyApi";
 import { showError } from "@/errors/getErrorMessage";
@@ -41,7 +41,7 @@ export default function SetUpPage() {
     useEffect(() => {
         if (!connected) return;
 
-        const subscription = subscribe((message) => {
+        const subscription = subscribe("lobby", (message) => {
             const event: LobbyEventType = JSON.parse(message.body);
 
             switch (event.type) {

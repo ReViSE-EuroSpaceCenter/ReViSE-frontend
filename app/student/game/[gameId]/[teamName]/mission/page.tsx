@@ -3,87 +3,88 @@
 import { teams } from "@/types/Teams";
 import { useParams, useRouter } from "next/navigation";
 import { MissionStructure } from "@/components/student/MissionStructure";
-import { useEffect, useState, useCallback } from "react";
-import { useWebSocket } from "@/components/WebSocketProvider";
+import { useEffect } from "react";
 import { ProgressionBar } from "@/components/student/PogressionBar";
 import { getTeamMissionsState } from "@/api/missionApi";
-import { teamColorMap } from "@/utils/TeamColor";
 import { MissionProvider } from "@/contexts/MissionContext";
 import { showError } from "@/errors/getErrorMessage";
 import {ApiError} from "@/api/apiError";
 import LoadingPage from "@/app/loading";
+import {teamColorMap} from "@/utils/teamColor";
+import {useWebSocket} from "@/contexts/WebSocketProvider";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
+import {TeamMissionsState} from "@/types/TeamMissionState";
 
 export default function MissionPage() {
     const params = useParams();
     const router = useRouter();
+    const queryClient = useQueryClient();
+    const { subscribe, connected, id } = useWebSocket();
+
     const teamName = params.teamName as string;
     const lobbyCode = params.gameId as string;
     const currentTeam = teams[teamName];
-    const { subscribeGame, connected, id } = useWebSocket();
     const clientId = id as string;
-    const missionMap = Object.fromEntries(
-        currentTeam.missions.map((m) => [m.id, m])
-    );
-
     const missions = currentTeam.missions;
-    const [isBonus1Completed, setIsBonus1Completed] = useState(false);
-    const [isBonus2Completed, setIsBonus2Completed] = useState(false);
-    const [completedMissions, setCompletedMissions] = useState<Record<string, boolean>>({});
+
+    const missionMap = Object.fromEntries(
+        missions.map((m) => [m.id, m])
+    );
 
     const projectIds = [...new Set(missions.map(m => m.projectId))]
         .sort((a, b) => a - b);
 
     const teamColor = teamColorMap[teamName];
 
-    const totalMissionCount = missions.filter(m => !m.bonus).length;
-    const completedMissionCount = Object.values(completedMissions).filter(Boolean).length;
-
-    const [loading, setLoading] = useState(true);
-
-    const fetchMissions = useCallback(async () => {
-        try {
-            const data = await getTeamMissionsState(lobbyCode, clientId);
-            setCompletedMissions(data.teamFullProgression.completedMissions);
-            setIsBonus1Completed(data.teamFullProgression.teamProgression.firstBonusMissionCompleted);
-            setIsBonus2Completed(data.teamFullProgression.teamProgression.secondBonusMissionCompleted);
-        } catch (err) {
-            showError(err instanceof ApiError ? err.key : "");
-        } finally {
-            setLoading(false);
-        }
-    }, [lobbyCode, clientId]);
+    const { data, isError, error, isLoading } = useQuery<TeamMissionsState>({
+        queryKey: ["missions", lobbyCode, clientId],
+        queryFn: () => getTeamMissionsState(lobbyCode, clientId),
+        enabled: !!lobbyCode && !!clientId,
+    });
 
     useEffect(() => {
-        if (!connected || !clientId) return;
-        void fetchMissions();
-    }, [connected, clientId, fetchMissions]);
+        if (isError) {
+            showError(error instanceof ApiError ? error.key : "");
+        }
+    }, [isError, error]);
 
     useEffect(() => {
         if (!connected) return;
 
-        const sub = subscribeGame((message) => {
+        const sub = subscribe("game", (message) => {
             const event = JSON.parse(message.body);
 
             if (event.type !== "TEAM_PROGRESSION" || event.payload.teamLabel !== teamName) return;
 
             if (event.type === "TEAM_PROGRESSION" && event.payload.teamLabel === teamName) {
-                const isBonus1Completed = event.payload.teamProgression.firstBonusMissionCompleted;
-                const isBonus2Completed = event.payload.teamProgression.secondBonusMissionCompleted;
-                setIsBonus1Completed(isBonus1Completed);
-                setIsBonus2Completed(isBonus2Completed);
-
-                if (event.payload.teamFullProgression?.completedMissions) {
-                    setCompletedMissions(event.payload.teamFullProgression.completedMissions);
-                }
+                queryClient.setQueryData<TeamMissionsState>(
+                  ["missions", lobbyCode, clientId],
+                  (old) => {
+                      if (!old) return old;
+                      return {
+                          ...old,
+                          teamFullProgression: {
+                              ...old.teamFullProgression,
+                              teamProgression: event.payload.teamProgression,
+                          },
+                      };
+                  }
+                );
             }
         });
 
         return () => sub?.unsubscribe();
-    }, [connected, subscribeGame, teamName]);
+    }, [clientId, connected, lobbyCode, queryClient, subscribe, teamName]);
 
-    if (loading) {
-        return <LoadingPage />;
-    }
+    if (isLoading || !data) return <LoadingPage />;
+
+    const completedMissions = data.teamFullProgression.completedMissions;
+    const isBonus1Completed = data.teamFullProgression.teamProgression.firstBonusMissionCompleted;
+    const isBonus2Completed = data.teamFullProgression.teamProgression.secondBonusMissionCompleted;
+
+    const totalMissionCount = missions.filter(m => !m.bonus).length;
+    const completedMissionCount = Object.values(completedMissions).filter(Boolean).length;
+
     return (
         <MissionProvider
             teamColor={teamColor}
@@ -123,7 +124,7 @@ export default function MissionPage() {
                             key={projectId}
                             className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-8 items-center"
                         >
-                            <div className="min-w-[150px]">
+                            <div className="min-w-37.5">
                                 <h2 className="text-3xl">
                                     Projet {projectId}
                                 </h2>
@@ -138,7 +139,7 @@ export default function MissionPage() {
                                         isBonus1Completed={isBonus1Completed}
                                         isBonus2Completed={isBonus2Completed}
                                         completedMissions={completedMissions}
-                                        onMissionUpdated={fetchMissions}
+                                        onMissionUpdated={() => queryClient.invalidateQueries({ queryKey: ["missions", lobbyCode, clientId] })}
                                         isUnlocked={true}
                                     />
                                 ))}

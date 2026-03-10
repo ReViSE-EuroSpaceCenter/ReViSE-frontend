@@ -21,9 +21,6 @@ const COLORS = [
 export default function Toolbox({ actions }: Readonly<RadialMenuProps>) {
 	const [hovered, setHovered] = useState<number | null>(null);
 
-	// j'ai ajouté ça pour Arrondir à 3 décimales pour éviter les écarts de précision entre Node et Browser
-	const round3 = (n: number) => Math.round(n * 1000) / 1000;
-
 	const S = 520;
 	const cx = S / 2;
 	const cy = S / 2;
@@ -31,16 +28,21 @@ export default function Toolbox({ actions }: Readonly<RadialMenuProps>) {
 	const outerR = 200;
 	const count = actions.length;
 	const offsetDeg = count < 4 ? 90 : -135;
+	const gapPx = 25;
 
-    const gapPx = 25;
+	const round = (n: number, precision = 10) =>
+		Number(n.toFixed(precision));
 
-    const deg2rad = (d: number) => (d * Math.PI) / 180;
-    const rad2deg = (r: number) => (r * 180) / Math.PI;
+	const deg2rad = (d: number) => (d * Math.PI) / 180;
+	const rad2deg = (r: number) => (r * 180) / Math.PI;
 
-	const polar = (radius: number, angleDeg: number) => {
+	const polar = (r: number, angleDeg: number) => {
 		const a = deg2rad(angleDeg);
-		return { x: round3(cx + radius * Math.cos(a)), y: round3(cy + radius * Math.sin(a)) };
-	}
+		return {
+			x: round(cx + r * Math.cos(a)),
+			y: round(cy + r * Math.sin(a)),
+		};
+	};
 
 	const petalPath = (i: number) => {
 		const step = 360 / count;
@@ -58,22 +60,23 @@ export default function Toolbox({ actions }: Readonly<RadialMenuProps>) {
 		const p3 = polar(outerR, endOuter);
 		const p4 = polar(innerR + 4, endInner);
 
-        return `M ${p1.x} ${p1.y} L ${p2.x} ${p2.y} A ${outerR} ${outerR} 0 0 1 ${p3.x} ${p3.y} L ${p4.x} ${p4.y} A ${innerR + 4} ${innerR + 4} 0 0 0 ${p1.x} ${p1.y} Z`;
-    };
+		return `M ${p1.x} ${p1.y} L ${p2.x} ${p2.y} A ${outerR} ${outerR} 0 0 1 ${p3.x} ${p3.y} L ${p4.x} ${p4.y} A ${innerR + 4} ${innerR + 4} 0 0 0 ${p1.x} ${p1.y} Z`;
+	};
 
-    const textArcPath = (i: number, radiusOffset = 0) => {
-        const step = 360 / count;
-        const r = (innerR + 4 + outerR) / 2 + radiusOffset;
-        const offset = rad2deg(gapPx / r);
+	const textArcPath = (i: number, radiusOffset = 0) => {
+		const step = 360 / count;
+		const r = (innerR + 4 + outerR) / 2 + radiusOffset;
+		const offset = rad2deg(gapPx / r);
 
-        const start = offsetDeg + i * step + offset / 2;
-        const end = offsetDeg + (i + 1) * step - offset / 2;
+		const start = offsetDeg + i * step + offset / 2;
+		const end = offsetDeg + (i + 1) * step - offset / 2;
 
 		const p1 = polar(r, start);
 		const p2 = polar(r, end);
 
-		if (count == 4 && i == 2 || count == 3 && i !== 1) {
-			return `M ${p2.x} ${p2.y+8} A ${r} ${r} 0 0 0 ${p1.x} ${p1.y+8}`;
+		if ((count === 4 && i === 2) || (count === 3 && i !== 1)) {
+			return `M ${p2.x} ${round(p2.y + 8)}
+				A ${r} ${r} 0 0 0 ${p1.x} ${round(p1.y + 8)}`;
 		}
 
 		return `M ${p1.x} ${p1.y} A ${r} ${r} 0 0 1 ${p2.x} ${p2.y}`;
@@ -87,7 +90,7 @@ export default function Toolbox({ actions }: Readonly<RadialMenuProps>) {
 	return (
 		<svg
 			viewBox={`0 0 ${S} ${S}`}
-            style={{ display: "block", margin: "0 auto", width: "100%", maxWidth: S, height: "100%", maxHeight: S }}
+			style={{ display: "block", margin: "0 auto", width: "100%", maxWidth: S, height: "100%", maxHeight: S }}
 		>
 			<defs>
 				<filter id="tb-glow-strong">
@@ -103,23 +106,34 @@ export default function Toolbox({ actions }: Readonly<RadialMenuProps>) {
 						<stop offset="100%" stopColor={c.base} stopOpacity="0.8" />
 					</radialGradient>
 				))}
-                {actions.map((action, i) => {
-                    const lines = action.label.split("\n");
 
-                    return lines.map((_, lineIndex) => {
-                        const radiusOffset = lines.length === 1 ? 0 : lineIndex === 0 ? -10 : 10;
+				{actions.map((action, i) => {
+					const lines = action.label.split("\n");
 
-                        return <path key={`ta-${action.label}-${lineIndex}`} id={`tb-arc-${i}-${lineIndex}`} d={textArcPath(i, radiusOffset)} fill="none"/>;
+					return lines.map((_, lineIndex) => {
+						let radiusOffset = 0;
 
-                    });
-                })}
+						if (lines.length !== 1) {
+							radiusOffset = lineIndex === 0 ? -10 : 10;
+						}
+
+						return (
+							<path
+								key={`ta-${action.label}-${lineIndex}`}
+								id={`tb-arc-${i}-${lineIndex}`}
+								d={textArcPath(i, radiusOffset)}
+								fill="none"
+							/>
+						);
+					});
+				})}
 			</defs>
 
 			<circle cx={cx} cy={cy} r={outerR + 60} fill="rgba(131,66,145,0.04)" />
 			<circle cx={cx} cy={cy} r={outerR + 30} fill="rgba(131,66,145,0.06)" />
 
 			{actions.map((action, i) => {
-                const lines = action.label.split("\n");
+				const lines = action.label.split("\n");
 				const color = COLORS[i % COLORS.length];
 				const isHov = hovered === i;
 				const mid = deg2rad(petalMidAngle(i));
@@ -133,15 +147,16 @@ export default function Toolbox({ actions }: Readonly<RadialMenuProps>) {
 						onMouseLeave={() => setHovered(null)}
 						style={{
 							cursor: "pointer",
-                            transform: `translate(${Math.cos(mid) * nudge}px, ${
-                                Math.sin(mid) * nudge
-                            }px)`,
+							transform: `translate(${round(Math.cos(mid) * nudge)}px, ${round(
+								Math.sin(mid) * nudge
+							)}px)`,
 							transition: "transform 0.2s ease",
 						}}
 					>
 						{isHov && (
 							<path d={petalPath(i)} fill={color.glow} filter="url(#tb-glow-strong)" />
 						)}
+
 						<path
 							d={petalPath(i)}
 							fill={`url(#tb-petal-grad-${i})`}
@@ -151,8 +166,17 @@ export default function Toolbox({ actions }: Readonly<RadialMenuProps>) {
 						/>
 
 						{lines.map((line, lineIndex) => (
-							<text key={`text-${i}-${lineIndex}`} fontSize={count === 4 ? 17 : 22} fill="white" fontWeight="600">
-								<textPath href={`#tb-arc-${i}-${lineIndex}`} startOffset="50%" textAnchor="middle">
+							<text
+								key={`${action.label}-${lineIndex}`}
+								fontSize={count === 4 ? 17 : 22}
+								fill="white"
+								fontWeight="600"
+							>
+								<textPath
+									href={`#tb-arc-${i}-${lineIndex}`}
+									startOffset="50%"
+									textAnchor="middle"
+								>
 									{line}
 								</textPath>
 							</text>

@@ -20,12 +20,10 @@ export async function handleJoin(_prevState: ActionState, formData: FormData) {
 
     try {
         const result = await joinLobby(lobbyCode);
-        const { clientId, availableTeams, allTeams } = result;
+        const { clientId } = result;
         const cookieStore = await cookies();
 
         cookieStore.set("clientId", clientId, { httpOnly: true, path: "/" });
-        cookieStore.set("availableTeams", JSON.stringify(availableTeams), { path: "/" });
-        cookieStore.set("allTeams", JSON.stringify(allTeams), { path: "/" });
 
         redirect(`/student/game/${lobbyCode}/team`);
 
