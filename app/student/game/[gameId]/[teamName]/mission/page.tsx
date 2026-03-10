@@ -3,15 +3,15 @@
 import { teams } from "@/types/Teams";
 import { useParams, useRouter } from "next/navigation";
 import { MissionStructure } from "@/components/student/MissionStructure";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useWebSocket } from "@/components/WebSocketProvider";
 import { ProgressionBar } from "@/components/student/PogressionBar";
 import { getTeamMissionsState } from "@/api/missionApi";
-import { missionNameTraduction } from "@/utils/MissionName";
 import { teamColorMap } from "@/utils/TeamColor";
 import { MissionProvider } from "@/contexts/MissionContext";
 import { showError } from "@/errors/getErrorMessage";
 import {ApiError} from "@/api/apiError";
+import LoadingPage from "@/app/loading";
 
 export default function MissionPage() {
     const params = useParams();
@@ -26,7 +26,6 @@ export default function MissionPage() {
     );
 
     const missions = currentTeam.missions;
-    const [progression, setProgression] = useState<number>(0);
     const [isBonus1Completed, setIsBonus1Completed] = useState(false);
     const [isBonus2Completed, setIsBonus2Completed] = useState(false);
     const [completedMissions, setCompletedMissions] = useState<Record<string, boolean>>({});
@@ -34,67 +33,30 @@ export default function MissionPage() {
     const projectIds = [...new Set(missions.map(m => m.projectId))]
         .sort((a, b) => a - b);
 
-    const projectCompletionMap = projectIds.reduce<Record<number, boolean>>(
-        (acc, projectId) => {
-            const projectMissions = missions.filter(
-                m => m.projectId === projectId && !m.bonus
-            );
-
-            acc[projectId] = projectMissions.every(m => {
-                const missionNumber = missionNameTraduction(m, teamName);
-                return completedMissions[missionNumber];
-            });
-            return acc;
-        },
-        {}
-    );
-
-    const projectUnlockedMap = useMemo(() => {
-        const map: Record<number, boolean> = {};
-        let previousUnlocked = true;
-
-        for (let i = 0; i < projectIds.length; i++) {
-            const projectId = projectIds[i];
-            if (!previousUnlocked) {
-                map[projectId] = false;
-            } else {
-                map[projectId] = true;
-                previousUnlocked = projectCompletionMap[projectId];
-            }
-        }
-
-        return map;
-    }, [projectIds, projectCompletionMap]);
-
     const teamColor = teamColorMap[teamName];
 
-    const fetchMissions = async () => {
+    const totalMissionCount = missions.filter(m => !m.bonus).length;
+    const completedMissionCount = Object.values(completedMissions).filter(Boolean).length;
+
+    const [loading, setLoading] = useState(true);
+
+    const fetchMissions = useCallback(async () => {
         try {
             const data = await getTeamMissionsState(lobbyCode, clientId);
             setCompletedMissions(data.teamFullProgression.completedMissions);
-            setProgression(data.teamFullProgression.teamProgression.classicMissionPercentage);
             setIsBonus1Completed(data.teamFullProgression.teamProgression.firstBonusMissionCompleted);
             setIsBonus2Completed(data.teamFullProgression.teamProgression.secondBonusMissionCompleted);
         } catch (err) {
             showError(err instanceof ApiError ? err.key : "");
-
+        } finally {
+            setLoading(false);
         }
-    };
+    }, [lobbyCode, clientId]);
 
     useEffect(() => {
-        if (!connected) return;
-        void (async () => {
-            try {
-                const data = await getTeamMissionsState(lobbyCode, clientId);
-                setCompletedMissions(data.teamFullProgression.completedMissions);
-                setProgression(data.teamFullProgression.teamProgression.classicMissionPercentage);
-                setIsBonus1Completed(data.teamFullProgression.teamProgression.firstBonusMissionCompleted);
-                setIsBonus2Completed(data.teamFullProgression.teamProgression.secondBonusMissionCompleted);
-            } catch (err) {
-                showError(err instanceof ApiError ? err.key : "");
-            }
-        })();
-    }, [connected, lobbyCode, clientId]);
+        if (!connected || !clientId) return;
+        void fetchMissions();
+    }, [connected, clientId, fetchMissions]);
 
     useEffect(() => {
         if (!connected) return;
@@ -105,22 +67,23 @@ export default function MissionPage() {
             if (event.type !== "TEAM_PROGRESSION" || event.payload.teamLabel !== teamName) return;
 
             if (event.type === "TEAM_PROGRESSION" && event.payload.teamLabel === teamName) {
-                const progressionValue = event.payload.teamProgression.classicMissionPercentage;
-
-                setProgression(progressionValue);
                 const isBonus1Completed = event.payload.teamProgression.firstBonusMissionCompleted;
                 const isBonus2Completed = event.payload.teamProgression.secondBonusMissionCompleted;
                 setIsBonus1Completed(isBonus1Completed);
                 setIsBonus2Completed(isBonus2Completed);
+
+                if (event.payload.teamFullProgression?.completedMissions) {
+                    setCompletedMissions(event.payload.teamFullProgression.completedMissions);
+                }
             }
         });
 
         return () => sub?.unsubscribe();
     }, [connected, subscribeGame, teamName]);
 
-    const totalMissionCount = missions.filter(m => !m.bonus).length;
-    const completedMissionCount = Math.round((progression / 100) * totalMissionCount);
-
+    if (loading) {
+        return <LoadingPage />;
+    }
     return (
         <MissionProvider
             teamColor={teamColor}
@@ -140,7 +103,6 @@ export default function MissionPage() {
 
                     <div className="flex flex-col gap-6 ">
                         <ProgressionBar
-                            progression={progression}
                             completed={completedMissionCount}
                             totalMission={totalMissionCount}
                             color={teamColor}
@@ -149,8 +111,7 @@ export default function MissionPage() {
                 </div>
 
                 {projectIds.map(projectId => {
-                    const isProjectUnlocked = projectUnlockedMap[projectId];
-                    const missionFilters = currentTeam.missions.filter(
+                    const missionFilters = missions.filter(
                         m => m.projectId === projectId
                     );
 
@@ -178,7 +139,7 @@ export default function MissionPage() {
                                         isBonus2Completed={isBonus2Completed}
                                         completedMissions={completedMissions}
                                         onMissionUpdated={fetchMissions}
-                                        isUnlocked={isProjectUnlocked}
+                                        isUnlocked={true}
                                     />
                                 ))}
                             </div>

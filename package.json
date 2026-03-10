@@ -30,7 +30,7 @@
     "@types/sockjs-client": "^1.5.4",
     "babel-jest": "^30.2.0",
     "eslint": "^10",
-    "eslint-config-next": "16.0.7",
+    "eslint-config-next": "16.1.6",
     "jest": "^30.2.0",
     "react-test-renderer": "^19.2.4",
     "tailwindcss": "^4.1.18",
