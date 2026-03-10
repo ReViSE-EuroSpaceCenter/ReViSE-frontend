@@ -11,6 +11,7 @@
     "coverage": "jest --coverage"
   },
   "dependencies": {
+    "next": "16.1.6",
     "@headlessui/react": "^2.2.9",
     "@stomp/stompjs": "^7.3.0",
     "@tanstack/react-query": "^5.90.21",
@@ -18,7 +19,7 @@
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "sockjs-client": "^1.6.1",
-    "sweetalert2": "^11.26.20"
+    "sweetalert2": "^11.26.22"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.28.5",
@@ -31,7 +32,7 @@
     "@types/sockjs-client": "^1.5.4",
     "babel-jest": "^30.2.0",
     "eslint": "^9",
-    "eslint-config-next": "16.0.7",
+    "eslint-config-next": "16.1.6",
     "jest": "^30.2.0",
     "react-test-renderer": "^19.2.4",
     "tailwindcss": "^4.1.18",
