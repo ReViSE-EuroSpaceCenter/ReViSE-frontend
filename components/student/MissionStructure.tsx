@@ -7,10 +7,10 @@ import { ValidationMissionModal } from "@/components/student/ValidationMission";
 import React, { useState } from "react";
 import { MissionButton } from "@/components/student/MissionButton";
 import { useMissionContext } from "@/contexts/MissionContext";
-import  getMissionModalMessage  from "@/utils/missionButtonMessage";
 import {showError} from "@/errors/getErrorMessage";
 import {ApiError} from "@/api/apiError";
 import { getProjectMissionsToUpdate } from "@/utils/missionUpdate";
+import {getBonusMissionModalMessage, getClassicMissionModalMessage} from "@/utils/missionButtonMessage";
 
 export function MissionStructure({
                                      mission,
@@ -59,10 +59,9 @@ export function MissionStructure({
         isCompleted = completedMissions[missionNumber];
     }
 
-    const message = getMissionModalMessage(
-        !!mission.bonus,
-        isCompleted
-    );
+    const message = mission.bonus
+      ? getBonusMissionModalMessage(isCompleted)
+      : getClassicMissionModalMessage(isCompleted);
 
     const handleMissionClick = () => setShowModal(true);
     const handleConfirm = async () => {
