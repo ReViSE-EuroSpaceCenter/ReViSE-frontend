@@ -7,6 +7,7 @@ type Props = {
     teamColor: string;
     textColorClass: string;
     onClick: () => void;
+    isCompleted: boolean;
 };
 
 export function MissionButton({
@@ -14,7 +15,8 @@ export function MissionButton({
                                   isUnlocked,
                                   teamColor,
                                   textColorClass,
-                                  onClick
+                                  onClick,
+                                  isCompleted
                               }: Props) {
 
     let displayText: React.ReactNode = mission.title;
@@ -38,9 +40,14 @@ export function MissionButton({
             style={{
                 backgroundColor: isUnlocked ? teamColor : "#555"
             }}
-            className={`px-4 py-3 rounded-2xl border-2 border-black shadow-md ${textColorClass} disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer`}
+            className={`relative px-4 py-3 rounded-2xl border-2 border-black shadow-md ${textColorClass} disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer`}
         >
             {displayText}
+            {isCompleted && (
+                <div className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow">
+                    ✓
+                </div>
+            )}
         </button>
     );
 }
