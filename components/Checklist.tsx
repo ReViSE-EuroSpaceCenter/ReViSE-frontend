@@ -91,15 +91,14 @@ export default function Checklist({ isOpen, setIsOpen }: Readonly<Props>) {
 
                   <ul className="space-y-2 md:space-y-3 text-white">
                       {steps.map((step, index) => {
-                          const visible = isVisible(index);
+                          if (!isVisible(index)) return null;
                           const done = checked.includes(step.id);
 
                           return (
                             <li
                               key={step.id}
-                              className={`flex items-start gap-3 p-2 md:p-3 rounded-lg transition-all duration-300 ${
-                                visible ? "opacity-100" : "opacity-0 pointer-events-none select-none"
-                              } ${done ? "bg-white/5" : "bg-white/0"}`}
+                              className={`flex items-start gap-3 p-2 md:p-3 rounded-lg transition-all duration-300 opacity-100
+                                          ${done ? "bg-white/5" : "bg-white/0"}`}
                             >
                                 <button
                                   onClick={() => toggle(step.id)}

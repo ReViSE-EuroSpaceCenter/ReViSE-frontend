@@ -9,7 +9,7 @@ export default function TeacherLayout({
 	params: Promise<{ gameId: string }>;
 }>) {
 	return (
-		<LobbyLayout params={params} cookieKey="hostId">
+		<LobbyLayout params={params}>
 			{children}
 		</LobbyLayout>
 	);
