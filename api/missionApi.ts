@@ -9,14 +9,14 @@ export const getTeamMissionsState = async (
   lobbyCode: string,
   clientId: string
 ): Promise<TeamMissionsState> => {
-    const response = await get(`/api/missions/${lobbyCode}/${clientId}`);
+    const response = await get(`/api/missions/${lobbyCode}?clientId=${clientId}`);
 
     if (!response) {
         return {
             teamFullProgression: {
                 completedMissions: {},
                 teamProgression: {
-                    classicMissionPercentage: 0,
+                    classicMissionsCompleted: 0,
                     firstBonusMissionCompleted: false,
                     secondBonusMissionCompleted: false,
                 },
