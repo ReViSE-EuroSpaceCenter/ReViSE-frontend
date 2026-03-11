@@ -27,6 +27,6 @@ export const getTeamMissionsState = async (
     return response as TeamMissionsState;
 };
 
-export const getTeamProgression = async (lobbyCode: string) => {
+export const getGameInfo = async (lobbyCode: string) => {
     return await get(`/api/missions/${lobbyCode}`);
 };
