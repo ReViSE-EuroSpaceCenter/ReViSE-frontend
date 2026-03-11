@@ -17,8 +17,10 @@ export default function SetUpPage() {
     const [joinedTeam, setJoinedTeam] = useState(0);
     const nbTeams = Number(searchParams.get("nbTeams"));
 
-    const { subscribe, connected, id } = useWebSocket();
+    const { subscribe, connected } = useWebSocket();
     const [loading, setLoading] = useState(false);
+
+    const hostId = sessionStorage.getItem("hostId");
 
     useEffect(() => {
         if (!connected) return;
@@ -63,14 +65,14 @@ export default function SetUpPage() {
 
 
     const startGame = async () => {
-        if (!id) {
+        if (!hostId) {
             showError("", "Identifiant de connexion manquant, impossible de démarrer la partie");
             return;
         }
 
         try {
             setLoading(true);
-            await startLobby(lobbyCode, id);
+            await startLobby(lobbyCode, hostId);
         } catch (err) {
             showError(err instanceof ApiError ? err.key : "");
         } finally {

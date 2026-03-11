@@ -6,11 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import NumberTeamSelector from "@/components/teacher/NumberTeamSelector";
 import { MissionHeader } from "@/components/student/MissionHeader";
 
-type Props = {
-	createLobbyAction: (formData: FormData) => void;
-}
-
-export default function Header(props: Readonly<Props>) {
+export default function Header() {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const router = useRouter();
@@ -153,7 +149,6 @@ export default function Header(props: Readonly<Props>) {
 			<NumberTeamSelector
 				isOpen={isModalOpen}
 				onClose={() => setIsModalOpen(false)}
-				action={props.createLobbyAction}
 			/>
 		</>
 	);

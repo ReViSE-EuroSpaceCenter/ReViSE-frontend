@@ -2,7 +2,7 @@ export type TeamMissionsState = {
 	teamFullProgression: {
 		completedMissions: Record<string, boolean>;
 		teamProgression: {
-			classicMissionPercentage: number;
+			classicMissionsCompleted: number;
 			firstBonusMissionCompleted: boolean;
 			secondBonusMissionCompleted: boolean;
 		};
