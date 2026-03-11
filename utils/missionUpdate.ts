@@ -13,10 +13,6 @@ export function getProjectMissionsToUpdate(
     const allProjectMissions = Object.values(missionMap)
         .filter(m => m.projectId === mission.projectId);
 
-    const normalMissions = allProjectMissions
-        .filter(m => !m.bonus)
-        .sort((a, b) => a.id - b.id);
-
     const bonusMissions = allProjectMissions.filter(m => m.bonus);
     const missionNumber = missionNameTraduction(mission, teamName);
     const isCompleted = completedMissions[missionNumber];
@@ -25,26 +21,30 @@ export function getProjectMissionsToUpdate(
         return [missionNumber];
     }
 
-    const missionIndex = normalMissions.findIndex(m => m.id === mission.id);
+    const missionsToInvalidate: Set<string> = new Set();
+    const queue: Mission[] = [mission];
 
-    const missionsToInvalidate: string[] = [];
+    while (queue.length > 0) {
+        const current = queue.shift()!;
+        const currentNumber = missionNameTraduction(current, teamName);
 
-    for (let i = missionIndex; i < normalMissions.length; i++) {
-        const m = normalMissions[i];
-        const number = missionNameTraduction(m, teamName);
+        if (!completedMissions[currentNumber]) continue;
+        if (missionsToInvalidate.has(currentNumber)) continue;
 
-        if (completedMissions[number]) {
-            missionsToInvalidate.push(number);
+        missionsToInvalidate.add(currentNumber);
+
+        for (const unlockedId of current.unlocks) {
+            const unlockedMission = missionMap[unlockedId];
+            if (unlockedMission) queue.push(unlockedMission);
         }
     }
 
     for (const bonus of bonusMissions) {
         const number = missionNameTraduction(bonus, teamName);
-
-        if (number === "BONUS_1" && isBonus1completed || number === "BONUS_2" && isBonus2completed) {
-            missionsToInvalidate.push(number);
+        if ((number === "BONUS_1" && isBonus1completed) || (number === "BONUS_2" && isBonus2completed)) {
+            missionsToInvalidate.add(number);
         }
     }
 
-    return missionsToInvalidate;
+    return Array.from(missionsToInvalidate);
 }
