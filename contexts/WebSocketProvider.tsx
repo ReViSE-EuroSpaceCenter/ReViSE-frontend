@@ -15,18 +15,15 @@ export type UrlDestination = "lobby" | "game";
 type WebSocketContextType = {
 	subscribe: (destinationType: UrlDestination, callback: (message: IMessage) => void) => StompSubscription | null;
 	connected: boolean;
-	id?: string;
 };
 
 const WebSocketContext = createContext<WebSocketContextType | null>(null);
 
 export function WebSocketProvider({
 																		lobbyCode,
-																		id,
 																		children,
 																	}: Readonly<{
 	lobbyCode: string;
-	id?: string;
 	children: React.ReactNode;
 }>) {
 	const clientRef = useRef<Client | null>(null);
@@ -72,9 +69,8 @@ export function WebSocketProvider({
 		() => ({
 			subscribe,
 			connected,
-			id,
 		}),
-		[subscribe, connected, id]
+		[subscribe, connected]
 	);
 
 	return (

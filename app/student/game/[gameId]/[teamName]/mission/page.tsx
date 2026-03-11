@@ -19,12 +19,12 @@ export default function MissionPage() {
     const params = useParams();
     const router = useRouter();
     const queryClient = useQueryClient();
-    const { subscribe, connected, id } = useWebSocket();
+    const { subscribe, connected } = useWebSocket();
 
     const teamName = params.teamName as string;
     const lobbyCode = params.gameId as string;
     const currentTeam = teams[teamName];
-    const clientId = id as string;
+    const clientId = sessionStorage.getItem("clientId") as string;
     const missions = currentTeam.missions;
 
     const missionMap = Object.fromEntries(

@@ -1,5 +1,4 @@
 import HomeButtons from "@/components/HomeButtons";
-import {handleCreateLobby} from "@/actions/createLobby";
 
 export default function Home() {
 
@@ -22,7 +21,7 @@ export default function Home() {
                       concrets autour de l{"'"}intelligence artificielle.
                   </p>
 
-                  <HomeButtons action={handleCreateLobby} />
+                  <HomeButtons />
 
                   <p className="text-sm text-slate-400 pt-4">
                       Développé par l{"'"}Euro Space Center, l{"'"}Université de Namur et B12 Consulting

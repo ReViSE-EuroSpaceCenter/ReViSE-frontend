@@ -18,7 +18,9 @@ export default function TeamPage() {
 	const searchParams = useSearchParams();
 	const params = useParams();
 	const queryClient = useQueryClient();
-	const { subscribe, connected, id } = useWebSocket();
+	const { subscribe, connected } = useWebSocket();
+
+	const clientId = sessionStorage.getItem("clientId");
 
 	const lobbyCode = params.gameId as string;
 	const { lobbyQuery, handleJoinTeam } = useLobby(lobbyCode);
@@ -100,7 +102,7 @@ export default function TeamPage() {
 							key={team}
 							team={team}
 							isTaken={!availableTeams.includes(team)}
-							onJoin={team => handleJoinTeam(team, availableTeams, id as string)}
+							onJoin={team => handleJoinTeam(team, availableTeams, clientId as string)}
 						/>
 					))}
 				</div>
