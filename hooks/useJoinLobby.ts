@@ -17,7 +17,7 @@ export const useJoinLobby = () => {
 
 		onSuccess: ({ clientId, lobbyCode }) => {
 			sessionStorage.setItem("clientId", clientId);
-			router.push(`/student/game/${lobbyCode}/team`);
+			router.replace(`/student/game/${lobbyCode}/team`);
 		},
 
 		onError: (error) => {

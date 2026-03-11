@@ -21,10 +21,14 @@ export default function MissionPage() {
     const queryClient = useQueryClient();
     const { subscribe, connected } = useWebSocket();
 
+    const clientId =
+      globalThis.window === undefined
+        ? null
+        : sessionStorage.getItem("clientId");
+
     const teamName = params.teamName as string;
     const lobbyCode = params.gameId as string;
     const currentTeam = teams[teamName];
-    const clientId = sessionStorage.getItem("clientId") as string;
     const missions = currentTeam.missions;
 
     const missionMap = Object.fromEntries(
@@ -38,7 +42,7 @@ export default function MissionPage() {
 
     const { data, isError, error, isLoading } = useQuery<TeamMissionsState>({
         queryKey: ["missions", lobbyCode, clientId],
-        queryFn: () => getTeamMissionsState(lobbyCode, clientId),
+        queryFn: () => getTeamMissionsState(lobbyCode, clientId as string),
         enabled: !!lobbyCode && !!clientId,
     });
 
@@ -90,7 +94,7 @@ export default function MissionPage() {
             teamColor={teamColor}
             teamName={teamName}
             lobbyCode={lobbyCode}
-            clientId={clientId}
+            clientId={clientId as string}
         >
         <div className="min-h-[calc(100vh-80px)]">
             <div className="px-6 lg:px-12 py-6 lg:py-12 space-y-16 justify-between item-center">
