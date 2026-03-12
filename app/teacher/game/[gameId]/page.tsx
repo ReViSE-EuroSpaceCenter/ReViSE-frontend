@@ -1,7 +1,7 @@
 "use client";
 
 import {useState, useEffect} from "react";
-import { useParams } from "next/navigation";
+import {useParams, usePathname, useRouter, useSearchParams} from "next/navigation";
 import Toolbox from "@/components/Toolbox";
 import Checklist from "@/components/Checklist";
 import IATech from "@/components/IATech";
@@ -10,6 +10,7 @@ import {showError} from "@/errors/getErrorMessage";
 import {ApiError} from "@/api/apiError";
 import {getTeamProgression} from "@/api/missionApi";
 import {useWebSocket} from "@/contexts/WebSocketProvider";
+import PresentationModal from "@/components/PresentationModal";
 
 type TeamData = {
 	id: number;
@@ -49,14 +50,34 @@ const updateTeamList = (prevTeams: TeamData[], event: GameEvent): TeamData[] => 
 };
 
 export default function Dashboard() {
+	const router = useRouter();
+	const pathname = usePathname();
+	const searchParams = useSearchParams();
 	const params = useParams();
 	const lobbyCode = params.gameId as string;
 	const [isChecklistOpen, setIsChecklistOpen] = useState(false);
 	const [isIAOpen, setIsIAOpen] = useState(false);
 	const { connected, subscribe } = useWebSocket();
 	const [teamsData, setTeamsData] = useState<TeamData[]>([]);
+	const [isPresentationOpen, setIsPresentationOpen] = useState(false);
+	const [teacherText, setTeacherText] = useState<string>("");
 
 
+	useEffect(() => {
+		const showPresentation = searchParams.get("presentation");
+		if (showPresentation === "true") {
+			fetch("/presentation_texts.json")
+				.then((res) => res.json())
+				.then((data: Record<string, string>) => {
+					if (data.TEACHER) {
+						setTeacherText(data.TEACHER);
+						setIsPresentationOpen(true);
+						router.replace(pathname);
+					}
+				})
+				.catch(() => showError("", "Erreur lors du chargement des textes de présentation"));
+		}
+	}, [searchParams, pathname, router]);
 
 	useEffect(() => {
 		const fetchProgression = async () => {
@@ -120,6 +141,14 @@ export default function Dashboard() {
 				/>
 				<Checklist isOpen={isChecklistOpen} setIsOpen={setIsChecklistOpen} />
 				<IATech isOpen={isIAOpen} setIsOpen={setIsIAOpen} />
+				<PresentationModal
+					isOpen={isPresentationOpen}
+					setIsOpen={setIsPresentationOpen}
+					icon="/logo.png"
+					text={teacherText}
+					name="TEACHER"
+					color="#fff"
+				/>
 			</div>
 
 			<div className="flex flex-col gap-12 xl:gap-28 w-full md:w-[calc(50%-1rem)] xl:flex-1 order-3 items-center xl:items-end xl:pl-12">
