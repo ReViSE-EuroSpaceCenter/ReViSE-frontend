@@ -29,31 +29,31 @@ export default function PresentationModal({ isOpen, setIsOpen, icon, text, name,
         }, 0);
 
     const renderBold = (text: string) =>
-        text.split(/(\*\*.*?\*\*)/g).map((part) =>
+        text.split(/(\*\*.*?\*\*)/g).map((part, index) =>
             part.startsWith("**") && part.endsWith("**") ? (
-                <strong key={hashString(part)}>{part.slice(2, -2)}</strong>
+                <strong key={`${hashString(part)}-${index}`}>{part.slice(2, -2)}</strong>
             ) : (
                 part
             )
         );
 
     const renderText = (text: string) =>
-        text.split("\n").map((line) => {
+        text.split("\n").map((line, lineIndex) => {
             const trimmed = line.trimStart();
             const isList = trimmed.startsWith("•");
 
             return (
                 <p
-                    key={hashString(line)}
+                    key={`${hashString(line)}-${lineIndex}`}
                     className={isList ? "text-left mb-2" : "text-center mb-4"}
                 >
-                    {line.split("\t").map((chunk) => (
+                    {line.split("\t").map((chunk, chunkIndex) => (
                         <span
-                            key={hashString(chunk)}
+                            key={`${hashString(chunk)}-${chunkIndex}`}
                             style={{ marginLeft: line.startsWith(chunk) ? 0 : "1em" }}
                         >
-            {renderBold(chunk)}
-          </span>
+                        {renderBold(chunk)}
+                    </span>
                     ))}
                 </p>
             );

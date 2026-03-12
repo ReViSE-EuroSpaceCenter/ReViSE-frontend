@@ -72,7 +72,6 @@ export default function Dashboard() {
 					if (data.TEACHER) {
 						setTeacherText(data.TEACHER);
 						setIsPresentationOpen(true);
-						router.replace(pathname);
 					}
 				})
 				.catch(() => showError("", "Erreur lors du chargement des textes de présentation"));
@@ -148,6 +147,7 @@ export default function Dashboard() {
 					text={teacherText}
 					name="TEACHER"
 					color="#fff"
+					onClose={() => router.replace(pathname) }
 				/>
 			</div>
 
