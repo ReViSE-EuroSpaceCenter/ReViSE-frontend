@@ -87,7 +87,7 @@ export default function PresentationModal({ isOpen, setIsOpen, icon, text, name,
                             : `Présentation de l'équipe - ${name}`}
                     </DialogTitle>
 
-                    <p className="text-center text-lg">{renderText(text)}</p>
+                    <div className="text-center text-lg">{renderText(text!)}</div>
 
                     <button
                         className="px-8 py-4 bg-purpleReViSE hover:bg-purpleReViSE/80 cursor-pointer rounded-lg font-semibold text-lg transition-colors"
