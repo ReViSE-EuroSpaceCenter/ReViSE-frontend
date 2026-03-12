@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter, usePathname } from "next/navigation";
 import NumberTeamSelector from "@/components/teacher/NumberTeamSelector";
 import { MissionHeader } from "@/components/student/MissionHeader";
+import {teamColorMap} from "@/utils/teamColor";
 
 export default function Header() {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -18,23 +19,8 @@ export default function Header() {
     const teamPageMatch = new RegExp(/^\/student\/game\/[^/]+\/([^/]+)(?:\/(intro|mission))?$/).exec(pathname);
     const teamName = teamPageMatch && teamPageMatch[1] !== "team" ? teamPageMatch[1] : null;
 
-    const teamColorMap: Record<string, string> = {
-        MEDI: "#a2d49f",
-        COOP: "#1783c2",
-        AERO: "#84298e",
-        MECA: "#e4dec8",
-        EXPE: "#da5437",
-        GECO: "#234e6f",
-    };
+	const teamColor = teamColorMap[teamName!];
 
-    const teamBadgeMap: Record<string, string[]> = {
-        MEDI: ["/badges/MEDI.png"],
-        COOP: ["/badges/COOP.png"],
-        AERO: ["/badges/AERO.png"],
-        MECA: ["/badges/MECA.png"],
-        EXPE: ["/badges/EXPE.png"],
-        GECO: ["/badges/GECO.png"],
-    };
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -70,8 +56,8 @@ export default function Header() {
                         {teamName && (
                             <MissionHeader
                                 teamName={teamName}
-                                color={teamColorMap[teamName]}
-                                badges={teamBadgeMap[teamName]}
+                                color={teamColor}
+                                badge={`/badges/${teamName}.png`}
                             />
                         )}
 						{isHomePage && (

@@ -7,6 +7,7 @@ import Checklist from "@/components/Checklist";
 import IATech from "@/components/IATech";
 import PresentationModal from "@/components/PresentationModal";
 import { showError } from "@/errors/getErrorMessage";
+import {teamColorMap} from "@/utils/teamColor";
 
 export default function Dashboard() {
 	const router = useRouter();
@@ -19,24 +20,7 @@ export default function Dashboard() {
 
 	const teamPageMatch = /^\/student\/game\/[^/]+\/([^/]+)(?:\/(intro|mission))?$/.exec(pathname);
 	const name = teamPageMatch && teamPageMatch[1] !== "team" ? teamPageMatch[1] : null;
-
-	const teamColorMap: Record<string, string> = {
-		MEDI: "#a2d49f",
-		COOP: "#1783c2",
-		AERO: "#84298e",
-		MECA: "#e4dec8",
-		EXPE: "#da5437",
-		GECO: "#234e6f",
-	};
-
-	const iconMap: Record<string, string> = {
-		MEDI: "/badges/MEDI.png",
-		COOP: "/badges/COOP.png",
-		AERO: "/badges/AERO.png",
-		MECA: "/badges/MECA.png",
-		EXPE: "/badges/EXPE.png",
-		GECO: "/badges/GECO.png",
-	};
+	const teamColor = teamColorMap[name!];
 
 	useEffect(() => {
 		const showPresentation = searchParams.get("presentation");
@@ -46,7 +30,6 @@ export default function Dashboard() {
 				.then((data) => {
 					setTexts(data)
 					setIsPresentationOpen(true);
-                    router.replace(pathname);
 				})
 				.catch(() => showError("", "Erreur lors du chargement des textes de présentation"));
 		}
@@ -70,10 +53,11 @@ export default function Dashboard() {
 				<PresentationModal
 					isOpen={isPresentationOpen}
 					setIsOpen={setIsPresentationOpen}
-					icon={iconMap[name]}
+					icon={`/badges/${name}.png`}
 					text={texts[name]}
 					name={name}
-					color={teamColorMap[name]}
+					color={teamColor}
+					onClose={() => router.replace(pathname) }
 				/>
 			)}
 		</div>

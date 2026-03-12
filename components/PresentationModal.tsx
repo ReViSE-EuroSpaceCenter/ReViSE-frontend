@@ -10,12 +10,14 @@ type Props = {
     text?: string;
     name?: string;
     color?: string;
+    onClose?: () => void;
 }
 
-export default function PresentationModal({ isOpen, setIsOpen, icon, text, name, color }: Readonly<Props>) {
+export default function PresentationModal({ isOpen, setIsOpen, icon, text, name, color, onClose }: Readonly<Props>) {
 
     const handleClose = () => {
         setIsOpen(false);
+        if (onClose) onClose();
     };
 
     if (!name || !icon || !text) return null;
