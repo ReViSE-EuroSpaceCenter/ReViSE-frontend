@@ -22,27 +22,36 @@ export default function PresentationModal({ isOpen, setIsOpen, icon, text, name,
 
     if (!name || !icon || !text) return null;
 
+    const hashString = (str: string) =>
+        str.split("").reduce((hash, char) => {
+            hash = (hash << 5) - hash + char.charCodeAt(0);
+            return hash & hash;
+        }, 0);
+
     const renderBold = (text: string) =>
-        text.split(/(\*\*.*?\*\*)/g).map((part, i) =>
+        text.split(/(\*\*.*?\*\*)/g).map((part) =>
             part.startsWith("**") && part.endsWith("**") ? (
-                <strong key={i}>{part.slice(2, -2)}</strong>
+                <strong key={hashString(part)}>{part.slice(2, -2)}</strong>
             ) : (
                 part
             )
         );
 
     const renderText = (text: string) =>
-        text.split("\n").map((line, i) => {
+        text.split("\n").map((line) => {
             const trimmed = line.trimStart();
             const isList = trimmed.startsWith("•");
 
             return (
                 <p
-                    key={i}
+                    key={hashString(line)}
                     className={isList ? "text-left mb-2" : "text-center mb-4"}
                 >
-                    {line.split("\t").map((chunk, j) => (
-                        <span key={j} style={{ marginLeft: j === 0 ? 0 : "1em" }}>
+                    {line.split("\t").map((chunk) => (
+                        <span
+                            key={hashString(chunk)}
+                            style={{ marginLeft: line.indexOf(chunk) === 0 ? 0 : "1em" }}
+                        >
             {renderBold(chunk)}
           </span>
                     ))}
@@ -65,7 +74,7 @@ export default function PresentationModal({ isOpen, setIsOpen, icon, text, name,
                 >
                     <Image
                         key={icon}
-                        src={icon!}
+                        src={icon}
                         alt={`${icon} image`}
                         width={100}
                         height={100}
@@ -78,7 +87,7 @@ export default function PresentationModal({ isOpen, setIsOpen, icon, text, name,
                             : `Présentation de l'équipe - ${name}`}
                     </DialogTitle>
 
-                    <p className="text-center text-lg">{renderText(text!)}</p>
+                    <p className="text-center text-lg">{renderText(text)}</p>
 
                     <button
                         className="px-8 py-4 bg-purpleReViSE hover:bg-purpleReViSE/80 cursor-pointer rounded-lg font-semibold text-lg transition-colors"
