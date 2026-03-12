@@ -12,7 +12,6 @@ export function getProjectMissionsToUpdate(
     const missionNumber = missionNameTraduction(mission, teamName);
     const isCompleted = completedMissions[missionNumber];
 
-    // Si la mission n'est pas complétée, on ne s'occupe que d'elle-même
     if (!isCompleted) {
         return [missionNumber];
     }
@@ -24,20 +23,16 @@ export function getProjectMissionsToUpdate(
         const current = queue.shift()!;
         const currentNumber = missionNameTraduction(current, teamName);
 
-        // Si déjà traité, on passe
         if (missionsToInvalidate.has(currentNumber)) continue;
 
-        // On vérifie si cette mission précise est complétée dans l'état actuel
         const isCurrentCompleted = current.bonus
             ? (currentNumber === "BONUS_1" ? isBonus1completed : isBonus2completed)
             : completedMissions[currentNumber];
 
         if (!isCurrentCompleted) continue;
 
-        // Ajouter à la liste des invalidations
         missionsToInvalidate.add(currentNumber);
 
-        // Ajouter les missions débloquées par celle-ci à la file
         for (const unlockedId of current.unlocks) {
             const unlockedMission = missionMap[unlockedId];
             if (unlockedMission) {

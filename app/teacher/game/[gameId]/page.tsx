@@ -9,7 +9,7 @@ import IATech from "@/components/IATech";
 import SideRow from "@/components/SideRow";
 import { showError } from "@/errors/getErrorMessage";
 import { ApiError } from "@/api/apiError";
-import { getGameInfo } from "@/api/missionApi";
+import {endMission, getGameInfo} from "@/api/missionApi";
 import { useWebSocket } from "@/contexts/WebSocketProvider";
 import { ProgressionBar } from "@/components/student/PogressionBar";
 import {teamColorMap} from "@/utils/teamColor";
@@ -47,6 +47,7 @@ export default function Dashboard() {
     const lobbyCode = params.gameId as string;
     const queryClient = useQueryClient();
     const { connected, subscribe } = useWebSocket();
+    const hostId = sessionStorage.getItem("hostId");
 
     const [isChecklistOpen, setIsChecklistOpen] = useState(false);
     const [isIAOpen, setIsIAOpen] = useState(false);
@@ -93,8 +94,8 @@ export default function Dashboard() {
 
                     return old;
                 });
-            } catch (e) {
-                console.error("Erreur parsing WS:", e);
+            } catch (err) {
+                showError(err instanceof ApiError ? err.key : "", "Erreur lors de la récupération des données");
             }
         });
 
@@ -115,11 +116,25 @@ export default function Dashboard() {
 	const leftTeams = teamsData.slice(0, half);
 	const rightTeams = teamsData.slice(half);
 
+    const handleEndMission = async () => {
+        if (!hostId) {
+            showError("", "Identifiant de connexion manquant, impossible d'autoriser l'encodage des ressources");
+            return;
+        }
+        try {
+            await endMission(lobbyCode, hostId);
+            console.log("Mission end ok ");
+        } catch (err) {
+            showError(err instanceof ApiError ? err.key : "", "Impossible de clôturer la mission");
+        }
+    };
+
     return (
         <>
             <div className="w-full flex justify-end px-8 md:px-26 py-2">
                 <button
                     disabled={!allTeamsCompleted}
+                    onClick={handleEndMission}
                     className="px-4 py-2 bg-purpleReViSE hover:bg-purpleReViSE/80 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer rounded-md font-medium text-base transition-colors"
                 >
                     Encodage des ressources
