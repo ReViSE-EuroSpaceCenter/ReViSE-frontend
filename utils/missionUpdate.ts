@@ -1,6 +1,19 @@
 import {missionNameTraduction} from "@/utils/missionName";
 import {Mission} from "@/types/Mission";
 
+function checkCompletion(
+    missionNum: string,
+    mission: Mission,
+    completedMissions: Record<string, boolean>,
+    isBonus1: boolean,
+    isBonus2: boolean
+): boolean {
+    if (!mission.bonus) {
+        return completedMissions[missionNum];
+    }
+    return missionNum === "BONUS_1" ? isBonus1 : isBonus2;
+}
+
 export function getProjectMissionsToUpdate(
     mission: Mission,
     missionMap: Record<number, Mission>,
@@ -8,36 +21,34 @@ export function getProjectMissionsToUpdate(
     teamName: string,
     isBonus1completed: boolean,
     isBonus2completed: boolean
-) {
+): string[] {
     const missionNumber = missionNameTraduction(mission, teamName);
-    const isCompleted = completedMissions[missionNumber];
 
-    if (!isCompleted) {
+    if (!completedMissions[missionNumber]) {
         return [missionNumber];
     }
 
-    const missionsToInvalidate: Set<string> = new Set();
+    const missionsToInvalidate = new Set<string>();
     const queue: Mission[] = [mission];
 
     while (queue.length > 0) {
         const current = queue.shift()!;
-        const currentNumber = missionNameTraduction(current, teamName);
+        const currentNum = missionNameTraduction(current, teamName);
 
-        if (missionsToInvalidate.has(currentNumber)) continue;
+        const isCurrentCompleted = checkCompletion(
+            currentNum,
+            current,
+            completedMissions,
+            isBonus1completed,
+            isBonus2completed
+        );
 
-        const isCurrentCompleted = current.bonus
-            ? (currentNumber === "BONUS_1" ? isBonus1completed : isBonus2completed)
-            : completedMissions[currentNumber];
+        if (isCurrentCompleted && !missionsToInvalidate.has(currentNum)) {
+            missionsToInvalidate.add(currentNum);
 
-        if (!isCurrentCompleted) continue;
-
-        missionsToInvalidate.add(currentNumber);
-
-        for (const unlockedId of current.unlocks) {
-            const unlockedMission = missionMap[unlockedId];
-            if (unlockedMission) {
-                queue.push(unlockedMission);
-            }
+            current.unlocks.forEach(id => {
+                if (missionMap[id]) queue.push(missionMap[id]);
+            });
         }
     }
 
