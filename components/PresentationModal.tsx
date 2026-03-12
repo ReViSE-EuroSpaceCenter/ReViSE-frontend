@@ -24,7 +24,7 @@ export default function PresentationModal({ isOpen, setIsOpen, icon, text, name,
 
     const hashString = (str: string) =>
         str.split("").reduce((hash, char) => {
-            hash = (hash << 5) - hash + char.charCodeAt(0);
+            hash = (hash << 5) - hash + char.codePointAt(0)!;
             return hash & hash;
         }, 0);
 
@@ -50,7 +50,7 @@ export default function PresentationModal({ isOpen, setIsOpen, icon, text, name,
                     {line.split("\t").map((chunk) => (
                         <span
                             key={hashString(chunk)}
-                            style={{ marginLeft: line.indexOf(chunk) === 0 ? 0 : "1em" }}
+                            style={{ marginLeft: line.startsWith(chunk) ? 0 : "1em" }}
                         >
             {renderBold(chunk)}
           </span>
@@ -87,7 +87,7 @@ export default function PresentationModal({ isOpen, setIsOpen, icon, text, name,
                             : `Présentation de l'équipe - ${name}`}
                     </DialogTitle>
 
-                    <div className="text-center text-lg">{renderText(text!)}</div>
+                    <div className="text-center text-lg">{renderText(text)}</div>
 
                     <button
                         className="px-8 py-4 bg-purpleReViSE hover:bg-purpleReViSE/80 cursor-pointer rounded-lg font-semibold text-lg transition-colors"
