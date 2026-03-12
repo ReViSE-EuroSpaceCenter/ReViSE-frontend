@@ -47,7 +47,10 @@ export default function Dashboard() {
     const lobbyCode = params.gameId as string;
     const queryClient = useQueryClient();
     const { connected, subscribe } = useWebSocket();
-    const hostId = sessionStorage.getItem("hostId");
+    const hostId =
+        globalThis.window === undefined
+            ? null
+            : sessionStorage.getItem("hostId");
 
     const [isChecklistOpen, setIsChecklistOpen] = useState(false);
     const [isIAOpen, setIsIAOpen] = useState(false);
