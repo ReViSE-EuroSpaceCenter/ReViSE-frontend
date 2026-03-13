@@ -1,7 +1,7 @@
 "use client";
 
 import { teams } from "@/types/Teams";
-import {useParams, useRouter, useSearchParams} from "next/navigation";
+import {useParams, useRouter} from "next/navigation";
 import { MissionStructure } from "@/components/student/MissionStructure";
 import { useEffect } from "react";
 import { ProgressionBar } from "@/components/student/PogressionBar";
@@ -20,9 +20,6 @@ export default function MissionPage() {
     const router = useRouter();
     const queryClient = useQueryClient();
     const { subscribe, connected } = useWebSocket();
-    const searchParams = useSearchParams();
-
-    const chosenTeam = searchParams.get("chosenTeam") as string;
 
     const clientId =
       globalThis.window === undefined
@@ -58,11 +55,11 @@ export default function MissionPage() {
     useEffect(() => {
         if (!connected) return;
 
-        const sub = subscribe("game", (message) => {
+        const sub = subscribe("mission", (message) => {
             const event = JSON.parse(message.body);
 
             if (event.type === "MISSION_ENDED") {
-                router.push(`/student/game/${lobbyCode}/${chosenTeam}/resources`);
+                router.push(`/student/game/${lobbyCode}/${teamName}/resources`);
             }
 
             if (event.type !== "TEAM_PROGRESSION" || event.payload.teamLabel !== teamName) return;
@@ -85,7 +82,7 @@ export default function MissionPage() {
         });
 
         return () => sub?.unsubscribe();
-    }, [chosenTeam, clientId, connected, lobbyCode, queryClient, router, subscribe, teamName]);
+    }, [clientId, connected, lobbyCode, queryClient, router, subscribe, teamName]);
 
     if (isLoading || !data) return <LoadingPage />;
 

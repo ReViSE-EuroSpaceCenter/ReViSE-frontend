@@ -1,43 +1,22 @@
 "use client";
 
-import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import {useParams, useRouter} from "next/navigation";
-import {updateResources} from "@/api/launcherApi";
+import {SyntheticEvent, useState} from "react";
+import {useResources} from "@/hooks/useResources";
 
 export default function Resources() {
-	const router = useRouter();
-	const params = useParams();
+	const resourcesMutation = useResources()
+	const [resources, setResources] = useState<string>("");
+	const [humans, setHumans] = useState<string>("");
+	const [time, setTime] = useState<string>("");
 
-	const lobbyCode = params.gameId as string;
-	const clientId =
-		globalThis.window === undefined
-			? null
-			: sessionStorage.getItem("clientId");
 
-	const [resources, setResources] = useState(0);
-	const [humans, setHumans] = useState(0);
-	const [time, setTime] = useState(0);
-
-	const mutation = useMutation({
-		mutationFn: async () => {
-			const resourcesPayload = {
-				resources: {
-					ENERGY: resources || 0,
-					HUMAN: humans || 0,
-					CLOCK: time || 0,
-				},
-			};
-			await updateResources(lobbyCode, clientId as string, resourcesPayload);
-		},
-		onSuccess: () => {
-			router.push("/");
-		},
-	});
-
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = (e: SyntheticEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		mutation.mutate();
+		resourcesMutation.mutate({
+			resources: Number(resources),
+			humans: Number(humans),
+			time: Number(time),
+		});
 	};
 
 	return (
@@ -93,19 +72,21 @@ export default function Resources() {
 								value={value}
 								inputMode="numeric"
 								pattern="[0-9]*"
+								placeholder="0"
 								onChange={(e) => {
-									const v = Number(e.target.value);
-									setter(Math.min(max, Math.max(0, v)));
+									const raw = e.target.value;
+									if (raw === "") { setter(""); return; }
+									const v = Math.min(max, Math.max(0, Number(raw)));
+									setter(String(v));
 								}}
 								className="
 									bg-slate-900/80 border border-slate-700 rounded-xl
 									px-4 py-3 text-white text-lg
 									placeholder:text-slate-600
 									focus:outline-none focus:border-purpleReViSE focus:ring-2 focus:ring-purpleReViSE/20
-									transition-all duration-150
-									w-full
-              	"
-								placeholder="0"
+									transition-all duration-150 w-full
+								"
+								enterKeyHint="done"
 							/>
 						</div>
 					))}
@@ -113,7 +94,7 @@ export default function Resources() {
 					<div className="pt-1">
 						<button
 							type="submit"
-							disabled={mutation.isPending}
+							disabled={resourcesMutation.isPending}
 							className="
               w-full bg-purpleReViSE hover:bg-purpleReViSE/85 active:scale-[0.98]
               disabled:opacity-60 disabled:cursor-not-allowed
@@ -122,7 +103,7 @@ export default function Resources() {
               text-base sm:text-lg
             "
 						>
-							{mutation.isPending ? (
+							{resourcesMutation.isPending ? (
 								<span className="flex items-center justify-center gap-2">
                 <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
@@ -135,12 +116,6 @@ export default function Resources() {
 							)}
 						</button>
 					</div>
-
-					{mutation.isError && (
-						<div className="flex items-center justify-center gap-2 bg-red-500/10 border border-red-500/20 rounded-lg py-2.5 px-4">
-							<span className="text-red-400 text-sm">Une erreur est survenue. Veuillez réessayer.</span>
-						</div>
-					)}
 				</form>
 			</div>
 		</div>

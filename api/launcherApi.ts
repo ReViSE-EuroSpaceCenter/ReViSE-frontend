@@ -7,5 +7,5 @@ type ResourcesPayload = {
 };
 
 export const updateResources = async (lobbyCode: string, clientId: string, r: ResourcesPayload) => {
-	 await put(`/api/launchers/${lobbyCode}`, { body: { request: { clientId, resources: r.resources }} });
+	await put(`/api/launchers/${lobbyCode}`, { body: { clientId, resources: r.resources } });
 }

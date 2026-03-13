@@ -1,7 +1,7 @@
 "use client";
 
 import Toolbox from "@/components/Toolbox";
-import {useParams, usePathname, useRouter, useSearchParams} from "next/navigation";
+import {useParams, usePathname, useRouter} from "next/navigation";
 import {useEffect, useState} from "react";
 import Checklist from "@/components/Checklist";
 import IATech from "@/components/IATech";
@@ -12,12 +12,10 @@ export default function Dashboard() {
 	const router = useRouter();
 	const pathname = usePathname();
 	const { subscribe, connected } = useWebSocket();
-	const searchParams = useSearchParams();
 	const params = useParams();
 
 	const lobbyCode = params.gameId as string;
-	const chosenTeam = searchParams.get("chosenTeam") as string;
-
+	const teamName = params.teamName as string;
 
 	const [isChecklistOpen, setIsChecklistOpen] = useState(false);
 	const [isIAOpen, setIsIAOpen] = useState(false);
@@ -25,16 +23,16 @@ export default function Dashboard() {
 	useEffect(() => {
 		if (!connected) return;
 
-		const subscription = subscribe("lobby", (message) => {
+		const subscription = subscribe("mission", (message) => {
 			const event: LobbyEventType = JSON.parse(message.body);
 
 			if (event.type === "MISSION_ENDED") {
-				router.push(`/student/game/${lobbyCode}/${chosenTeam}/resources`);
+				router.push(`/student/game/${lobbyCode}/${teamName}/resources`);
 			}
 		});
 
 		return () => subscription?.unsubscribe();
-	}, [chosenTeam, connected, lobbyCode, router, subscribe]);
+	}, [teamName, connected, lobbyCode, router, subscribe]);
 
 	return (
 		<div className="min-h-[calc(100vh-120px)] flex items-center justify-center p-4">

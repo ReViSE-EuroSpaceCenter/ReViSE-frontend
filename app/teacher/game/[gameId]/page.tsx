@@ -70,7 +70,7 @@ export default function Dashboard() {
     useEffect(() => {
         if (!connected || !lobbyCode) return;
 
-        const sub = subscribe("game", (message) => {
+        const sub = subscribe("mission", (message) => {
             try {
                 const event = JSON.parse(message.body);
 
