@@ -1,8 +1,8 @@
-import { post } from './apiClient'
+import { post, get } from './apiClient'
 
 
 export const createLobby = async (numberOfTeams: number) => {
-	return (await post(`/api/lobbies`, { body: { numberOfTeams } }));
+	return (await post(`/api/lobbies`, { body: { numberOfTeams }}));
 }
 
 export const joinLobby = async (lobbyCode: string) => {
@@ -14,10 +14,14 @@ export const assignTeam = async (
 	clientId: string,
 	teamLabel: string
 ) => {
-	return await post(`/api/lobbies/${lobbyCode}/team`, { body: { clientId, teamLabel} });
+	return await post(`/api/lobbies/${lobbyCode}/team`, { body: { clientId, teamLabel }});
 };
 
 
 export const startLobby = async (lobbyCode: string, hostId: string) => {
     return await post(`/api/lobbies/${lobbyCode}/start`, {body: { hostId }});
+};
+
+export const getLobbyInfo = async (lobbyCode: string) => {
+    return await get(`/api/lobbies/${lobbyCode}`);
 };

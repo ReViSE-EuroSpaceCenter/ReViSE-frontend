@@ -1,0 +1,56 @@
+import {missionNameTraduction} from "@/utils/missionName";
+import {Mission} from "@/types/Mission";
+
+function checkCompletion(
+    missionNum: string,
+    mission: Mission,
+    completedMissions: Record<string, boolean>,
+    isBonus1: boolean,
+    isBonus2: boolean
+): boolean {
+    if (!mission.bonus) {
+        return completedMissions[missionNum];
+    }
+    return missionNum === "BONUS_1" ? isBonus1 : isBonus2;
+}
+
+export function getProjectMissionsToUpdate(
+    mission: Mission,
+    missionMap: Record<number, Mission>,
+    completedMissions: Record<string, boolean>,
+    teamName: string,
+    isBonus1completed: boolean,
+    isBonus2completed: boolean
+): string[] {
+    const missionNumber = missionNameTraduction(mission, teamName);
+
+    if (!completedMissions[missionNumber]) {
+        return [missionNumber];
+    }
+
+    const missionsToInvalidate = new Set<string>();
+    const queue: Mission[] = [mission];
+
+    while (queue.length > 0) {
+        const current = queue.shift()!;
+        const currentNum = missionNameTraduction(current, teamName);
+
+        const isCurrentCompleted = checkCompletion(
+            currentNum,
+            current,
+            completedMissions,
+            isBonus1completed,
+            isBonus2completed
+        );
+
+        if (isCurrentCompleted && !missionsToInvalidate.has(currentNum)) {
+            missionsToInvalidate.add(currentNum);
+
+            current.unlocks.forEach(id => {
+                if (missionMap[id]) queue.push(missionMap[id]);
+            });
+        }
+    }
+
+    return Array.from(missionsToInvalidate);
+}

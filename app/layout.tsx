@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import React from "react";
 import Header from "@/components/Header";
-import {handleCreateLobby} from "@/actions/createLobby";
+import QueryProvider from "@/contexts/QueryProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,10 +30,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Header createLobbyAction={handleCreateLobby} />
-        <main>
-          {children}
-        </main>
+        <QueryProvider>
+          <Header />
+          <main>
+            {children}
+          </main>
+        </QueryProvider>
       </body>
     </html>
   );

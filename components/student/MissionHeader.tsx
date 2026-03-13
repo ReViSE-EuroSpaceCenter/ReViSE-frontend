@@ -8,15 +8,15 @@ interface TeamHeaderProps {
     badges: string[];
 }
 
-export function MissionHeader({ teamName, color, badges }: TeamHeaderProps) {
+export function MissionHeader({ teamName, color, badges }: Readonly<TeamHeaderProps>) {
     return (
         <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-                {badges.map((badge, index) => (
+                {badges.map((badge) => (
                     <Image
-                        key={index}
+                        key={badge}
                         src={badge}
-                        alt={`${teamName} badge ${index + 1}`}
+                        alt={`${teamName} badge`}
                         width={140}
                         height={140}
                         className="w-10 h-10 object-contain"

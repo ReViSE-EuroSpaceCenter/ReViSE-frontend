@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams, useParams } from "next/navigation";
-import { useWebSocket } from "@/components/WebSocketProvider";
+import { useWebSocket } from "@/contexts/WebSocketProvider";
 import { LobbyEventType } from "@/types/LobbyEventType";
-import { startLobby } from "@/api/lobbyApi";
+import { getLobbyInfo, startLobby } from "@/api/lobbyApi";
+import { showError } from "@/errors/getErrorMessage";
+import { ApiError } from "@/api/apiError";
 
 export default function SetUpPage() {
     const router = useRouter();
@@ -15,13 +17,33 @@ export default function SetUpPage() {
     const [joinedTeam, setJoinedTeam] = useState(0);
     const nbTeams = Number(searchParams.get("nbTeams"));
 
-    const { subscribe, connected, id } = useWebSocket();
+    const { subscribe, connected } = useWebSocket();
     const [loading, setLoading] = useState(false);
+
+    const hostId = sessionStorage.getItem("hostId");
 
     useEffect(() => {
         if (!connected) return;
 
-        const subscription = subscribe((message) => {
+        void (async () => {
+            try {
+                const lobby = await getLobbyInfo(lobbyCode);
+
+                const joined =
+                    lobby.allTeams.length - lobby.availableTeams.length;
+
+                setJoinedTeam(joined);
+
+            } catch (err) {
+                showError(err instanceof ApiError ? err.key : "");
+            }
+        })();
+    }, [connected, lobbyCode]);
+
+    useEffect(() => {
+        if (!connected) return;
+
+        const subscription = subscribe("lobby", (message) => {
             const event: LobbyEventType = JSON.parse(message.body);
 
             switch (event.type) {
@@ -33,27 +55,26 @@ export default function SetUpPage() {
                     router.push(`/teacher/game/${lobbyCode}`);
                     break;
 
-
                 default:
                     break;
             }
         });
 
         return () => subscription?.unsubscribe();
-    }, [router, subscribe, connected, lobbyCode]);
+    }, [router, subscribe, connected, lobbyCode, nbTeams]);
 
 
     const startGame = async () => {
-        if (!id) {
-            console.error("hostId manquant, impossible de démarrer la partie");
+        if (!hostId) {
+            showError("", "Identifiant de connexion manquant, impossible de démarrer la partie");
             return;
         }
 
         try {
             setLoading(true);
-            await startLobby(lobbyCode, id);
+            await startLobby(lobbyCode, hostId);
         } catch (err) {
-            console.error(err);
+            showError(err instanceof ApiError ? err.key : "");
         } finally {
             setLoading(false);
         }

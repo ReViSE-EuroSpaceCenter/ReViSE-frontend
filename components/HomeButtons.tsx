@@ -4,11 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import NumberTeamSelector from "@/components/teacher/NumberTeamSelector";
 
-type Props = {
-	action: (formData: FormData) => void
-}
-
-export default function HomeButtons(props: Readonly<Props>) {
+export default function HomeButtons() {
 	const router = useRouter();
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -32,7 +28,6 @@ export default function HomeButtons(props: Readonly<Props>) {
 			<NumberTeamSelector
 				isOpen={isModalOpen}
 				onClose={() => setIsModalOpen(false)}
-				action={props.action}
 			/>
 		</>
 	)

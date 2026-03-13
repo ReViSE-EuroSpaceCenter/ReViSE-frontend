@@ -1,31 +1,101 @@
+"use client";
+
 import { Mission } from "@/types/Mission";
+import { changeTeamMissionState } from "@/api/missionApi";
+import { missionNameTraduction } from "@/utils/missionName";
+import { ValidationMissionModal } from "@/components/student/ValidationMission";
+import React, { useState } from "react";
+import { MissionButton } from "@/components/student/MissionButton";
+import { useMissionContext } from "@/contexts/MissionContext";
+import {showError} from "@/errors/getErrorMessage";
+import {ApiError} from "@/api/apiError";
+import { getProjectMissionsToUpdate } from "@/utils/missionUpdate";
+import {getBonusMissionModalMessage, getClassicMissionModalMessage} from "@/utils/missionButtonMessage";
 
 export function MissionStructure({
                                      mission,
                                      missionMap,
-                                     teamColor,
-                                     teamName,
-                                 }: {
+                                     isBonus1Completed,
+                                     isBonus2Completed,
+                                     completedMissions,
+                                     onMissionUpdated,
+                                     isUnlocked,
+                                 }: Readonly<{
     mission: Mission;
     missionMap: Record<number, Mission>;
-    teamColor: string;
-    teamName: string;
-}) {
+    isBonus1Completed: boolean;
+    isBonus2Completed: boolean;
+    completedMissions: Record<string, boolean>;
+    onMissionUpdated: () => Promise<void>;
+    isUnlocked: boolean;
+}>) {
+
+    const {
+        lobbyCode,
+        clientId,
+        teamColor,
+        teamName,
+    } = useMissionContext();
+
     const children = mission.unlocks
         .map((id) => missionMap[id])
         .filter(Boolean);
 
-    const isDarkText = teamName === "MECA" || teamName === "MEDI" || teamName === "EXPE";
+    const isDarkText = ["MECA", "MEDI", "EXPE"].includes(teamName);
     const textColorClass = isDarkText ? "text-black" : "text-white";
+
+    const [showModal, setShowModal] = useState(false);
+
+    const missionNumber = missionNameTraduction(mission, teamName);
+
+    let isCompleted: boolean;
+
+    if (mission.bonus) {
+        isCompleted =
+            missionNumber === "BONUS_1"
+                ? isBonus1Completed
+                : isBonus2Completed;
+    } else {
+        isCompleted = completedMissions[missionNumber];
+    }
+
+    const message = mission.bonus
+      ? getBonusMissionModalMessage(isCompleted)
+      : getClassicMissionModalMessage(isCompleted);
+
+    const handleMissionClick = () => setShowModal(true);
+    const handleConfirm = async () => {
+        setShowModal(false);
+        try {
+            const missionsToUpdate = getProjectMissionsToUpdate(
+                mission,
+                missionMap,
+                completedMissions,
+                teamName,
+                isBonus1Completed,
+                isBonus2Completed
+            );
+            await changeTeamMissionState(lobbyCode, clientId, missionsToUpdate);
+            await onMissionUpdated();
+        } catch (err) {
+            showError(err instanceof ApiError ? err.key : "");
+        }
+    };
+    const handleCancel = () => setShowModal(false);
+
+    const childUnlocked = isUnlocked && isCompleted;
 
     return (
         <>
             <div className="flex md:hidden flex-col items-center gap-3 w-full">
-                <button
-                    style={{ backgroundColor: teamColor }}
-                    className={`px-4 py-3 ${textColorClass} rounded-2xl border-2 border-black shadow-md active:scale-95 transition text-center whitespace-nowrap cursor-pointer`}                >
-                    {mission.title}
-                </button>
+                <MissionButton
+                    mission={mission}
+                    isUnlocked={isUnlocked}
+                    teamColor={teamColor}
+                    textColorClass={textColorClass}
+                    onClick={handleMissionClick}
+                    isCompleted={isCompleted}
+                />
 
                 {children.length > 0 && (
                     <div className="flex flex-row flex-wrap justify-center gap-3">
@@ -34,8 +104,11 @@ export function MissionStructure({
                                 <MissionStructure
                                     mission={child}
                                     missionMap={missionMap}
-                                    teamColor={teamColor}
-                                    teamName={teamName}
+                                    isBonus1Completed={isBonus1Completed}
+                                    isBonus2Completed={isBonus2Completed}
+                                    completedMissions={completedMissions}
+                                    onMissionUpdated={onMissionUpdated}
+                                    isUnlocked={childUnlocked}
                                 />
                             </div>
                         ))}
@@ -43,12 +116,15 @@ export function MissionStructure({
                 )}
             </div>
 
-            <div className="hidden md:flex flex-row items-center ">
-                <button
-                    style={{ backgroundColor: teamColor }}
-                    className={`shrink-0 px-4 py-3 ${textColorClass} rounded-2xl border-2 border-black shadow-md hover:scale-115 transition text-center whitespace-nowrap cursor-pointer`}                >
-                    {mission.title}
-                </button>
+            <div className="hidden md:flex flex-row items-center">
+                <MissionButton
+                    mission={mission}
+                    isUnlocked={isUnlocked}
+                    teamColor={teamColor}
+                    textColorClass={textColorClass}
+                    onClick={handleMissionClick}
+                    isCompleted={isCompleted}
+                />
 
                 {children.length === 1 && (
                     <>
@@ -56,8 +132,11 @@ export function MissionStructure({
                         <MissionStructure
                             mission={children[0]}
                             missionMap={missionMap}
-                            teamColor={teamColor}
-                            teamName={teamName}
+                            isBonus1Completed={isBonus1Completed}
+                            isBonus2Completed={isBonus2Completed}
+                            completedMissions={completedMissions}
+                            onMissionUpdated={onMissionUpdated}
+                            isUnlocked={childUnlocked}
                         />
                     </>
                 )}
@@ -65,22 +144,25 @@ export function MissionStructure({
                 {children.length > 1 && (
                     <div className="flex flex-row items-center">
                         <div className="shrink-0 w-10 h-0.5 bg-white/40" />
-                        <div className="relative flex flex-col ">
+                        <div className="relative flex flex-col">
                             {children.map((child, i) => (
                                 <div key={child.id} className="relative flex flex-row items-center py-3">
                                     <div
                                         className="absolute left-0 w-0.5 bg-white/40"
                                         style={{
-                                            top: i === 0 ? '50%' : '0',
-                                            bottom: i === children.length - 1 ? '50%' : '0',
+                                            top: i === 0 ? "50%" : 0,
+                                            bottom: i === children.length - 1 ? "50%" : 0,
                                         }}
                                     />
                                     <div className="shrink-0 w-10 h-0.5 bg-white/40" />
                                     <MissionStructure
                                         mission={child}
                                         missionMap={missionMap}
-                                        teamColor={teamColor}
-                                        teamName={teamName}
+                                        isBonus1Completed={isBonus1Completed}
+                                        isBonus2Completed={isBonus2Completed}
+                                        completedMissions={completedMissions}
+                                        onMissionUpdated={onMissionUpdated}
+                                        isUnlocked={childUnlocked}
                                     />
                                 </div>
                             ))}
@@ -88,6 +170,13 @@ export function MissionStructure({
                     </div>
                 )}
             </div>
+
+            <ValidationMissionModal
+                isOpen={showModal}
+                message={message}
+                onConfirm={handleConfirm}
+                onCancel={handleCancel}
+            />
         </>
     );
 }

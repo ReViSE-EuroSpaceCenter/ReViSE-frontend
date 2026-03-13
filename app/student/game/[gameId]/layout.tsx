@@ -4,12 +4,12 @@ import React from "react";
 export default function StudentLayout({
 																				children,
 																				params,
-																			}: {
+																			}: Readonly<{
 	children: React.ReactNode;
 	params: Promise<{ gameId: string }>;
-}) {
+}>) {
 	return (
-		<LobbyLayout params={params} cookieKey="clientId">
+		<LobbyLayout params={params}>
 			{children}
 		</LobbyLayout>
 	);
