@@ -70,9 +70,7 @@ export default function SetUpPage() {
             showError("", "Identifiant de connexion manquant, impossible de démarrer la partie");
             return;
         }
-
-        console.log("Test");
-
+        
         try {
             setLoading(true);
             await startLobby(lobbyCode, hostId);
