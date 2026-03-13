@@ -1,4 +1,4 @@
-import { put, get } from './apiClient'
+import { put, get, post } from './apiClient'
 import { TeamMissionsState } from "@/types/TeamMissionState";
 
 export const changeTeamMissionState = async (lobbyCode: string, id: string, updateMissions: string[]) => {
@@ -27,6 +27,12 @@ export const getTeamMissionsState = async (
     return response as TeamMissionsState;
 };
 
-export const getTeamProgression = async (lobbyCode: string) => {
+export const getGameInfo = async (lobbyCode: string) => {
     return await get(`/api/missions/${lobbyCode}`);
+};
+
+export const endMission = async (lobbyCode: string, hostId: string) => {
+    return await post(`/api/missions/${lobbyCode}/end`, {
+        body: { hostId }
+    });
 };
