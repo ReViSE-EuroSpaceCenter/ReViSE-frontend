@@ -11,8 +11,9 @@ import { showError } from "@/errors/getErrorMessage";
 import { ApiError } from "@/api/apiError";
 import {endMission, getGameInfo} from "@/api/missionApi";
 import { useWebSocket } from "@/contexts/WebSocketProvider";
-import { ProgressionBar } from "@/components/student/PogressionBar";
+import { ProgressionBar } from "@/components/student/ProgressionBar";
 import {teamColorMap} from "@/utils/teamColor";
+import {WSEventType} from "@/types/WSEventType";
 
 type TeamData = {
 	id: number;
@@ -72,27 +73,24 @@ export default function Dashboard() {
 
         const sub = subscribe("mission", (message) => {
             try {
-                const event = JSON.parse(message.body);
+                const event: WSEventType = JSON.parse(message.body);
 
                 queryClient.setQueryData<GameInfoResponse>(["gameInfo", lobbyCode], (old) => {
                     if (!old) return old;
 
                     if (event.type === "TEAM_PROGRESSION") {
-                        const { teamLabel, teamProgression } = event.payload;
+                        const { teamProgression, allTeamsMissionsCompleted } = event.payload;
                         return {
                             ...old,
                             teamsProgression: {
                                 ...old.teamsProgression,
-                                [teamLabel]: {
-                                    ...old.teamsProgression[teamLabel],
+                                [teamProgression.teamLabel]: {
+                                    ...old.teamsProgression[teamProgression.teamLabel],
                                     ...teamProgression,
                                 },
                             },
+                            allTeamsMissionsCompleted,
                         };
-                    }
-
-                    if (event.allTeamsMissionsCompleted !== undefined) {
-                        return { ...old, allTeamsCompleted: event.allTeamsMissionsCompleted };
                     }
 
                     return old;

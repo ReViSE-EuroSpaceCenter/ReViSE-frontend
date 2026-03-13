@@ -16,7 +16,7 @@ export default function Header() {
 
 	const isHomePage = pathname === '/';
 
-    const teamPageMatch = new RegExp(/^\/student\/game\/[^/]+\/([^/]+)(?:\/(intro|mission))?$/).exec(pathname);
+    const teamPageMatch = new RegExp(/^\/student\/game\/[^/]+\/([^/]+)(?:\/(launcher|resources|mission))?$/).exec(pathname);
     const teamName = teamPageMatch && teamPageMatch[1] !== "team" ? teamPageMatch[1] : null;
 
     const teamBadgeMap: Record<string, string[]> = {

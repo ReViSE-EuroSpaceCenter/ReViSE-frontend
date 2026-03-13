@@ -4,7 +4,7 @@ import { teams } from "@/types/Teams";
 import {useParams, useRouter} from "next/navigation";
 import { MissionStructure } from "@/components/student/MissionStructure";
 import { useEffect } from "react";
-import { ProgressionBar } from "@/components/student/PogressionBar";
+import { ProgressionBar } from "@/components/student/ProgressionBar";
 import { getTeamMissionsState } from "@/api/missionApi";
 import { MissionProvider } from "@/contexts/MissionContext";
 import { showError } from "@/errors/getErrorMessage";
@@ -14,6 +14,7 @@ import {teamColorMap} from "@/utils/teamColor";
 import {useWebSocket} from "@/contexts/WebSocketProvider";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {TeamMissionsState} from "@/types/TeamMissionState";
+import {WSEventType} from "@/types/WSEventType";
 
 export default function MissionPage() {
     const params = useParams();
@@ -56,15 +57,15 @@ export default function MissionPage() {
         if (!connected) return;
 
         const sub = subscribe("mission", (message) => {
-            const event = JSON.parse(message.body);
+            const event: WSEventType = JSON.parse(message.body);
 
             if (event.type === "MISSION_ENDED") {
                 router.push(`/student/game/${lobbyCode}/${teamName}/resources`);
             }
 
-            if (event.type !== "TEAM_PROGRESSION" || event.payload.teamLabel !== teamName) return;
+            if (event.type !== "TEAM_PROGRESSION" || event.payload.teamProgression.teamLabel !== teamName) return;
 
-            if (event.type === "TEAM_PROGRESSION" && event.payload.teamLabel === teamName) {
+            if (event.type === "TEAM_PROGRESSION" && event.payload.teamProgression.teamLabel === teamName) {
                 queryClient.setQueryData<TeamMissionsState>(
                   ["missions", lobbyCode, clientId],
                   (old) => {

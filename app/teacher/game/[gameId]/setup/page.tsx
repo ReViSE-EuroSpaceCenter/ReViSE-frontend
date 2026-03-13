@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams, useParams } from "next/navigation";
 import { useWebSocket } from "@/contexts/WebSocketProvider";
-import { LobbyEventType } from "@/types/LobbyEventType";
+import { WSEventType } from "@/types/WSEventType";
 import { getLobbyInfo, startLobby } from "@/api/lobbyApi";
 import { showError } from "@/errors/getErrorMessage";
 import { ApiError } from "@/api/apiError";
@@ -44,7 +44,7 @@ export default function SetUpPage() {
         if (!connected) return;
 
         const subscription = subscribe("lobby", (message) => {
-            const event: LobbyEventType = JSON.parse(message.body);
+            const event: WSEventType = JSON.parse(message.body);
 
             switch (event.type) {
                 case "TEAM_JOINED":

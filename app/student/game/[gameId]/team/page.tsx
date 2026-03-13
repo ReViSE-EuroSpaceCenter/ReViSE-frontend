@@ -5,7 +5,7 @@ import {useWebSocket} from "@/contexts/WebSocketProvider";
 import {useEffect} from "react";
 import {useQueryClient} from "@tanstack/react-query";
 import {showError} from "@/errors/getErrorMessage";
-import {LobbyEventType} from "@/types/LobbyEventType";
+import {WSEventType} from "@/types/WSEventType";
 import {ApiError} from "@/api/apiError";
 import LoadingPage from "@/app/loading";
 import {useLobby} from "@/hooks/useLobby";
@@ -48,7 +48,7 @@ export default function TeamPage() {
 		if (!connected) return;
 
 		const subscription = subscribe("lobby", (message) => {
-			const event: LobbyEventType = JSON.parse(message.body);
+			const event: WSEventType = JSON.parse(message.body);
 
 			switch (event.type) {
 				case "TEAM_JOINED":

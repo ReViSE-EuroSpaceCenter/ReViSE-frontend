@@ -5,7 +5,7 @@ import {useParams, usePathname, useRouter} from "next/navigation";
 import {useEffect, useState} from "react";
 import Checklist from "@/components/Checklist";
 import IATech from "@/components/IATech";
-import {LobbyEventType} from "@/types/LobbyEventType";
+import {WSEventType} from "@/types/WSEventType";
 import {useWebSocket} from "@/contexts/WebSocketProvider";
 
 export default function Dashboard() {
@@ -24,7 +24,7 @@ export default function Dashboard() {
 		if (!connected) return;
 
 		const subscription = subscribe("mission", (message) => {
-			const event: LobbyEventType = JSON.parse(message.body);
+			const event: WSEventType = JSON.parse(message.body);
 
 			if (event.type === "MISSION_ENDED") {
 				router.push(`/student/game/${lobbyCode}/${teamName}/resources`);
