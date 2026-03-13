@@ -11,16 +11,16 @@ permissions:
   pull-requests: write
 
 jobs:
-  jest:
+  tests:
     uses: ./.github/workflows/tests.yml
 
   eslint:
-    needs: jest
+    needs: tests
     if: success()
     uses: ./.github/workflows/eslint.yml
 
   sonar:
-    needs: jest
+    needs: tests
     if: success()
     uses: ./.github/workflows/sonarcloud.yml
     secrets:
