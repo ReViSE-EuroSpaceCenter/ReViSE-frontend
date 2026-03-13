@@ -122,6 +122,7 @@ export default function SetUpPage() {
                 </div>
 
                 <button
+                    data-testid="start-game-button"
                     onClick={startGame}
                     disabled={joinedTeam < nbTeams || joinedTeam === 0 || loading}
                     className={`w-full py-3 sm:py-5 rounded-xl sm:rounded-2xl font-black text-sm sm:text-xl transition-all duration-500 flex items-center justify-center shadow-xl ${
