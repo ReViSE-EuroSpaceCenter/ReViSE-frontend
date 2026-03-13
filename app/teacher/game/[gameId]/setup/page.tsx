@@ -13,7 +13,7 @@ export default function SetUpPage() {
     const searchParams = useSearchParams();
     const params = useParams();
 
-    // TODO: ça a de l'interet d'avoir le nbTeams dans la query, si on peut le trouver dans le lobbyInfo ?
+    // ça a de l'interet d'avoir le nbTeams dans la query, si on peut le trouver dans le lobbyInfo ?
     const lobbyCode = params.gameId?.toString() as string;
     const [joinedTeam, setJoinedTeam] = useState(0);
     const nbTeams = Number(searchParams.get("nbTeams"));
