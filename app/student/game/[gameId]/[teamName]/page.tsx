@@ -2,12 +2,12 @@
 
 import Toolbox from "@/components/Toolbox";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import Checklist from "@/components/Checklist";
 import IATech from "@/components/IATech";
 import PresentationModal from "@/components/PresentationModal";
-import { showError } from "@/errors/getErrorMessage";
 import {teamColorMap} from "@/utils/teamColor";
+import {presentationTexts} from "@/utils/presentation_texts";
 
 export default function Dashboard() {
 	const router = useRouter();
@@ -15,25 +15,14 @@ export default function Dashboard() {
 	const searchParams = useSearchParams();
 	const [isChecklistOpen, setIsChecklistOpen] = useState(false);
 	const [isIAOpen, setIsIAOpen] = useState(false);
-	const [texts, setTexts] = useState<Record<string, string>>({});
-	const [isPresentationOpen, setIsPresentationOpen] = useState(false);
 
 	const teamPageMatch = /^\/student\/game\/[^/]+\/([^/]+)(?:\/(intro|mission))?$/.exec(pathname);
 	const name = teamPageMatch && teamPageMatch[1] !== "team" ? teamPageMatch[1] : null;
 	const teamColor = teamColorMap[name!];
 
-	useEffect(() => {
-		const showPresentation = searchParams.get("presentation");
-		if (showPresentation === "true") {
-			fetch("/presentation_texts.json")
-				.then((res) => res.json())
-				.then((data) => {
-					setTexts(data)
-					setIsPresentationOpen(true);
-				})
-				.catch(() => showError("", "Erreur lors du chargement des textes de présentation"));
-		}
-	}, [pathname, searchParams, router]);
+	const showPresentation = searchParams.get("presentation") === "true";
+	const [isPresentationOpen, setIsPresentationOpen] = useState(showPresentation);
+	const text = showPresentation ? presentationTexts[name!] : null
 
 	return (
 		<div className="min-h-[calc(100vh-120px)] flex items-center justify-center p-4">
@@ -49,12 +38,12 @@ export default function Dashboard() {
 				<IATech isOpen={isIAOpen} setIsOpen={setIsIAOpen} />
 			</div>
 
-			{name && texts[name] && (
+			{name && text && (
 				<PresentationModal
 					isOpen={isPresentationOpen}
 					setIsOpen={setIsPresentationOpen}
 					icon={`/badges/${name}.png`}
-					text={texts[name]}
+					text={text}
 					name={name}
 					color={teamColor}
 					onClose={() => router.replace(pathname) }

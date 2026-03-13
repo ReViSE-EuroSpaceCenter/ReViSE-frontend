@@ -11,6 +11,7 @@ import {ApiError} from "@/api/apiError";
 import {getTeamProgression} from "@/api/missionApi";
 import {useWebSocket} from "@/contexts/WebSocketProvider";
 import PresentationModal from "@/components/PresentationModal";
+import {presentationTexts} from "@/utils/presentation_texts";
 
 type TeamData = {
 	id: number;
@@ -59,24 +60,10 @@ export default function Dashboard() {
 	const [isIAOpen, setIsIAOpen] = useState(false);
 	const { connected, subscribe } = useWebSocket();
 	const [teamsData, setTeamsData] = useState<TeamData[]>([]);
-	const [isPresentationOpen, setIsPresentationOpen] = useState(false);
-	const [teacherText, setTeacherText] = useState<string>("");
 
-
-	useEffect(() => {
-		const showPresentation = searchParams.get("presentation");
-		if (showPresentation === "true") {
-			fetch("/presentation_texts.json")
-				.then((res) => res.json())
-				.then((data: Record<string, string>) => {
-					if (data.TEACHER) {
-						setTeacherText(data.TEACHER);
-						setIsPresentationOpen(true);
-					}
-				})
-				.catch(() => showError("", "Erreur lors du chargement des textes de présentation"));
-		}
-	}, [searchParams, pathname, router]);
+	const showPresentation = searchParams.get("presentation") === "true";
+	const [isPresentationOpen, setIsPresentationOpen] = useState(showPresentation);
+	const text = showPresentation ? presentationTexts.TEACHER : null
 
 	useEffect(() => {
 		const fetchProgression = async () => {
@@ -140,15 +127,17 @@ export default function Dashboard() {
 				/>
 				<Checklist isOpen={isChecklistOpen} setIsOpen={setIsChecklistOpen} />
 				<IATech isOpen={isIAOpen} setIsOpen={setIsIAOpen} />
-				<PresentationModal
-					isOpen={isPresentationOpen}
-					setIsOpen={setIsPresentationOpen}
-					icon="/logo.png"
-					text={teacherText}
-					name="TEACHER"
-					color="#fff"
-					onClose={() => router.replace(pathname) }
-				/>
+				{text && (
+					<PresentationModal
+						isOpen={isPresentationOpen}
+						setIsOpen={setIsPresentationOpen}
+						icon="/logo.png"
+						text={text}
+						name="TEACHER"
+						color="#fff"
+						onClose={() => router.replace(pathname) }
+					/>
+				)}
 			</div>
 
 			<div className="flex flex-col gap-12 xl:gap-28 w-full md:w-[calc(50%-1rem)] xl:flex-1 order-3 items-center xl:items-end xl:pl-12">
