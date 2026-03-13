@@ -1,6 +1,19 @@
 import {missionNameTraduction} from "@/utils/missionName";
 import {Mission} from "@/types/Mission";
 
+function checkCompletion(
+    missionNum: string,
+    mission: Mission,
+    completedMissions: Record<string, boolean>,
+    isBonus1: boolean,
+    isBonus2: boolean
+): boolean {
+    if (!mission.bonus) {
+        return completedMissions[missionNum];
+    }
+    return missionNum === "BONUS_1" ? isBonus1 : isBonus2;
+}
+
 export function getProjectMissionsToUpdate(
     mission: Mission,
     missionMap: Record<number, Mission>,
@@ -8,43 +21,36 @@ export function getProjectMissionsToUpdate(
     teamName: string,
     isBonus1completed: boolean,
     isBonus2completed: boolean
-) {
-
-    const allProjectMissions = Object.values(missionMap)
-        .filter(m => m.projectId === mission.projectId);
-
-    const normalMissions = allProjectMissions
-        .filter(m => !m.bonus)
-        .sort((a, b) => a.id - b.id);
-
-    const bonusMissions = allProjectMissions.filter(m => m.bonus);
+): string[] {
     const missionNumber = missionNameTraduction(mission, teamName);
-    const isCompleted = completedMissions[missionNumber];
 
-    if (!isCompleted) {
+    if (!completedMissions[missionNumber]) {
         return [missionNumber];
     }
 
-    const missionIndex = normalMissions.findIndex(m => m.id === mission.id);
+    const missionsToInvalidate = new Set<string>();
+    const queue: Mission[] = [mission];
 
-    const missionsToInvalidate: string[] = [];
+    while (queue.length > 0) {
+        const current = queue.shift()!;
+        const currentNum = missionNameTraduction(current, teamName);
 
-    for (let i = missionIndex; i < normalMissions.length; i++) {
-        const m = normalMissions[i];
-        const number = missionNameTraduction(m, teamName);
+        const isCurrentCompleted = checkCompletion(
+            currentNum,
+            current,
+            completedMissions,
+            isBonus1completed,
+            isBonus2completed
+        );
 
-        if (completedMissions[number]) {
-            missionsToInvalidate.push(number);
+        if (isCurrentCompleted && !missionsToInvalidate.has(currentNum)) {
+            missionsToInvalidate.add(currentNum);
+
+            current.unlocks.forEach(id => {
+                if (missionMap[id]) queue.push(missionMap[id]);
+            });
         }
     }
 
-    for (const bonus of bonusMissions) {
-        const number = missionNameTraduction(bonus, teamName);
-
-        if (number === "BONUS_1" && isBonus1completed || number === "BONUS_2" && isBonus2completed) {
-            missionsToInvalidate.push(number);
-        }
-    }
-
-    return missionsToInvalidate;
+    return Array.from(missionsToInvalidate);
 }
