@@ -1,15 +1,14 @@
-name: Run Jest Tests
+name: Run Tests
 
 on:
-
   workflow_call:
 
 jobs:
   test:
-    name: Run Jest Tests
+    name: Run Tests
     runs-on: ubuntu-latest
     outputs:
-      jest_success: ${{ steps.check.outputs.success }}
+      test_success: ${{ steps.check.outputs.success }}
 
     steps:
       - name: Checkout repository
