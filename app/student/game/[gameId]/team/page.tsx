@@ -20,8 +20,11 @@ export default function TeamPage() {
 	const queryClient = useQueryClient();
 	const { subscribe, connected } = useWebSocket();
 
-	const clientId = sessionStorage.getItem("clientId");
-
+    const clientId =
+        globalThis.window === undefined
+            ? null
+            : sessionStorage.getItem("clientId");
+    
 	const lobbyCode = params.gameId as string;
 	const { lobbyQuery, handleJoinTeam } = useLobby(lobbyCode);
 	const { data, isError, error, isLoading } = lobbyQuery;
