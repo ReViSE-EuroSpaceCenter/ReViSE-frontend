@@ -13,6 +13,7 @@ export default function SetUpPage() {
     const searchParams = useSearchParams();
     const params = useParams();
 
+    // TODO: ça a de l'interet d'avoir le nbTeams dans la query, si on peut le trouver dans le lobbyInfo ?
     const lobbyCode = params.gameId?.toString() as string;
     const [joinedTeam, setJoinedTeam] = useState(0);
     const nbTeams = Number(searchParams.get("nbTeams"));
@@ -87,9 +88,10 @@ export default function SetUpPage() {
                     Code d{"'"}accès à la partie
                 </h1>
 
-                <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
+                <div data-testid="lobby-code-container" className="flex flex-wrap justify-center gap-2 sm:gap-3">
                     {lobbyCode.toUpperCase().split("").map((char, i) => (
                         <div
+                            data-testid={`lobby-code-char-${i}`}
                             key={i+1}
                             className="w-9 h-12 sm:w-22 sm:h-26 flex items-center justify-center bg-white text-black text-xl sm:text-8xl font-black rounded-xl sm:rounded-2xl"
                         >
@@ -103,8 +105,8 @@ export default function SetUpPage() {
                     <div className="flex items-center justify-between">
                         <span className="text-xs sm:text-sm text-white/40 font-semibold tracking-widest uppercase">Equipes connectées</span>
                         <div className="flex items-end gap-1">
-                            <span className="text-3xl sm:text-5xl font-black text-white leading-none">{joinedTeam}</span>
-                            <span className="text-white/20 text-lg sm:text-2xl font-bold mb-0.5">/ {nbTeams}</span>
+                            <span data-testid="joinedTeams" className="text-3xl sm:text-5xl font-black text-white leading-none">{joinedTeam}</span>
+                            <span data-testid="nbTeams" className="text-white/20 text-lg sm:text-2xl font-bold mb-0.5">/ {nbTeams}</span>
                         </div>
                     </div>
 
