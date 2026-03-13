@@ -131,62 +131,170 @@ export default function Dashboard() {
             showError(err instanceof ApiError ? err.key : "", "Impossible de clôturer la mission");
         }
     };
-
-    return (
-        <>
-            <div className="w-full flex justify-end px-8 md:px-26 py-2">
-                <button
-                    disabled={!allTeamsCompleted}
-                    onClick={handleEndMission}
-                    className="px-4 py-2 bg-purpleReViSE hover:bg-purpleReViSE/80 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer rounded-md font-medium text-base transition-colors"
-                >
-                    Encodage des ressources
-                </button>
-            </div>
-
-            <div className="min-h-[calc(100vh-120px)] w-full max-w-450 mx-auto flex flex-wrap xl:flex-nowrap items-center justify-center px-8 md:px-26 gap-8 xl:gap-0 overflow-x-hidden py-10 xl:py-4">
-
-                <div className="flex flex-col gap-12 xl:gap-28 w-full md:w-[calc(50%-1rem)] xl:flex-1 order-2 xl:order-1 items-center xl:items-start xl:pr-12">
-                    {leftTeams.map((teamItem) => (
-                        <div key={`left-${teamItem.team}`} className="flex flex-col items-center xl:items-start gap-2">
-                            <ProgressionBar
-                                completed={teamItem.completed}
-                                totalMission={teamItem.team === "MECA" ? 8 : 7}
-                                color={teamColorMap[teamItem.team]}
-                            />
-                            <SideRow {...teamItem} />
-
-                        </div>
-                    ))}
+    if (leftTeams.length==2)
+    {
+        return (
+            <div className="w-full max-w-full overflow-x-clip">
+                <div className="mx-auto w-full max-w-screen-2xl px-4 md:px-10 pt-2">
+                    <div className="flex justify-end">
+                        <button
+                            disabled={!allTeamsCompleted}
+                            onClick={handleEndMission}
+                            className="px-4 py-2 bg-purpleReViSE hover:bg-purpleReViSE/80 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer rounded-md font-medium text-base transition-colors"
+                        >
+                            Encodage des ressources
+                        </button>
+                    </div>
                 </div>
 
-			<div className="w-full max-w-[min(600px,calc(100vh-160px))] shrink-0 order-1 xl:order-2 flex justify-center px-4 xl:px-12">
-				<Toolbox
-					actions={[
-						{ label: "Missions terminées", onClick: () => console.log("4") },
-						{ label: "Fin du tour", onClick: () => setIsChecklistOpen(true) },
-						{ label: "Aide\nTechnologies IA", onClick: () => setIsIAOpen(true) },
-						{ label: "Tutoriel", onClick: () => console.log("3") },
-					]}
-				/>
-				<Checklist isOpen={isChecklistOpen} setIsOpen={setIsChecklistOpen} />
-				<IATech isOpen={isIAOpen} setIsOpen={setIsIAOpen} />
-			</div>
-
-                <div className="flex flex-col gap-12 xl:gap-28 w-full md:w-[calc(50%-1rem)] xl:flex-1 order-3 items-center xl:items-end xl:pl-12">
-                    {rightTeams.map((teamItem) => (
-                        <div key={`right-${teamItem.team}`} className="flex flex-col items-center xl:items-end gap-2">
-                            <ProgressionBar
-                                completed={teamItem.completed}
-                                totalMission={teamItem.team === "MECA" ? 8 : 7}
-                                color={teamColorMap[teamItem.team]}
-                            />
-                            <SideRow {...teamItem} />
-
+                <div className="w-full max-w-screen-2xl mx-auto px-4 md:px-10 py-10 xl:py-4">
+                    <div className="flex flex-col xl:flex-row items-center xl:items-stretch justify-center gap-8 xl:gap-0 xl:h-[calc(100vh-180px)]">
+                        <div className="hidden xl:flex flex-col justify-around xl:flex-1 order-1 items-center xl:items-start xl:pr-12 min-w-0">
+                            {leftTeams.map((teamItem) => (
+                                <div
+                                    key={`left-${teamItem.team}`}
+                                    className="flex flex-col items-center xl:items-start gap-2 min-w-0"
+                                >
+                                    <ProgressionBar
+                                        completed={teamItem.completed}
+                                        totalMission={teamItem.team === "MECA" ? 8 : 7}
+                                        color={teamColorMap[teamItem.team]}
+                                    />
+                                    <SideRow {...teamItem} />
+                                </div>
+                            ))}
                         </div>
-                    ))}
+
+                        <div className="w-full max-w-[min(600px,calc(100vh-160px))] shrink-0 order-1 xl:order-2 flex justify-center px-4 xl:px-12 min-w-0">
+                            <Toolbox
+                                actions={[
+                                    { label: "Missions terminées", onClick: () => console.log("4") },
+                                    { label: "Fin du tour", onClick: () => setIsChecklistOpen(true) },
+                                    { label: "Aide\nTechnologies IA", onClick: () => setIsIAOpen(true) },
+                                    { label: "Tutoriel", onClick: () => console.log("3") },
+                                ]}
+                            />
+                            <Checklist isOpen={isChecklistOpen} setIsOpen={setIsChecklistOpen} />
+                            <IATech isOpen={isIAOpen} setIsOpen={setIsIAOpen} />
+                        </div>
+
+                        <div className="hidden xl:flex flex-col justify-around xl:flex-1 order-3 items-center xl:items-end xl:pl-12 min-w-0">
+                            {rightTeams.map((teamItem) => (
+                                <div
+                                    key={`right-${teamItem.team}`}
+                                    className="flex flex-col items-center xl:items-end gap-2 min-w-0"
+                                >
+                                    <ProgressionBar
+                                        completed={teamItem.completed}
+                                        totalMission={teamItem.team === "MECA" ? 8 : 7}
+                                        color={teamColorMap[teamItem.team]}
+                                    />
+                                    <SideRow {...teamItem} />
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="xl:hidden w-full order-2 grid grid-cols-1 md:grid-cols-2 gap-8">
+                            {[...leftTeams, ...rightTeams].map((teamItem) => (
+                                <div
+                                    key={`mobile-${teamItem.team}`}
+                                    className="flex flex-col items-center gap-2 min-w-0"
+                                >
+                                    <ProgressionBar
+                                        completed={teamItem.completed}
+                                        totalMission={teamItem.team === "MECA" ? 8 : 7}
+                                        color={teamColorMap[teamItem.team]}
+                                    />
+                                    <SideRow {...teamItem} />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </div>
-        </>
-    );
+        );
+    }
+    else
+    {
+        return (
+            <div className="w-full max-w-full overflow-x-clip">
+                <div className="mx-auto w-full max-w-screen-2xl px-3 md:px-6 pt-1">
+                    <div className="flex justify-end">
+                        <button
+                            disabled={!allTeamsCompleted}
+                            onClick={handleEndMission}
+                            className="px-4 py-2 bg-purpleReViSE hover:bg-purpleReViSE/80 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer rounded-md font-medium text-base transition-colors"
+                        >
+                            Encodage des ressources
+                        </button>
+                    </div>
+                </div>
+
+                <div className="w-full max-w-screen-2xl mx-auto px-3 md:px-6 py-2 xl:py-1">
+                    <div className="flex flex-col xl:flex-row items-center xl:items-stretch justify-center gap-2 xl:gap-0 xl:h-[calc(100vh-140px)]">
+                        <div className="hidden xl:flex h-full flex-col justify-around xl:flex-1 order-1 items-center xl:items-start xl:pr-6 min-w-0 overflow-hidden">
+                            {leftTeams.map((teamItem) => (
+                                <div
+                                    key={`left-${teamItem.team}`}
+                                    className="flex flex-col items-center xl:items-start gap-0 min-w-0"
+                                >
+                                    <ProgressionBar
+                                        completed={teamItem.completed}
+                                        totalMission={teamItem.team === "MECA" ? 8 : 7}
+                                        color={teamColorMap[teamItem.team]}
+                                    />
+                                    <SideRow {...teamItem} />
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="w-full max-w-[min(600px,calc(100vh-160px))] shrink-0 order-1 xl:order-2 flex justify-center px-1 xl:px-6 min-w-0">
+                            <Toolbox
+                                actions={[
+                                    { label: "Missions terminées", onClick: () => console.log("4") },
+                                    { label: "Fin du tour", onClick: () => setIsChecklistOpen(true) },
+                                    { label: "Aide\nTechnologies IA", onClick: () => setIsIAOpen(true) },
+                                    { label: "Tutoriel", onClick: () => console.log("3") },
+                                ]}
+                            />
+                            <Checklist isOpen={isChecklistOpen} setIsOpen={setIsChecklistOpen} />
+                            <IATech isOpen={isIAOpen} setIsOpen={setIsIAOpen} />
+                        </div>
+
+                        <div className="hidden xl:flex h-full flex-col justify-around xl:flex-1 order-3 items-center xl:items-end xl:pl-6 min-w-0 overflow-hidden">
+                            {rightTeams.map((teamItem) => (
+                                <div
+                                    key={`right-${teamItem.team}`}
+                                    className="flex flex-col items-center xl:items-end gap-0 min-w-0"
+                                >
+                                    <ProgressionBar
+                                        completed={teamItem.completed}
+                                        totalMission={teamItem.team === "MECA" ? 8 : 7}
+                                        color={teamColorMap[teamItem.team]}
+                                    />
+                                    <SideRow {...teamItem} />
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="xl:hidden w-full order-2 grid grid-cols-1 md:grid-cols-2 gap-1">
+                            {[...leftTeams, ...rightTeams].map((teamItem) => (
+                                <div
+                                    key={`mobile-${teamItem.team}`}
+                                    className="flex flex-col items-center gap-0 min-w-0"
+                                >
+                                    <ProgressionBar
+                                        completed={teamItem.completed}
+                                        totalMission={teamItem.team === "MECA" ? 8 : 7}
+                                        color={teamColorMap[teamItem.team]}
+                                    />
+                                    <SideRow {...teamItem} />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 }
