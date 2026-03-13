@@ -46,6 +46,9 @@ const formatTeamStats = (stats: TeamStats) => ({
 
 export default function Dashboard() {
     const params = useParams();
+	const router = useRouter();
+	const pathname = usePathname();
+	const searchParams = useSearchParams();
     const lobbyCode = params.gameId as string;
     const queryClient = useQueryClient();
     const { connected, subscribe } = useWebSocket();
@@ -58,8 +61,8 @@ export default function Dashboard() {
     const [isIAOpen, setIsIAOpen] = useState(false);
     
     const showPresentation = searchParams.get("presentation") === "true";
-	  const [isPresentationOpen, setIsPresentationOpen] = useState(showPresentation);
-	  const text = showPresentation ? presentationTexts.TEACHER : null
+	const [isPresentationOpen, setIsPresentationOpen] = useState(showPresentation);
+	const text = showPresentation ? presentationTexts.TEACHER : null
 
     const { data: gameData, isError, error } = useQuery<GameInfoResponse>({
         queryKey: ["gameInfo", lobbyCode],
