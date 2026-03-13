@@ -1,13 +1,17 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Toolbox from "@/components/Toolbox";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {useState} from "react";
 import Checklist from "@/components/Checklist";
 import IATech from "@/components/IATech";
-import PresentationModal from "@/components/PresentationModal";
 import {teamColorMap} from "@/utils/teamColor";
 import {presentationTexts} from "@/utils/presentation_texts";
+const PresentationModal = dynamic(
+	() => import("@/components/PresentationModal"),
+	{ ssr: false, loading: () => null }
+);
 
 export default function Dashboard() {
 	const router = useRouter();

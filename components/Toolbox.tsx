@@ -27,7 +27,7 @@ export default function Toolbox({ actions }: Readonly<RadialMenuProps>) {
 	const innerR = 90;
 	const outerR = 200;
 	const count = actions.length;
-	const offsetDeg = count < 4 ? 90 : -135;
+	const offsetDeg = count < 4 ? 90 : 135;
 	const gapPx = 25;
 
 	const round = (n: number, precision = 10) =>
@@ -74,9 +74,22 @@ export default function Toolbox({ actions }: Readonly<RadialMenuProps>) {
 		const p1 = polar(r, start);
 		const p2 = polar(r, end);
 
-		if ((count === 4 && i === 2) || (count === 3 && i !== 1)) {
-			return `M ${p2.x} ${round(p2.y + 8)}
-				A ${r} ${r} 0 0 0 ${p1.x} ${round(p1.y + 8)}`;
+		let dx = 0;
+		let dy = 0;
+
+		if ((count === 4 && i !== 1) || (count === 3 && i !== 1)) {
+			dy = 8;
+			if (count === 4) {
+				if (i === 0) {
+					dx = -8;
+					dy = 0;
+				}
+				if (i === 2) {
+					dx = 8;
+					dy = 0;
+				}
+			}
+			return `M ${round(p2.x + dx)} ${round(p2.y + dy)} A ${r} ${r} 0 0 0 ${round(p1.x + dx)} ${round(p1.y + dy)}`;
 		}
 
 		return `M ${p1.x} ${p1.y} A ${r} ${r} 0 0 1 ${p2.x} ${p2.y}`;

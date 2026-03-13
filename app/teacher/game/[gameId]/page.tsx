@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState, useEffect } from "react";
 import {useParams, usePathname, useRouter, useSearchParams} from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -13,7 +14,10 @@ import {endMission, getGameInfo} from "@/api/missionApi";
 import { useWebSocket } from "@/contexts/WebSocketProvider";
 import { ProgressionBar } from "@/components/student/PogressionBar";
 import {teamColorMap} from "@/utils/teamColor";
-import PresentationModal from "@/components/PresentationModal";
+const PresentationModal = dynamic(
+    () => import("@/components/PresentationModal"),
+    { ssr: false, loading: () => null }
+);
 import {presentationTexts} from "@/utils/presentation_texts";
 
 type TeamData = {
@@ -172,8 +176,8 @@ export default function Dashboard() {
 			<div className="w-full max-w-[min(600px,calc(100vh-160px))] shrink-0 order-1 xl:order-2 flex justify-center px-4 xl:px-12">
 				<Toolbox
 					actions={[
-						{ label: "Missions terminées", onClick: () => console.log("4") },
-						{ label: "Fin du tour", onClick: () => setIsChecklistOpen(true) },
+                        { label: "Fin du tour", onClick: () => setIsChecklistOpen(true) },
+                        { label: "Missions terminées", onClick: () => console.log("4") },
 						{ label: "Aide\nTechnologies IA", onClick: () => setIsIAOpen(true) },
 						{ label: "Tutoriel", onClick: () => console.log("3") },
 					]}
