@@ -21,7 +21,10 @@ export default function SetUpPage() {
     const { subscribe, connected } = useWebSocket();
     const [loading, setLoading] = useState(false);
 
-    const hostId = sessionStorage.getItem("hostId");
+    const hostId =
+      globalThis.window === undefined
+        ? null
+        : sessionStorage.getItem("hostId");
 
     useEffect(() => {
         if (!connected) return;
