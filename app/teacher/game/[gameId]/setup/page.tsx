@@ -71,6 +71,8 @@ export default function SetUpPage() {
             return;
         }
 
+        console.log("Test");
+
         try {
             setLoading(true);
             await startLobby(lobbyCode, hostId);
