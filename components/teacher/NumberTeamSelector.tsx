@@ -15,10 +15,10 @@ export default function NumberTeamSelector({ isOpen, onClose }: Readonly<Props>)
 
   const mutation = useMutation({
     mutationFn: (nbTeams: number) => createLobby(nbTeams),
-    onSuccess: ({ lobbyCode, hostId }, nbTeams) => {
+    onSuccess: ({ lobbyCode, hostId }) => {
       sessionStorage.setItem("hostId", hostId);
       onClose();
-      router.push(`/teacher/game/${lobbyCode}/setup?nbTeams=${nbTeams}`);
+      router.push(`/teacher/game/${lobbyCode}/setup`);
     },
   });
 

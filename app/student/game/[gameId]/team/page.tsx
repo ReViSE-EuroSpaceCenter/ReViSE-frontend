@@ -82,7 +82,7 @@ export default function TeamPage() {
 	}
 
 	return (
-		<div className="min-h-[calc(100vh-80px)]">
+		<div className="h-[calc(100vh-80px)] overflow-hidden">
 			<div className="px-6 lg:px-12 py-6 lg:py-12 max-w-7xl mx-auto">
 				<div className="text-center space-y-4 mb-12">
 					<h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight">

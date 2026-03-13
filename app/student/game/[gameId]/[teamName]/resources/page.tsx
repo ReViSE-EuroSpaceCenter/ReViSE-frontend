@@ -40,29 +40,25 @@ export default function Resources() {
 					{[
 						{
 							label: "Ressources restantes",
-							icon: "🪫",
 							value: resources,
 							max: 40,
 							setter: setResources,
 						},
 						{
 							label: "Humains restants",
-							icon: "👤",
 							value: humans,
 							max: 6,
 							setter: setHumans,
 						},
 						{
 							label: "Horloge restante",
-							icon: "🕐",
 							value: time,
 							max: 6,
 							setter: setTime,
 						},
-					].map(({ label, icon, value, max, setter }) => (
+					].map(({ label, value, max, setter }) => (
 						<div key={label} className="flex flex-col space-y-1.5">
 							<label className="text-slate-300 text-sm font-medium flex items-center gap-2">
-								<span className="text-base">{icon}</span>
 								{label}
 							</label>
 							<input
