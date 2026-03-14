@@ -4,6 +4,7 @@ import MissionPage from "@/app/student/game/[gameId]/[teamName]/mission/page";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {TeamMissionsState} from "@/types/TeamMissionState";
 
+// ---------- Mocks ----------
 const mockMissionsState: TeamMissionsState = {
     teamFullProgression: {
         completedMissions: {
@@ -63,6 +64,7 @@ vi.mock("@/components/student/ProgressionBar", () => ({
     ),
 }));
 
+// ---------- Tests ----------
 describe("MissionPage", () => {
     let queryClient: QueryClient;
 
