@@ -54,6 +54,7 @@ export default function Dashboard() {
 
     const [isChecklistOpen, setIsChecklistOpen] = useState(false);
     const [isIAOpen, setIsIAOpen] = useState(false);
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
     const { data: gameData, isError, error } = useQuery<GameInfoResponse>({
         queryKey: ["gameInfo", lobbyCode],
@@ -137,7 +138,7 @@ export default function Dashboard() {
             <div className="w-full flex justify-end px-8 md:px-26 py-2">
                 <button
                     disabled={!allTeamsCompleted}
-                    onClick={handleEndMission}
+                    onClick={() => setIsConfirmOpen(true)}
                     className="px-4 py-2 bg-purpleReViSE hover:bg-purpleReViSE/80 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer rounded-md font-medium text-base transition-colors"
                 >
                     Encodage des ressources
@@ -187,6 +188,40 @@ export default function Dashboard() {
                     ))}
                 </div>
             </div>
+
+            {isConfirmOpen && (
+                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+                    <div className="bg-darkBlueReViSE rounded-lg p-6 max-w-xl w-full shadow-lg">
+                        <h2 className="text-3xl font-semibold mb-5">
+                            Confirmation
+                        </h2>
+
+                        <p className="text-lg text-white mb-6">
+                            Attention une fois ce bouton cliqué les équipes ne seront plus en mesure de valider des missions.
+                            Vérifiez bien que chaque équipe a fini sa dernière mission en cours.
+                        </p>
+
+                        <div className="flex justify-end gap-3">
+                            <button
+                                onClick={() => setIsConfirmOpen(false)}
+                                className="px-4 py-2 rounded-md bg-orangeReViSE/50 text-white hover:bg-orangeReViSE cursor-pointer"
+                            >
+                                Annuler
+                            </button>
+
+                            <button
+                                onClick={async () => {
+                                    setIsConfirmOpen(false);
+                                    await handleEndMission();
+                                }}
+                                className="px-4 py-2 rounded-md bg-purpleReViSE/50 text-white hover:bg-purpleReViSE cursor-pointer"
+                            >
+                                Confirmer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     );
 }

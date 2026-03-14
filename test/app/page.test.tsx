@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import {describe, it, expect, vi, beforeEach} from "vitest";
 import Home from "@/app/page";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import Dashboard from "@/app/teacher/game/[gameId]/page";
 
 // ---------- Mocks ----------
 const createLobbyMock = vi.fn();
@@ -16,6 +17,22 @@ const pushMock = vi.fn();
 vi.mock("next/navigation", () => ({
     useRouter: () => ({
         push: pushMock,
+    }),
+    useParams: () => ({ teamName: "MECA", gameId: "LOBBY123" }),
+}));
+
+const endMissionMock = vi.fn();
+const getGameInfoMock = vi.fn();
+
+vi.mock("@/api/missionApi", () => ({
+    endMission: (...args: any[]) => endMissionMock(...args),
+    getGameInfo: (...args: any[]) => getGameInfoMock(...args),
+}));
+
+vi.mock("@/contexts/WebSocketProvider", () => ({
+    useWebSocket: () => ({
+        connected: false,
+        subscribe: vi.fn(),
     }),
 }));
 
@@ -40,6 +57,19 @@ describe("Home page", () => {
     beforeEach(() => {
         vi.clearAllMocks();
         sessionStorage.clear();
+        sessionStorage.setItem("hostId", "host123");
+
+        getGameInfoMock.mockResolvedValue({
+            allTeamsCompleted: true,
+            teamsProgression: {
+                TEAM1: {
+                    teamLabel: "MECA",
+                    classicMissionsCompleted: 8,
+                    firstBonusMissionCompleted: false,
+                    secondBonusMissionCompleted: false,
+                },
+            },
+        });
     });
 
     it("affiche le contenu de la page d'accueil", () => {
@@ -129,5 +159,80 @@ describe("Home page", () => {
                 screen.queryByText("Choisissez le nombre d'équipes")
             ).not.toBeInTheDocument();
         });
+    });
+
+    it("clique sur Confirmer", async () => {
+        const user = userEvent.setup();
+
+        endMissionMock.mockResolvedValueOnce({});
+
+        renderPage(<Dashboard />);
+
+        const button = await screen.findByRole("button", {
+            name: "Encodage des ressources",
+        });
+
+        await user.click(button);
+
+        const confirmButton = screen.getByRole("button", { name: "Confirmer" });
+
+        await user.click(confirmButton);
+
+        await waitFor(() => {
+            expect(endMissionMock).toHaveBeenCalled();
+        });
+    });
+    it("clique sur Annuler", async () => {
+        const user = userEvent.setup();
+
+        renderPage(<Dashboard />);
+
+        const button = await screen.findByRole("button", {
+            name: "Encodage des ressources",
+        });
+
+        await user.click(button);
+
+        const cancelButton = screen.getByRole("button", { name: "Annuler" });
+
+        await user.click(cancelButton);
+
+        await waitFor(() => {
+            expect(
+                screen.queryByText(/Attention une fois ce bouton cliqué/i)
+            ).not.toBeInTheDocument();
+        });
+        expect(endMissionMock).not.toHaveBeenCalled();
+    });
+
+    it("clique sur Encodage des ressources → ouvre la modal de confirmation", async () => {
+        const user = userEvent.setup();
+
+        renderPage(<Dashboard />);
+
+        const button = await screen.findByRole("button", {
+            name: "Encodage des ressources",
+        });
+
+        await user.click(button);
+
+        expect(
+            screen.getByText("Attention une fois ce bouton cliqué les équipes ne seront plus en mesure de valider des missions. Vérifiez bien que chaque équipe a fini sa dernière mission en cours.")
+        ).toBeInTheDocument();
+    });
+
+    it("le bouton est désactivé si toutes les missions ne sont pas terminées", async () => {
+        getGameInfoMock.mockResolvedValueOnce({
+            allTeamsCompleted: false,
+            teamsProgression: {},
+        });
+
+        renderPage(<Dashboard />);
+
+        const button = await screen.findByRole("button", {
+            name: "Encodage des ressources",
+        });
+
+        expect(button).toBeDisabled();
     });
 });
