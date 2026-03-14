@@ -127,7 +127,6 @@ export default function Dashboard() {
         }
         try {
             await endMission(lobbyCode, hostId);
-            console.log("Mission end ok ");
         } catch (err) {
             showError(err instanceof ApiError ? err.key : "", "Impossible de clôturer la mission");
         }
@@ -197,13 +196,15 @@ export default function Dashboard() {
                         </h2>
 
                         <p className="text-lg text-white mb-6">
-                            Cette action est irréversible. Une fois effectuée, les étudiants ne pourront plus modifier l&#39;état des missions réalisées. Êtes-vous sûr de vouloir continuer ?
+                            Cette action est irréversible. Une fois effectuée, les étudiants ne pourront plus modifier l&#39;état des missions réalisées.
+                            <br />
+                            Êtes-vous sûr de vouloir continuer ?
                         </p>
 
                         <div className="flex justify-end gap-3">
                             <button
                                 onClick={() => setIsConfirmOpen(false)}
-                                className="px-4 py-2 rounded-md bg-orangeReViSE/50 text-white hover:bg-orangeReViSE cursor-pointer"
+                                className="px-4 py-2 rounded-md border border-gray-400 hover:bg-gray-500 transition cursor-pointer"
                             >
                                 Annuler
                             </button>
@@ -213,7 +214,7 @@ export default function Dashboard() {
                                     setIsConfirmOpen(false);
                                     await handleEndMission();
                                 }}
-                                className="px-4 py-2 rounded-md bg-purpleReViSE/50 text-white hover:bg-purpleReViSE cursor-pointer"
+                                className="px-4 py-2 rounded-md bg-purpleReViSE text-white hover:bg-purple-700 transition cursor-pointer"
                             >
                                 Continuer
                             </button>
