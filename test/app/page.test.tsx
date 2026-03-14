@@ -161,7 +161,7 @@ describe("Home page", () => {
         });
     });
 
-    it("clique sur Confirmer", async () => {
+    it("clique sur Continuer", async () => {
         const user = userEvent.setup();
 
         endMissionMock.mockResolvedValueOnce({});
@@ -169,14 +169,14 @@ describe("Home page", () => {
         renderPage(<Dashboard />);
 
         const button = await screen.findByRole("button", {
-            name: "Encodage des ressources",
+            name: "Terminer les missions",
         });
 
         await user.click(button);
 
-        const confirmButton = screen.getByRole("button", { name: "Confirmer" });
+        const continueButton = screen.getByRole("button", { name: "Continuer" });
 
-        await user.click(confirmButton);
+        await user.click(continueButton);
 
         await waitFor(() => {
             expect(endMissionMock).toHaveBeenCalled();
@@ -188,7 +188,7 @@ describe("Home page", () => {
         renderPage(<Dashboard />);
 
         const button = await screen.findByRole("button", {
-            name: "Encodage des ressources",
+            name: "Terminer les missions",
         });
 
         await user.click(button);
@@ -199,25 +199,25 @@ describe("Home page", () => {
 
         await waitFor(() => {
             expect(
-                screen.queryByText(/Attention une fois ce bouton cliqué/i)
+                screen.queryByText(/Cette action est irréversible/i)
             ).not.toBeInTheDocument();
         });
         expect(endMissionMock).not.toHaveBeenCalled();
     });
 
-    it("clique sur Encodage des ressources → ouvre la modal de confirmation", async () => {
+    it("clique sur Terminer les missions → ouvre la modal de confirmation", async () => {
         const user = userEvent.setup();
 
         renderPage(<Dashboard />);
 
         const button = await screen.findByRole("button", {
-            name: "Encodage des ressources",
+            name: "Terminer les missions",
         });
 
         await user.click(button);
 
         expect(
-            screen.getByText("Attention une fois ce bouton cliqué les équipes ne seront plus en mesure de valider des missions. Vérifiez bien que chaque équipe a fini sa dernière mission en cours.")
+            screen.queryByText(/Cette action est irréversible/i)
         ).toBeInTheDocument();
     });
 
@@ -230,7 +230,7 @@ describe("Home page", () => {
         renderPage(<Dashboard />);
 
         const button = await screen.findByRole("button", {
-            name: "Encodage des ressources",
+            name: "Terminer les missions",
         });
 
         expect(button).toBeDisabled();
