@@ -69,6 +69,11 @@ export default function Resources() {
 								inputMode="numeric"
 								pattern="[0-9]*"
 								placeholder="0"
+								onKeyDown={(e) => {
+									if (["e", "E", "+", "-"].includes(e.key)) {
+										e.preventDefault();
+									}
+								}}
 								onChange={(e) => {
 									const raw = e.target.value;
 									if (raw === "") { setter(""); return; }

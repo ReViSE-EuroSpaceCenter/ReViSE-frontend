@@ -102,7 +102,7 @@ describe("Home page", () => {
 
         await waitFor(() => {
             expect(pushMock).toHaveBeenCalledWith(
-                "/teacher/game/ABC123/setup?nbTeams=4"
+                "/teacher/game/ABC123/setup"
             );
         });
     });
