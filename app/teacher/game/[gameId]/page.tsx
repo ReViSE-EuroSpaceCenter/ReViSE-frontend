@@ -12,8 +12,9 @@ import { showError } from "@/errors/getErrorMessage";
 import { ApiError } from "@/api/apiError";
 import {endMission, getGameInfo} from "@/api/missionApi";
 import { useWebSocket } from "@/contexts/WebSocketProvider";
-import { ProgressionBar } from "@/components/student/PogressionBar";
+import { ProgressionBar } from "@/components/student/ProgressionBar";
 import {teamColorMap} from "@/utils/teamColor";
+import {WSEventType} from "@/types/WSEventType";
 const PresentationModal = dynamic(
     () => import("@/components/PresentationModal"),
     { ssr: false, loading: () => null }
@@ -63,7 +64,7 @@ export default function Dashboard() {
 
     const [isChecklistOpen, setIsChecklistOpen] = useState(false);
     const [isIAOpen, setIsIAOpen] = useState(false);
-    
+
     const showPresentation = searchParams.get("presentation") === "true";
 	const [isPresentationOpen, setIsPresentationOpen] = useState(showPresentation);
 	const text = showPresentation ? presentationTexts.TEACHER : null
@@ -83,29 +84,26 @@ export default function Dashboard() {
     useEffect(() => {
         if (!connected || !lobbyCode) return;
 
-        const sub = subscribe("game", (message) => {
+        const sub = subscribe("mission", (message) => {
             try {
-                const event = JSON.parse(message.body);
+                const event: WSEventType = JSON.parse(message.body);
 
                 queryClient.setQueryData<GameInfoResponse>(["gameInfo", lobbyCode], (old) => {
                     if (!old) return old;
 
                     if (event.type === "TEAM_PROGRESSION") {
-                        const { teamLabel, teamProgression } = event.payload;
+                        const { teamProgression, allTeamsMissionsCompleted } = event.payload;
                         return {
                             ...old,
                             teamsProgression: {
                                 ...old.teamsProgression,
-                                [teamLabel]: {
-                                    ...old.teamsProgression[teamLabel],
+                                [teamProgression.teamLabel]: {
+                                    ...old.teamsProgression[teamProgression.teamLabel],
                                     ...teamProgression,
                                 },
                             },
+                            allTeamsMissionsCompleted,
                         };
-                    }
-
-                    if (event.allTeamsMissionsCompleted !== undefined) {
-                        return { ...old, allTeamsCompleted: event.allTeamsMissionsCompleted };
                     }
 
                     return old;

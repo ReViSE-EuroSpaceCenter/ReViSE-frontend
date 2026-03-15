@@ -5,7 +5,7 @@ import {useWebSocket} from "@/contexts/WebSocketProvider";
 import {useEffect} from "react";
 import {useQueryClient} from "@tanstack/react-query";
 import {showError} from "@/errors/getErrorMessage";
-import {LobbyEventType} from "@/types/LobbyEventType";
+import {WSEventType} from "@/types/WSEventType";
 import {ApiError} from "@/api/apiError";
 import LoadingPage from "@/app/loading";
 import {useLobby} from "@/hooks/useLobby";
@@ -48,7 +48,7 @@ export default function TeamPage() {
 		if (!connected) return;
 
 		const subscription = subscribe("lobby", (message) => {
-			const event: LobbyEventType = JSON.parse(message.body);
+			const event: WSEventType = JSON.parse(message.body);
 
 			switch (event.type) {
 				case "TEAM_JOINED":
@@ -82,7 +82,7 @@ export default function TeamPage() {
 	}
 
 	return (
-		<div className="min-h-[calc(100vh-80px)]">
+		<div className="h-[calc(100vh-80px)] overflow-hidden">
 			<div className="px-6 lg:px-12 py-6 lg:py-12 max-w-7xl mx-auto">
 				<div className="text-center space-y-4 mb-12">
 					<h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight">

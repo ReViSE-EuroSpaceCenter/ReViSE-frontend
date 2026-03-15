@@ -1,9 +1,8 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Toolbox from "@/components/Toolbox";
-import {usePathname, useRouter, useSearchParams} from "next/navigation";
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import {usePathname, useParams, useRouter, useSearchParams} from "next/navigation";
 import Checklist from "@/components/Checklist";
 import IATech from "@/components/IATech";
 import {teamColorMap} from "@/utils/teamColor";
@@ -12,10 +11,19 @@ const PresentationModal = dynamic(
 	() => import("@/components/PresentationModal"),
 	{ ssr: false, loading: () => null }
 );
+import {WSEventType} from "@/types/WSEventType";
+import {useWebSocket} from "@/contexts/WebSocketProvider";
+import dynamic from "next/dynamic";
 
 export default function Dashboard() {
 	const router = useRouter();
 	const pathname = usePathname();
+	const { subscribe, connected } = useWebSocket();
+	const params = useParams();
+
+	const lobbyCode = params.gameId as string;
+	const teamName = params.teamName as string;
+
 	const searchParams = useSearchParams();
 	const [isChecklistOpen, setIsChecklistOpen] = useState(false);
 	const [isIAOpen, setIsIAOpen] = useState(false);
@@ -27,6 +35,20 @@ export default function Dashboard() {
 	const showPresentation = searchParams.get("presentation") === "true";
 	const [isPresentationOpen, setIsPresentationOpen] = useState(showPresentation);
 	const text = showPresentation ? presentationTexts[name!] : null
+
+	useEffect(() => {
+		if (!connected) return;
+
+		const subscription = subscribe("mission", (message) => {
+			const event: WSEventType = JSON.parse(message.body);
+
+			if (event.type === "MISSION_ENDED") {
+				router.push(`/student/game/${lobbyCode}/${teamName}/resources`);
+			}
+		});
+
+		return () => subscription?.unsubscribe();
+	}, [teamName, connected, lobbyCode, router, subscribe]);
 
 	return (
 		<div className="min-h-[calc(100vh-120px)] flex items-center justify-center p-4">

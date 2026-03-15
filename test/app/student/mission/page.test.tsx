@@ -55,7 +55,7 @@ vi.mock("@/components/student/MissionStructure", () => ({
     MissionStructure: () => <div data-testid="mission-node" />,
 }));
 
-vi.mock("@/components/student/PogressionBar", () => ({
+vi.mock("@/components/student/ProgressionBar", () => ({
     ProgressionBar: ({ completed, totalMission}: {
         completed: number;
         totalMission: number;
