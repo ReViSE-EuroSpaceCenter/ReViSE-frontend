@@ -65,7 +65,7 @@ export default function TeamPage() {
 					);
 					break;
 				case "GAME_STARTED":
-					router.push(`/student/game/${lobbyCode}/${chosenTeam}`);
+					router.push(`/student/game/${lobbyCode}/${chosenTeam}?presentation=true`);
 					break;
 			}
 		});

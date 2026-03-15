@@ -16,17 +16,11 @@ export default function Header() {
 
 	const isHomePage = pathname === '/';
 
-    const teamPageMatch = new RegExp(/^\/student\/game\/[^/]+\/([^/]+)(?:\/(intro|mission))?$/).exec(pathname);
-    const teamName = teamPageMatch && teamPageMatch[1] !== "team" ? teamPageMatch[1] : null;
+  	const teamPageMatch = new RegExp(/^\/student\/game\/[^/]+\/([^/]+)(?:\/(intro|mission))?$/).exec(pathname);
+  	const teamName = teamPageMatch && teamPageMatch[1] !== "team" ? teamPageMatch[1] : null;
 
-    const teamBadgeMap: Record<string, string[]> = {
-        MEDI: ["/badges/MEDI.png"],
-        COOP: ["/badges/COOP.png"],
-        AERO: ["/badges/AERO.png"],
-        MECA: ["/badges/MECA.png"],
-        EXPE: ["/badges/EXPE.png"],
-        GECO: ["/badges/GECO.png"],
-    };
+	const teamColor = teamColorMap[teamName!];
+
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -62,8 +56,8 @@ export default function Header() {
                         {teamName && (
                             <MissionHeader
                                 teamName={teamName}
-                                color={teamColorMap[teamName]}
-                                badges={teamBadgeMap[teamName]}
+                                color={teamColor}
+                                badge={`/badges/${teamName}.png`}
                             />
                         )}
 						{isHomePage && (

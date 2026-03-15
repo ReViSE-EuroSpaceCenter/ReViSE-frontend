@@ -19,6 +19,8 @@ vi.mock("next/navigation", () => ({
         push: pushMock,
     }),
     useParams: () => ({ teamName: "MECA", gameId: "LOBBY123" }),
+    usePathname: () => "/teacher/game/LOBBY123",
+    useSearchParams: () => new URLSearchParams(),
 }));
 
 const endMissionMock = vi.fn();
@@ -182,6 +184,7 @@ describe("Home page", () => {
             expect(endMissionMock).toHaveBeenCalled();
         });
     });
+
     it("clique sur Annuler", async () => {
         const user = userEvent.setup();
 
