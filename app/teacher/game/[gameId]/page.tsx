@@ -1,7 +1,8 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import {useParams, usePathname, useRouter, useSearchParams} from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Toolbox from "@/components/Toolbox";
 import Checklist from "@/components/Checklist";
@@ -14,6 +15,11 @@ import { useWebSocket } from "@/contexts/WebSocketProvider";
 import { ProgressionBar } from "@/components/student/ProgressionBar";
 import {teamColorMap} from "@/utils/teamColor";
 import {WSEventType} from "@/types/WSEventType";
+const PresentationModal = dynamic(
+    () => import("@/components/PresentationModal"),
+    { ssr: false, loading: () => null }
+);
+import {presentationTexts} from "@/utils/presentation_texts";
 
 type TeamData = {
 	id: number;
@@ -45,6 +51,9 @@ const formatTeamStats = (stats: TeamStats) => ({
 
 export default function Dashboard() {
     const params = useParams();
+	const router = useRouter();
+	const pathname = usePathname();
+	const searchParams = useSearchParams();
     const lobbyCode = params.gameId as string;
     const queryClient = useQueryClient();
     const { connected, subscribe } = useWebSocket();
@@ -55,6 +64,10 @@ export default function Dashboard() {
 
     const [isChecklistOpen, setIsChecklistOpen] = useState(false);
     const [isIAOpen, setIsIAOpen] = useState(false);
+
+    const showPresentation = searchParams.get("presentation") === "true";
+	const [isPresentationOpen, setIsPresentationOpen] = useState(showPresentation);
+	const text = showPresentation ? presentationTexts.TEACHER : null
 
     const { data: gameData, isError, error } = useQuery<GameInfoResponse>({
         queryKey: ["gameInfo", lobbyCode],
@@ -161,14 +174,25 @@ export default function Dashboard() {
 			<div className="w-full max-w-[min(600px,calc(100vh-160px))] shrink-0 order-1 xl:order-2 flex justify-center px-4 xl:px-12">
 				<Toolbox
 					actions={[
-						{ label: "Missions terminées", onClick: () => console.log("4") },
-						{ label: "Fin du tour", onClick: () => setIsChecklistOpen(true) },
+                        { label: "Fin du tour", onClick: () => setIsChecklistOpen(true) },
+                        { label: "Missions terminées", onClick: () => console.log("4") },
 						{ label: "Aide\nTechnologies IA", onClick: () => setIsIAOpen(true) },
 						{ label: "Tutoriel", onClick: () => console.log("3") },
 					]}
 				/>
 				<Checklist isOpen={isChecklistOpen} setIsOpen={setIsChecklistOpen} />
 				<IATech isOpen={isIAOpen} setIsOpen={setIsIAOpen} />
+				{text && (
+					<PresentationModal
+						isOpen={isPresentationOpen}
+						setIsOpen={setIsPresentationOpen}
+						icon="/logo.png"
+						text={text}
+						name="TEACHER"
+						color="#fff"
+						onClose={() => router.replace(pathname) }
+					/>
+				)}
 			</div>
 
                 <div className="flex flex-col gap-12 xl:gap-28 w-full md:w-[calc(50%-1rem)] xl:flex-1 order-3 items-center xl:items-end xl:pl-12">

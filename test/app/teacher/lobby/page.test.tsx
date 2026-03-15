@@ -126,7 +126,7 @@ describe("LobbyPage", () => {
         });
 
         await waitFor(() => {
-            expect(pushMock).toHaveBeenCalledWith("/teacher/game/ABCDEF");
+            expect(pushMock).toHaveBeenCalledWith("/teacher/game/ABCDEF?presentation=true");
         });
     });
 });
