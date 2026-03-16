@@ -39,10 +39,16 @@ interface TeamProgressionResponse extends TeamStats {
     teamLabel: string;
 }
 
+interface TeamFullProgression {
+    completedMissions: Record<string, boolean>;
+    teamProgression: TeamProgressionResponse;
+}
+
 interface GameInfoResponse {
     allTeamsCompleted: boolean;
-    teamsProgression: Record<string, TeamProgressionResponse>;
+    teamsFullProgression: Record<string, TeamFullProgression>;
 }
+
 const formatTeamStats = (stats: TeamStats) => ({
     mission1_check: stats.firstBonusMissionCompleted,
     mission2_check: stats.secondBonusMissionCompleted,
@@ -97,11 +103,14 @@ export default function Dashboard() {
                         const { teamProgression, allTeamsMissionsCompleted } = event.payload;
                         return {
                             ...old,
-                            teamsProgression: {
-                                ...old.teamsProgression,
+                            teamsFullProgression: {
+                                ...old.teamsFullProgression,
                                 [teamProgression.teamLabel]: {
-                                    ...old.teamsProgression[teamProgression.teamLabel],
-                                    ...teamProgression,
+                                    ...old.teamsFullProgression[teamProgression.teamLabel],
+                                    teamProgression: {
+                                        ...old.teamsFullProgression[teamProgression.teamLabel]?.teamProgression,
+                                        ...teamProgression,
+                                    },
                                 },
                             },
                             allTeamsMissionsCompleted,
@@ -119,10 +128,10 @@ export default function Dashboard() {
     }, [connected, lobbyCode, queryClient, subscribe]);
 
     const teamsData: TeamData[] = gameData
-        ? Object.entries(gameData.teamsProgression).map(([key, stats], index) => ({
+        ? Object.entries(gameData.teamsFullProgression).map(([key, data], index) => ({
             id: index,
             team: key,
-            ...formatTeamStats(stats),
+            ...formatTeamStats(data.teamProgression),
         }))
         : [];
 
