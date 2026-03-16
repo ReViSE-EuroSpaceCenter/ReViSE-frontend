@@ -16,6 +16,14 @@ vi.mock("@/lib/api/lobby", () => ({
     }),
 }));
 
+vi.mock("sweetalert2", () => {
+    return {
+        default: {
+            fire: vi.fn().mockResolvedValue({}),
+        },
+    };
+});
+
 vi.mock("@/contexts/WebSocketProvider", () => ({
     __esModule: true,
     WebSocketProvider: ({children}: any) => <>{children}</>,

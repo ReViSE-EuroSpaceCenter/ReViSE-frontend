@@ -7,7 +7,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Toolbox from "@/components/Toolbox";
 import Checklist from "@/components/Checklist";
 import IATech from "@/components/IATech";
-import SideRow from "@/components/SideRow";
+import SideRow from "@/components/teacher/SideRow";
 import { showError } from "@/errors/getErrorMessage";
 import { ApiError } from "@/api/apiError";
 import {endMission, getGameInfo} from "@/api/missionApi";
