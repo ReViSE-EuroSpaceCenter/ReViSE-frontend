@@ -63,12 +63,18 @@ describe("Home page", () => {
 
         getGameInfoMock.mockResolvedValue({
             allTeamsCompleted: true,
-            teamsProgression: {
-                TEAM1: {
-                    teamLabel: "MECA",
-                    classicMissionsCompleted: 8,
-                    firstBonusMissionCompleted: false,
-                    secondBonusMissionCompleted: false,
+            teamsFullProgression: {
+                MECA: {
+                    completedMissions: {
+                        CLASSIC_1: true,
+                        CLASSIC_2: true,
+                    },
+                    teamProgression: {
+                        teamLabel: "MECA",
+                        classicMissionsCompleted: 8,
+                        firstBonusMissionCompleted: false,
+                        secondBonusMissionCompleted: false,
+                    },
                 },
             },
         });
@@ -227,7 +233,7 @@ describe("Home page", () => {
     it("le bouton est désactivé si toutes les missions ne sont pas terminées", async () => {
         getGameInfoMock.mockResolvedValueOnce({
             allTeamsCompleted: false,
-            teamsProgression: {},
+            teamsFullProgression: {},
         });
 
         renderPage(<Dashboard />);
