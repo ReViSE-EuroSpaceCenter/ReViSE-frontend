@@ -8,6 +8,10 @@ import clsx from "clsx";
 
 import { teams } from "@/types/Teams";
 import { MissionStructure } from "@/components/student/MissionStructure";
+<<<<<<< Updated upstream
+=======
+import { ProgressionBar } from "@/components/student/PogressionBar";
+>>>>>>> Stashed changes
 import { MissionProvider } from "@/contexts/MissionContext";
 import { getGameInfo } from "@/api/missionApi";
 import { showError } from "@/errors/getErrorMessage";
@@ -16,7 +20,10 @@ import LoadingPage from "@/app/loading";
 import { teamColorMap } from "@/utils/teamColor";
 import { useWebSocket } from "@/contexts/WebSocketProvider";
 import { createMissionSyncChannel, MissionSyncMessage } from "@/utils/missionSync";
+<<<<<<< Updated upstream
 import {ProgressionBar} from "@/components/student/ProgressionBar";
+=======
+>>>>>>> Stashed changes
 type TeamStats = {
     classicMissionsCompleted: number;
     firstBonusMissionCompleted: boolean;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import {useParams, useRouter} from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Toolbox from "@/components/Toolbox";
 import Checklist from "@/components/Checklist";
@@ -49,6 +49,7 @@ export default function Dashboard() {
     const lobbyCode = params.gameId as string;
     const queryClient = useQueryClient();
     const { connected, subscribe } = useWebSocket();
+    const router = useRouter();
     const hostId =
         globalThis.window === undefined
             ? null
@@ -202,7 +203,10 @@ export default function Dashboard() {
                     >
                         <Toolbox
                             actions={[
-                                { label: "Missions terminées", onClick: () => console.log("4") },
+                                {
+                                    label: "Missions terminées",
+                                    onClick: () => router.push(`${lobbyCode}/mission`),
+                                },
                                 { label: "Fin du tour", onClick: () => setIsChecklistOpen(true) },
                                 { label: "Aide\nTechnologies IA", onClick: () => setIsIAOpen(true) },
                                 { label: "Tutoriel", onClick: () => console.log("3") },
