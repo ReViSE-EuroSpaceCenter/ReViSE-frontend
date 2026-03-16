@@ -1,6 +1,6 @@
 import {render, screen, waitFor} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import {describe, it, expect, vi, beforeEach} from "vitest";
+import {describe, it, expect, vi, beforeEach, beforeAll} from "vitest";
 import Home from "@/app/page";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import Dashboard from "@/app/teacher/game/[gameId]/page";
@@ -53,6 +53,17 @@ function renderPage(ui: React.ReactNode) {
         </QueryClientProvider>
     );
 }
+
+beforeAll(() => {
+    vi.stubGlobal("Audio", class {
+        play = vi.fn().mockResolvedValue(undefined);
+        load = vi.fn();
+        pause = vi.fn();
+        muted: boolean = false;
+        currentTime: number = 0;
+        volume: number = 1;
+    });
+});
 
 // ---------- Tests ----------
 describe("Home page", () => {
