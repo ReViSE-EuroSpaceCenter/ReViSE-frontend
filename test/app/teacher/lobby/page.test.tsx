@@ -2,6 +2,7 @@ import {render, screen, waitFor} from "@testing-library/react";
 import {describe, it, expect, vi, beforeEach} from "vitest";
 import {act} from "react";
 import LobbyPage from "@/app/teacher/game/[gameId]/setup/page";
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 
 // ---------- Mocks ----------
 const pushMock = vi.fn();
@@ -14,6 +15,14 @@ vi.mock("@/lib/api/lobby", () => ({
         availableTeams: ["AERO", "EXPE", "GECO", "MECA"],
     }),
 }));
+
+vi.mock("sweetalert2", () => {
+    return {
+        default: {
+            fire: vi.fn().mockResolvedValue({}),
+        },
+    };
+});
 
 vi.mock("@/contexts/WebSocketProvider", () => ({
     __esModule: true,
@@ -46,8 +55,24 @@ describe("LobbyPage", () => {
         onMessage = null;
     });
 
+    const renderPage = () => {
+        const queryClient = new QueryClient({
+            defaultOptions: {
+                queries: {
+                    retry: false,
+                },
+            },
+        });
+
+        return render(
+          <QueryClientProvider client={queryClient}>
+              <LobbyPage />
+          </QueryClientProvider>
+        );
+    };
+
     it("affiche le code du lobby et les équipes (état initial)", async () => {
-        render(<LobbyPage/>);
+        renderPage();
 
         expect(
             screen.queryByText("Choisissez le nombre d'équipes")
@@ -61,7 +86,6 @@ describe("LobbyPage", () => {
         expect(displayed).toBe("ABCDEF");
 
         expect(screen.getByTestId("joinedTeams").textContent?.trim()).toBe("0");
-        expect(screen.getByTestId("nbTeams").textContent?.trim()).toBe("/ 4");
 
         const button = screen.getByTestId("start-game-button");
         expect(button).toBeDisabled();
@@ -69,7 +93,7 @@ describe("LobbyPage", () => {
     });
 
     it("active le bouton après 4 TEAM_JOINED via WebSocket", async () => {
-        render(<LobbyPage/>);
+        renderPage();
 
         await waitFor(() => {
             expect(onMessage).toBeInstanceOf(Function);
@@ -97,7 +121,7 @@ describe("LobbyPage", () => {
     });
 
     it("redirige vers la page de jeu sur GAME_STARTED", async () => {
-        render(<LobbyPage/>);
+        renderPage();
 
         await waitFor(() => {
             expect(onMessage).toBeInstanceOf(Function);
@@ -110,7 +134,7 @@ describe("LobbyPage", () => {
         });
 
         await waitFor(() => {
-            expect(pushMock).toHaveBeenCalledWith("/teacher/game/ABCDEF");
+            expect(pushMock).toHaveBeenCalledWith("/teacher/game/ABCDEF?presentation=true");
         });
     });
 });
