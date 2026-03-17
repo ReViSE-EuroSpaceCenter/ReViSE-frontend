@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {useParams, useRouter} from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Toolbox from "@/components/Toolbox";
 import Checklist from "@/components/Checklist";
@@ -9,19 +9,19 @@ import IATech from "@/components/IATech";
 
 import { showError } from "@/errors/getErrorMessage";
 import { ApiError } from "@/api/apiError";
-import {endMission, getGameInfo} from "@/api/missionApi";
+import { endMission, getGameInfo } from "@/api/missionApi";
 import { useWebSocket } from "@/contexts/WebSocketProvider";
 
-import {teamColorMap} from "@/utils/teamColor";
-import {ProgressionBar} from "@/components/student/ProgressionBar";
+import { teamColorMap } from "@/utils/teamColor";
+import { ProgressionBar } from "@/components/student/ProgressionBar";
 import SideRow from "@/components/teacher/SideRow";
 
 type TeamData = {
-	id: number;
-	team: string;
+    id: number;
+    team: string;
     completed: number;
-	mission1_check: boolean;
-	mission2_check: boolean;
+    mission1_check: boolean;
+    mission2_check: boolean;
 };
 
 type TeamStats = {
@@ -34,14 +34,20 @@ interface TeamProgressionResponse extends TeamStats {
     teamLabel: string;
 }
 
+interface TeamFullProgressionResponse {
+    completedMissions: Record<string, boolean>;
+    teamProgression: TeamProgressionResponse;
+}
+
 interface GameInfoResponse {
     allTeamsCompleted: boolean;
-    teamsProgression: Record<string, TeamProgressionResponse>;
+    teamsFullProgression: Record<string, TeamFullProgressionResponse>;
 }
-const formatTeamStats = (stats: TeamStats) => ({
-    mission1_check: stats.firstBonusMissionCompleted,
-    mission2_check: stats.secondBonusMissionCompleted,
-    completed: stats.classicMissionsCompleted,
+
+const formatTeamStats = (stats?: Partial<TeamStats>) => ({
+    mission1_check: stats?.firstBonusMissionCompleted ?? false,
+    mission2_check: stats?.secondBonusMissionCompleted ?? false,
+    completed: stats?.classicMissionsCompleted ?? 0,
 });
 
 export default function Dashboard() {
@@ -50,8 +56,9 @@ export default function Dashboard() {
     const queryClient = useQueryClient();
     const { connected, subscribe } = useWebSocket();
     const router = useRouter();
+
     const hostId =
-        globalThis.window === undefined
+        typeof window === "undefined"
             ? null
             : sessionStorage.getItem("hostId");
 
@@ -66,7 +73,10 @@ export default function Dashboard() {
 
     useEffect(() => {
         if (isError) {
-            showError(error instanceof ApiError ? error.key : "", "Erreur lors de la récupération des données");
+            showError(
+                error instanceof ApiError ? error.key : "",
+                "Erreur lors de la récupération des données"
+            );
         }
     }, [isError, error]);
 
@@ -82,58 +92,88 @@ export default function Dashboard() {
 
                     if (event.type === "TEAM_PROGRESSION") {
                         const { teamLabel, teamProgression } = event.payload;
+
                         return {
                             ...old,
-                            teamsProgression: {
-                                ...(old.teamsProgression ?? {}),
+                            teamsFullProgression: {
+                                ...(old.teamsFullProgression ?? {}),
                                 [teamLabel]: {
-                                    ...(old.teamsProgression?.[teamLabel] ?? {}),
-                                    ...teamProgression,
+                                    ...(old.teamsFullProgression?.[teamLabel] ?? {
+                                        completedMissions: {},
+                                        teamProgression: {
+                                            teamLabel,
+                                            classicMissionsCompleted: 0,
+                                            firstBonusMissionCompleted: false,
+                                            secondBonusMissionCompleted: false,
+                                        },
+                                    }),
+                                    teamProgression: {
+                                        ...(old.teamsFullProgression?.[teamLabel]?.teamProgression ?? {
+                                            teamLabel,
+                                            classicMissionsCompleted: 0,
+                                            firstBonusMissionCompleted: false,
+                                            secondBonusMissionCompleted: false,
+                                        }),
+                                        ...teamProgression,
+                                    },
                                 },
                             },
                         };
                     }
 
                     if (event.allTeamsMissionsCompleted !== undefined) {
-                        return { ...old, allTeamsCompleted: event.allTeamsMissionsCompleted };
+                        return {
+                            ...old,
+                            allTeamsCompleted: event.allTeamsMissionsCompleted,
+                        };
                     }
 
                     return old;
                 });
             } catch (err) {
-                showError(err instanceof ApiError ? err.key : "", "Erreur lors de la récupération des données");
+                showError(
+                    err instanceof ApiError ? err.key : "",
+                    "Erreur lors de la récupération des données"
+                );
             }
         });
 
         return () => sub?.unsubscribe();
     }, [connected, lobbyCode, queryClient, subscribe]);
 
-    const teamsData: TeamData[] = Object.entries(gameData?.teamsProgression ?? {}).map(
-        ([key, stats], index) => ({
+    const teamsData: TeamData[] = Object.entries(gameData?.teamsFullProgression ?? {}).map(
+        ([key, teamFullProgression], index) => ({
             id: index,
             team: key,
-            ...formatTeamStats(stats),
+            ...formatTeamStats(teamFullProgression?.teamProgression),
         })
     );
 
     const allTeamsCompleted = gameData?.allTeamsCompleted ?? false;
 
-	const half = Math.ceil(teamsData.length / 2);
-	const leftTeams = teamsData.slice(0, half);
-	const rightTeams = teamsData.slice(half);
+    const half = Math.ceil(teamsData.length / 2);
+    const leftTeams = teamsData.slice(0, half);
+    const rightTeams = teamsData.slice(half);
 
     const handleEndMission = async () => {
         if (!hostId) {
-            showError("", "Identifiant de connexion manquant, impossible d'autoriser l'encodage des ressources");
+            showError(
+                "",
+                "Identifiant de connexion manquant, impossible d'autoriser l'encodage des ressources"
+            );
             return;
         }
         try {
             await endMission(lobbyCode, hostId);
-            console.log("Mission end ok ");
+            console.log("Mission end ok");
         } catch (err) {
-            showError(err instanceof ApiError ? err.key : "", "Impossible de clôturer la mission");
+            showError(
+                err instanceof ApiError ? err.key : "",
+                "Impossible de clôturer la mission"
+            );
         }
     };
+
     const isTwoTeams = leftTeams.length === 2;
 
     const layout = isTwoTeams
@@ -205,7 +245,7 @@ export default function Dashboard() {
                             actions={[
                                 {
                                     label: "Missions terminées",
-                                    onClick: () => router.push(`${lobbyCode}/mission`),
+                                    onClick: () => router.push(`./${lobbyCode}/mission`),
                                 },
                                 { label: "Fin du tour", onClick: () => setIsChecklistOpen(true) },
                                 { label: "Aide\nTechnologies IA", onClick: () => setIsIAOpen(true) },
@@ -253,4 +293,4 @@ export default function Dashboard() {
             </div>
         </div>
     );
-    }
+}
