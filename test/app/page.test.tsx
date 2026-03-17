@@ -1,8 +1,9 @@
 import {render, screen, waitFor} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import {describe, it, expect, vi, beforeEach} from "vitest";
+import {describe, it, expect, vi, beforeEach, beforeAll} from "vitest";
 import Home from "@/app/page";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import Dashboard from "@/app/teacher/game/[gameId]/page";
 
 // ---------- Mocks ----------
 const createLobbyMock = vi.fn();
@@ -16,6 +17,24 @@ const pushMock = vi.fn();
 vi.mock("next/navigation", () => ({
     useRouter: () => ({
         push: pushMock,
+    }),
+    useParams: () => ({ teamName: "MECA", gameId: "LOBBY123" }),
+    usePathname: () => "/teacher/game/LOBBY123",
+    useSearchParams: () => new URLSearchParams(),
+}));
+
+const endMissionMock = vi.fn();
+const getGameInfoMock = vi.fn();
+
+vi.mock("@/api/missionApi", () => ({
+    endMission: (...args: any[]) => endMissionMock(...args),
+    getGameInfo: (...args: any[]) => getGameInfoMock(...args),
+}));
+
+vi.mock("@/contexts/WebSocketProvider", () => ({
+    useWebSocket: () => ({
+        connected: false,
+        subscribe: vi.fn(),
     }),
 }));
 
@@ -35,11 +54,41 @@ function renderPage(ui: React.ReactNode) {
     );
 }
 
+beforeAll(() => {
+    vi.stubGlobal("Audio", class {
+        play = vi.fn().mockResolvedValue(undefined);
+        load = vi.fn();
+        pause = vi.fn();
+        muted: boolean = false;
+        currentTime: number = 0;
+        volume: number = 1;
+    });
+});
+
 // ---------- Tests ----------
 describe("Home page", () => {
     beforeEach(() => {
         vi.clearAllMocks();
         sessionStorage.clear();
+        sessionStorage.setItem("hostId", "host123");
+
+        getGameInfoMock.mockResolvedValue({
+            allTeamsCompleted: true,
+            teamsFullProgression: {
+                MECA: {
+                    completedMissions: {
+                        CLASSIC_1: true,
+                        CLASSIC_2: true,
+                    },
+                    teamProgression: {
+                        teamLabel: "MECA",
+                        classicMissionsCompleted: 8,
+                        firstBonusMissionCompleted: false,
+                        secondBonusMissionCompleted: false,
+                    },
+                },
+            },
+        });
     });
 
     it("affiche le contenu de la page d'accueil", () => {
@@ -102,7 +151,7 @@ describe("Home page", () => {
 
         await waitFor(() => {
             expect(pushMock).toHaveBeenCalledWith(
-                "/teacher/game/ABC123/setup?nbTeams=4"
+                "/teacher/game/ABC123/setup"
             );
         });
     });
@@ -160,5 +209,81 @@ describe("Home page", () => {
                 screen.queryByText("Choisissez le nombre d'équipes")
             ).not.toBeInTheDocument();
         });
+    });
+
+    it("clique sur Continuer", async () => {
+        const user = userEvent.setup();
+
+        endMissionMock.mockResolvedValueOnce({});
+
+        renderPage(<Dashboard />);
+
+        const button = await screen.findByRole("button", {
+            name: "Terminer les missions",
+        });
+
+        await user.click(button);
+
+        const continueButton = screen.getByRole("button", { name: "Continuer" });
+
+        await user.click(continueButton);
+
+        await waitFor(() => {
+            expect(endMissionMock).toHaveBeenCalled();
+        });
+    });
+
+    it("clique sur Annuler", async () => {
+        const user = userEvent.setup();
+
+        renderPage(<Dashboard />);
+
+        const button = await screen.findByRole("button", {
+            name: "Terminer les missions",
+        });
+
+        await user.click(button);
+
+        const cancelButton = screen.getByRole("button", { name: "Annuler" });
+
+        await user.click(cancelButton);
+
+        await waitFor(() => {
+            expect(
+                screen.queryByText(/Cette action est irréversible/i)
+            ).not.toBeInTheDocument();
+        });
+        expect(endMissionMock).not.toHaveBeenCalled();
+    });
+
+    it("clique sur Terminer les missions → ouvre la modal de confirmation", async () => {
+        const user = userEvent.setup();
+
+        renderPage(<Dashboard />);
+
+        const button = await screen.findByRole("button", {
+            name: "Terminer les missions",
+        });
+
+        await user.click(button);
+
+        expect(
+            screen.queryByText(/Cette action est irréversible/i)
+        ).toBeInTheDocument();
+    });
+
+    it("le bouton est désactivé si toutes les missions ne sont pas terminées", async () => {
+        getGameInfoMock.mockResolvedValueOnce({
+            allTeamsCompleted: false,
+            teamsFullProgression: {},
+        });
+
+        renderPage(<Dashboard />);
+
+        const button = await screen.findByRole("button", {
+            name: "Terminer les missions",
+        });
+
+        expect(button).toBeDisabled();
     });
 });

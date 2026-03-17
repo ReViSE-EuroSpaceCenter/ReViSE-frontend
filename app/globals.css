@@ -35,3 +35,7 @@ body {
     -ms-overflow-style: none;
     scrollbar-width: none;
 }
+
+input[type="number"] {
+  color-scheme: dark;
+}

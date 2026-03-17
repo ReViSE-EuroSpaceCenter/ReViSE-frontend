@@ -2,7 +2,7 @@
 
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { useState } from "react";
-import Swal from "sweetalert2";
+import {showHint} from "@/utils/alerts";
 
 type Props = {
     isOpen: boolean;
@@ -48,17 +48,6 @@ export default function Checklist({ isOpen, setIsOpen }: Readonly<Props>) {
             }
 
             return [...prev, id];
-        });
-    };
-
-    const showHint = (hint: string) => {
-        Swal.fire({
-            text: hint,
-            icon: "info",
-            confirmButtonText: "OK",
-            background: "#1a1f3a",
-            color: "#ffffff",
-            confirmButtonColor: "#7c3aed",
         });
     };
 

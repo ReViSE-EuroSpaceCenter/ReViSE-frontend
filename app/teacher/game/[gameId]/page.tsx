@@ -1,18 +1,25 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import {useParams, usePathname, useRouter, useSearchParams} from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Toolbox from "@/components/Toolbox";
 import Checklist from "@/components/Checklist";
 import IATech from "@/components/IATech";
-import SideRow from "@/components/SideRow";
+import SideRow from "@/components/teacher/SideRow";
 import { showError } from "@/errors/getErrorMessage";
 import { ApiError } from "@/api/apiError";
 import {endMission, getGameInfo} from "@/api/missionApi";
 import { useWebSocket } from "@/contexts/WebSocketProvider";
-import { ProgressionBar } from "@/components/student/PogressionBar";
+import { ProgressionBar } from "@/components/student/ProgressionBar";
 import {teamColorMap} from "@/utils/teamColor";
+import {WSEventType} from "@/types/WSEventType";
+const PresentationModal = dynamic(
+    () => import("@/components/PresentationModal"),
+    { ssr: false, loading: () => null }
+);
+import {presentationTexts} from "@/utils/presentation_texts";
 
 type TeamData = {
 	id: number;
@@ -32,10 +39,16 @@ interface TeamProgressionResponse extends TeamStats {
     teamLabel: string;
 }
 
+interface TeamFullProgression {
+    completedMissions: Record<string, boolean>;
+    teamProgression: TeamProgressionResponse;
+}
+
 interface GameInfoResponse {
     allTeamsCompleted: boolean;
-    teamsProgression: Record<string, TeamProgressionResponse>;
+    teamsFullProgression: Record<string, TeamFullProgression>;
 }
+
 const formatTeamStats = (stats: TeamStats) => ({
     mission1_check: stats.firstBonusMissionCompleted,
     mission2_check: stats.secondBonusMissionCompleted,
@@ -44,6 +57,9 @@ const formatTeamStats = (stats: TeamStats) => ({
 
 export default function Dashboard() {
     const params = useParams();
+	const router = useRouter();
+	const pathname = usePathname();
+	const searchParams = useSearchParams();
     const lobbyCode = params.gameId as string;
     const queryClient = useQueryClient();
     const { connected, subscribe } = useWebSocket();
@@ -54,6 +70,12 @@ export default function Dashboard() {
 
     const [isChecklistOpen, setIsChecklistOpen] = useState(false);
     const [isIAOpen, setIsIAOpen] = useState(false);
+
+    const showPresentation = searchParams.get("presentation") === "true";
+	const [isPresentationOpen, setIsPresentationOpen] = useState(showPresentation);
+	const text = showPresentation ? presentationTexts.TEACHER : null
+
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
     const { data: gameData, isError, error } = useQuery<GameInfoResponse>({
         queryKey: ["gameInfo", lobbyCode],
@@ -70,29 +92,29 @@ export default function Dashboard() {
     useEffect(() => {
         if (!connected || !lobbyCode) return;
 
-        const sub = subscribe("game", (message) => {
+        const sub = subscribe("mission", (message) => {
             try {
-                const event = JSON.parse(message.body);
+                const event: WSEventType = JSON.parse(message.body);
 
                 queryClient.setQueryData<GameInfoResponse>(["gameInfo", lobbyCode], (old) => {
                     if (!old) return old;
 
                     if (event.type === "TEAM_PROGRESSION") {
-                        const { teamLabel, teamProgression } = event.payload;
+                        const { teamProgression, allTeamsMissionsCompleted } = event.payload;
                         return {
                             ...old,
-                            teamsProgression: {
-                                ...old.teamsProgression,
-                                [teamLabel]: {
-                                    ...old.teamsProgression[teamLabel],
-                                    ...teamProgression,
+                            teamsFullProgression: {
+                                ...old.teamsFullProgression,
+                                [teamProgression.teamLabel]: {
+                                    ...old.teamsFullProgression[teamProgression.teamLabel],
+                                    teamProgression: {
+                                        ...old.teamsFullProgression[teamProgression.teamLabel]?.teamProgression,
+                                        ...teamProgression,
+                                    },
                                 },
                             },
+                            allTeamsMissionsCompleted,
                         };
-                    }
-
-                    if (event.allTeamsMissionsCompleted !== undefined) {
-                        return { ...old, allTeamsCompleted: event.allTeamsMissionsCompleted };
                     }
 
                     return old;
@@ -106,10 +128,10 @@ export default function Dashboard() {
     }, [connected, lobbyCode, queryClient, subscribe]);
 
     const teamsData: TeamData[] = gameData
-        ? Object.entries(gameData.teamsProgression).map(([key, stats], index) => ({
+        ? Object.entries(gameData.teamsFullProgression).map(([key, data], index) => ({
             id: index,
             team: key,
-            ...formatTeamStats(stats),
+            ...formatTeamStats(data.teamProgression),
         }))
         : [];
 
@@ -126,7 +148,6 @@ export default function Dashboard() {
         }
         try {
             await endMission(lobbyCode, hostId);
-            console.log("Mission end ok ");
         } catch (err) {
             showError(err instanceof ApiError ? err.key : "", "Impossible de clôturer la mission");
         }
