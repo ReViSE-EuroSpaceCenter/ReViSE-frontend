@@ -50,11 +50,15 @@ export function MissionStructure({
 
     const missionNumber = missionNameTraduction(mission, teamName);
 
-    const isCompleted = mission.bonus
-        ? missionNumber === "BONUS_1"
-            ? isBonus1Completed
-            : isBonus2Completed
-        : completedMissions[missionNumber];
+    let isCompleted: boolean;
+
+    if (!mission.bonus) {
+        isCompleted = completedMissions[missionNumber];
+    } else if (missionNumber === "BONUS_1") {
+        isCompleted = isBonus1Completed;
+    } else {
+        isCompleted = isBonus2Completed;
+    }
 
     const message = mission.bonus
         ? getBonusMissionModalMessage(isCompleted)
