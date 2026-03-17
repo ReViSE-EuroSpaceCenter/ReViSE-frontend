@@ -218,7 +218,7 @@ export default function Dashboard() {
 				<Toolbox
 					actions={[
                         { label: "Fin du tour", onClick: () => setIsChecklistOpen(true) },
-                        { label: "Missions terminées", onClick: () => console.log("4") },
+                        { label: "Missions terminées", onClick: () => router.push(`/teacher/game/${lobbyCode}/mission`)},
 						{ label: "Aide\nTechnologies IA", onClick: () => setIsIAOpen(true) },
 						{ label: "Tutoriel", onClick: () => console.log("3") },
 					]}

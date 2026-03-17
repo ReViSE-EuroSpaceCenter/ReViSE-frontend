@@ -13,41 +13,21 @@ import { ApiError } from "@/api/apiError";
 import LoadingPage from "@/app/loading";
 import { teamColorMap } from "@/utils/teamColor";
 import { useWebSocket } from "@/contexts/WebSocketProvider";
-import {createMissionSyncChannel, MissionSyncMessage} from "@/utils/missionSync";
 import { ProgressionBar } from "@/components/student/ProgressionBar";
-import {TeamSelector} from "@/components/teacher/TeamSelector";
-
-type TeamStats = {
-    classicMissionsCompleted: number;
-    firstBonusMissionCompleted: boolean;
-    secondBonusMissionCompleted: boolean;
-};
-
-interface TeamProgressionResponse extends TeamStats {
-    teamLabel: string;
-}
-
-interface TeamFullProgressionResponse {
-    completedMissions: Record<string, boolean>;
-    teamProgression: TeamProgressionResponse;
-}
-
-interface GameInfoResponse {
-    allTeamsCompleted: boolean;
-    teamsFullProgression: Record<string, TeamFullProgressionResponse>;
-}
+import { WSEventType } from "@/types/WSEventType";
+import { GameInfoResponse } from "@/types/Mission";
 
 export default function HostMissionsPage() {
-    const params = useParams();
+    const { gameId } = useParams();
     const router = useRouter();
     const queryClient = useQueryClient();
     const { subscribe, connected } = useWebSocket();
 
-    const lobbyCode = params.gameId as string;
-
+    const lobbyCode = gameId as string;
     const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
-    const [completedMissions, setCompletedMissions] = useState<Record<string, boolean>>({});
-
+    const handleMissionUpdated = async () => {
+        await refetch();
+    };
     const hostId =
         typeof window === "undefined"
             ? null
@@ -74,155 +54,96 @@ export default function HostMissionsPage() {
         }
     }, [isError, error]);
 
-    const getCompletedMissionsForTeam = (teamKey: string): Record<string, boolean> => {
-        if (!gameData) return {};
-        return gameData.teamsFullProgression?.[teamKey]?.completedMissions ?? {};
-    };
-
-    const handleSelectTeam = (teamKey: string) => {
-        const nextCompletedMissions = getCompletedMissionsForTeam(teamKey);
-
-        console.log("teamKey:", teamKey);
-        console.log("nextCompletedMissions:", nextCompletedMissions);
-
-        setSelectedTeam(teamKey);
-        setCompletedMissions(nextCompletedMissions);
-    };
-
-    useEffect(() => {
-        const channel = createMissionSyncChannel();
-        if (!channel) return;
-
-        channel.onmessage = (event: MessageEvent<MissionSyncMessage>) => {
-            const { lobbyCode: eventLobbyCode, teamName, missionsToUpdate } = event.data;
-
-            if (eventLobbyCode !== lobbyCode) return;
-            if (!selectedTeam || selectedTeam !== teamName) return;
-
-            setCompletedMissions((prev) => {
-                const next = { ...prev };
-
-                for (const missionKey of missionsToUpdate) {
-                    next[missionKey] = !next[missionKey];
-                }
-
-                return next;
-            });
-        };
-
-        return () => {
-            channel.close();
-        };
-    }, [lobbyCode, selectedTeam]);
-    const handleMissionUpdated = async (missionsToUpdate: string[]) => {
-        const next = { ...completedMissions };
-
-        for (const missionKey of missionsToUpdate) {
-            next[missionKey] = !next[missionKey];
-        }
-
-        setCompletedMissions(next);
-
-        const result = await refetch();
-
-        if (selectedTeam && result.data) {
-            const refreshedCompletedMissions =
-                result.data.teamsFullProgression?.[selectedTeam]?.completedMissions ?? {};
-
-            setCompletedMissions(refreshedCompletedMissions);
-        }
-    };
+    const activeTeamKeys = Object.keys(gameData?.teamsFullProgression ?? {});
+    const effectiveSelectedTeam = selectedTeam ?? activeTeamKeys[0] ?? null;
 
     useEffect(() => {
         if (!connected || !lobbyCode) return;
 
-        const sub = subscribe("game", (message) => {
+        const sub = subscribe("mission", async (message) => {
             try {
-                const event = JSON.parse(message.body);
+                const event: WSEventType = JSON.parse(message.body);
 
                 if (event.type !== "TEAM_PROGRESSION") return;
 
-                const { teamLabel, teamProgression } = event.payload;
+                const { teamProgression, allTeamsMissionsCompleted } = event.payload;
 
                 queryClient.setQueryData<GameInfoResponse>(
                     ["gameInfo", lobbyCode],
                     (old) => {
                         if (!old) return old;
 
+                        const teamLabel = teamProgression.teamLabel;
+                        const oldTeamData = old.teamsFullProgression?.[teamLabel];
+
+                        if (!oldTeamData) return old;
+
+                        const bonusMissions = teams[teamLabel]?.missions.filter((m) => m.bonus) ?? [];
+                        const [bonus1, bonus2] = bonusMissions;
+
                         return {
                             ...old,
                             teamsFullProgression: {
-                                ...(old.teamsFullProgression ?? {}),
+                                ...old.teamsFullProgression,
                                 [teamLabel]: {
-                                    ...(old.teamsFullProgression?.[teamLabel] ?? {
-                                        completedMissions: {},
-                                        teamProgression: {
-                                            teamLabel,
-                                            classicMissionsCompleted: 0,
-                                            firstBonusMissionCompleted: false,
-                                            secondBonusMissionCompleted: false,
-                                        },
-                                    }),
-                                    teamProgression: {
-                                        ...(old.teamsFullProgression?.[teamLabel]?.teamProgression ?? {
-                                            teamLabel,
-                                            classicMissionsCompleted: 0,
-                                            firstBonusMissionCompleted: false,
-                                            secondBonusMissionCompleted: false,
+                                    ...oldTeamData,
+                                    completedMissions: {
+                                        ...oldTeamData.completedMissions,
+                                        ...(bonus1 && {
+                                            [bonus1.id]: teamProgression.firstBonusMissionCompleted,
                                         }),
+                                        ...(bonus2 && {
+                                            [bonus2.id]: teamProgression.secondBonusMissionCompleted,
+                                        }),
+                                    },
+                                    teamProgression: {
+                                        ...oldTeamData.teamProgression,
                                         ...teamProgression,
                                     },
                                 },
                             },
+                            allTeamsCompleted: allTeamsMissionsCompleted,
                         };
                     }
                 );
 
-                if (selectedTeam === teamLabel) {
-                    const localCount = Object.values(completedMissions ?? {}).filter(Boolean).length;
-                    const remoteCount = teamProgression?.classicMissionsCompleted ?? 0;
-
-                    if (remoteCount < localCount) {
-                        setCompletedMissions(
-                            gameData?.teamsFullProgression?.[teamLabel]?.completedMissions ?? {}
-                        );
-                    }
+                if (effectiveSelectedTeam === teamProgression.teamLabel) {
+                    await refetch();
                 }
             } catch (err) {
-                console.error("Erreur websocket host missions:", err);
+                showError(
+                    err instanceof ApiError ? err.key : "",
+                    "Erreur lors de la récupération des données"
+                );
             }
         });
 
         return () => sub?.unsubscribe();
-    }, [connected, lobbyCode, queryClient, subscribe, selectedTeam, completedMissions, gameData]);
+    }, [connected, lobbyCode, queryClient, subscribe, effectiveSelectedTeam, refetch]);
 
     if (isLoading || !gameData) return <LoadingPage />;
 
-    const activeTeamKeys = Object.keys(gameData.teamsFullProgression ?? {});
-
-    const currentTeam = selectedTeam ? teams[selectedTeam] : null;
+    const currentTeam = effectiveSelectedTeam ? teams[effectiveSelectedTeam] : null;
     const missions = currentTeam?.missions ?? [];
-    const teamColor = selectedTeam ? teamColorMap[selectedTeam] : "#a855f7";
+    const teamColor = effectiveSelectedTeam
+        ? teamColorMap[effectiveSelectedTeam]
+        : "#a855f7";
 
-    const missionMap = Object.fromEntries(missions.map((m) => [m.id, m]));
-
-    const projectIds = [...new Set(missions.map((m) => m.projectId))].sort((a, b) => a - b);
-
-    const selectedTeamFullProgression = selectedTeam
-        ? gameData.teamsFullProgression?.[selectedTeam]
+    const selectedTeamData = effectiveSelectedTeam
+        ? gameData.teamsFullProgression?.[effectiveSelectedTeam]
         : null;
 
-    const selectedTeamProgression = selectedTeamFullProgression?.teamProgression ?? null;
+    const completedMissions = selectedTeamData?.completedMissions ?? {};
+    const selectedTeamProgression = selectedTeamData?.teamProgression ?? null;
 
     const isBonus1Completed =
         selectedTeamProgression?.firstBonusMissionCompleted ?? false;
-
     const isBonus2Completed =
         selectedTeamProgression?.secondBonusMissionCompleted ?? false;
 
-    const totalMissionCount = missions.filter((m) => !m.bonus).length;
-
-    const localCompletedMissionCount = Object.values(completedMissions ?? {}).filter(Boolean).length;
+    const totalMissionCount = missions.filter((mission) => !mission.bonus).length;
+    const localCompletedMissionCount =
+        Object.values(completedMissions).filter(Boolean).length;
     const serverCompletedMissionCount =
         selectedTeamProgression?.classicMissionsCompleted ?? 0;
 
@@ -231,43 +152,69 @@ export default function HostMissionsPage() {
         serverCompletedMissionCount
     );
 
+    const missionMap = Object.fromEntries(missions.map((mission) => [mission.id, mission]));
+    const projectIds = [...new Set(missions.map((mission) => mission.projectId))].sort(
+        (a, b) => a - b
+    );
+
     return (
         <MissionProvider
             teamColor={teamColor}
-            teamName={selectedTeam ?? ""}
+            teamName={effectiveSelectedTeam ?? ""}
             lobbyCode={lobbyCode}
             clientId={hostId ?? ""}
         >
             <div className="h-[calc(100vh-80px)] overflow-hidden">
                 <div className="h-full px-3 sm:px-4 lg:px-8 py-3 sm:py-4 lg:py-5 flex flex-col gap-4 overflow-hidden">
-                    <div className="flex flex-col gap-3 shrink-0">
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div className="flex items-end justify-between gap-4 border-b border-slate-700 shrink-0 overflow-hidden">
+                        <div className="flex items-end gap-4 overflow-x-auto min-w-0">
                             <button
                                 onClick={() => router.back()}
-                                className="w-fit px-3 sm:px-4 py-2 rounded-lg border border-slate-600 text-slate-300 hover:border-purpleReViSE hover:text-white transition text-sm cursor-pointer"
+                                className="mb-2 px-3 sm:px-4 py-2 rounded-lg border border-slate-600 text-slate-300 hover:border-purpleReViSE hover:text-white transition text-sm cursor-pointer shrink-0"
                             >
                                 ← Retour
                             </button>
 
-                            {selectedTeam && (
-                                <div className="w-full sm:w-auto">
-                                    <ProgressionBar
-                                        completed={completedMissionCount}
-                                        totalMission={totalMissionCount}
-                                        color={teamColor}
-                                    />
-                                </div>
-                            )}
+                            <div className="flex items-end gap-2 min-w-max">
+                                {activeTeamKeys.map((teamKey) => {
+                                    const isSelected = effectiveSelectedTeam === teamKey;
+
+                                    return (
+                                        <button
+                                            key={teamKey}
+                                            type="button"
+                                            onClick={() => setSelectedTeam(teamKey)}
+                                            className={[
+                                                "px-4 py-2 text-sm font-medium transition cursor-pointer",
+                                                "rounded-t-xl border border-b-0 flex items-center gap-2 whitespace-nowrap",
+                                                isSelected
+                                                    ? "bg-slate-800 text-white border-slate-500"
+                                                    : "bg-slate-900/60 text-slate-300 border-slate-700 hover:bg-slate-800 hover:text-white",
+                                            ].join(" ")}
+                                        >
+                                            <span
+                                                className="w-2.5 h-2.5 rounded-full shrink-0"
+                                                style={{ backgroundColor: teamColorMap[teamKey] }}
+                                            />
+                                            {teamKey}
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         </div>
 
-                        <TeamSelector
-                            activeTeamKeys={activeTeamKeys}
-                            selectedTeam={selectedTeam}
-                            onSelectTeam={handleSelectTeam}
-                        />
+                        {effectiveSelectedTeam && (
+                            <div className="mb-2 w-full max-w-xs shrink-0">
+                                <ProgressionBar
+                                    completed={completedMissionCount}
+                                    totalMission={totalMissionCount}
+                                    color={teamColor}
+                                />
+                            </div>
+                        )}
                     </div>
 
-                    {!selectedTeam && (
+                    {!effectiveSelectedTeam && (
                         <div className="flex-1 min-h-0 flex items-center justify-center">
                             <p className="text-slate-400 text-sm sm:text-base text-center">
                                 Sélectionne une équipe pour afficher ses missions
@@ -275,15 +222,15 @@ export default function HostMissionsPage() {
                         </div>
                     )}
 
-                    {selectedTeam && !hostId && (
+                    {effectiveSelectedTeam && !hostId && (
                         <div className="flex-1 min-h-0 flex items-center justify-center">
                             <p className="text-red-400 text-sm text-center">
-                                HostId introuvable dans la session.
+                                Une erreur est survenue. Réessayez dans quelques instants.
                             </p>
                         </div>
                     )}
 
-                    {selectedTeam && hostId && (
+                    {effectiveSelectedTeam && hostId && (
                         <div className="flex-1 min-h-0 flex flex-col gap-4 sm:gap-5 lg:gap-6 overflow-hidden pt-3 sm:pt-4 lg:pt-5">
                             {projectIds.map((projectId) => {
                                 const missionFilters = missions.filter((m) => m.projectId === projectId);
@@ -301,8 +248,8 @@ export default function HostMissionsPage() {
                                             </h2>
                                         </div>
 
-                                        <div className="w-full min-h-0 overflow-visible py-2">
-                                            <div className="flex flex-row items-center gap-0 w-full h-full origin-left scale-[0.72] sm:scale-[0.8] lg:scale-[0.9] xl:scale-100 overflow-visible">
+                                        <div className="w-full min-h-0 py-2 overflow-x-auto">
+                                            <div className="flex flex-row items-center gap-0 min-w-max">
                                                 {roots.map((root) => (
                                                     <MissionStructure
                                                         key={root.id}

@@ -4,14 +4,16 @@ import { Mission } from "@/types/Mission";
 import { changeTeamMissionState } from "@/api/missionApi";
 import { missionNameTraduction } from "@/utils/missionName";
 import { ValidationMissionModal } from "@/components/student/ValidationMission";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { MissionButton } from "@/components/student/MissionButton";
 import { useMissionContext } from "@/contexts/MissionContext";
 import { showError } from "@/errors/getErrorMessage";
 import { ApiError } from "@/api/apiError";
 import { getProjectMissionsToUpdate } from "@/utils/missionUpdate";
-import { getBonusMissionModalMessage, getClassicMissionModalMessage } from "@/utils/missionButtonMessage";
-import {createMissionSyncChannel} from "@/utils/missionSync";
+import {
+    getBonusMissionModalMessage,
+    getClassicMissionModalMessage,
+} from "@/utils/missionButtonMessage";
 
 export function MissionStructure({
                                      mission,
@@ -30,12 +32,7 @@ export function MissionStructure({
     onMissionUpdated: (missionsToUpdate: string[]) => Promise<void>;
     isUnlocked: boolean;
 }>) {
-    const {
-        lobbyCode,
-        clientId,
-        teamColor,
-        teamName,
-    } = useMissionContext();
+    const { lobbyCode, clientId, teamColor, teamName } = useMissionContext();
 
     const hostId =
         globalThis.window === undefined
@@ -53,19 +50,11 @@ export function MissionStructure({
 
     const missionNumber = missionNameTraduction(mission, teamName);
 
-    const computedIsCompleted = mission.bonus
+    const isCompleted = mission.bonus
         ? missionNumber === "BONUS_1"
             ? isBonus1Completed
             : isBonus2Completed
         : completedMissions[missionNumber];
-
-    const [localIsCompleted, setLocalIsCompleted] = useState(computedIsCompleted);
-
-    useEffect(() => {
-        setLocalIsCompleted(computedIsCompleted);
-    }, [computedIsCompleted]);
-
-    const isCompleted = localIsCompleted;
 
     const message = mission.bonus
         ? getBonusMissionModalMessage(isCompleted)
@@ -96,16 +85,6 @@ export function MissionStructure({
                 missionsToUpdate,
                 teamLabelToSend
             );
-
-            const channel = createMissionSyncChannel();
-            channel?.postMessage({
-                lobbyCode,
-                teamName,
-                missionsToUpdate,
-            });
-            channel?.close();
-
-            setLocalIsCompleted((prev) => !prev);
 
             await onMissionUpdated(missionsToUpdate);
         } catch (err) {

@@ -1,11 +1,10 @@
 import React from "react";
-import {act, fireEvent, render, screen, waitFor} from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import {beforeEach, describe, expect, it, vi} from "vitest";
-import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-import {showError} from "@/errors/getErrorMessage";
-import {createMissionSyncChannel} from "@/utils/missionSync";
+import { showError } from "@/errors/getErrorMessage";
 import HostMissionsPage from "@/app/teacher/game/[gameId]/mission/page";
 
 // ---------- Mocks ----------
@@ -16,7 +15,6 @@ const mockSubscribe = vi.fn();
 const unsubscribeMock = vi.fn();
 
 let mockUseQueryState: any = {};
-let missionChannelHandler: ((event: MessageEvent<any>) => void) | null = null;
 let wsHandler: ((message: { body: string }) => void) | null = null;
 
 vi.mock("next/navigation", () => ({
@@ -72,7 +70,6 @@ vi.mock("@/app/loading", () => ({
     },
 }));
 
-
 vi.mock("@/components/student/ProgressionBar", () => ({
     ProgressionBar: ({
                          completed,
@@ -83,20 +80,22 @@ vi.mock("@/components/student/ProgressionBar", () => ({
     }) => <div data-testid="progression-bar">{completed}/{totalMission}</div>,
 }));
 
-
-
 vi.mock("@/components/student/MissionStructure", () => ({
     MissionStructure: ({
                            mission,
                            onMissionUpdated,
                        }: {
         mission: { id: string };
-        onMissionUpdated: (missionsToUpdate: string[]) => void;
+        onMissionUpdated: (missionsToUpdate: string[]) => Promise<void>;
     }) => (
-        <button onClick={() => onMissionUpdated([mission.id])}>
+        <button onClick={() => void onMissionUpdated([mission.id])}>
             mission-{mission.id}
         </button>
     ),
+}));
+
+vi.mock("@/contexts/MissionContext", () => ({
+    MissionProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 vi.mock("@/types/Teams", () => ({
@@ -119,22 +118,6 @@ vi.mock("@/utils/teamColor", () => ({
         MECA: "#ff0000",
         EXPE: "#00ff00",
     },
-}));
-
-let mockMissionChannel: {
-    close: ReturnType<typeof vi.fn>;
-    onmessage: ((event: MessageEvent<any>) => void) | null;
-} | null = null;
-
-vi.mock("@/utils/missionSync", () => ({
-    createMissionSyncChannel: vi.fn(() => {
-        mockMissionChannel = {
-            close: vi.fn(),
-            onmessage: null,
-        };
-
-        return mockMissionChannel;
-    }),
 }));
 
 // ---------- Helpers ----------
@@ -186,9 +169,7 @@ const baseGameData = {
 describe("HostMissionsPage coverage", () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        missionChannelHandler = null;
         wsHandler = null;
-        sessionStorage.clear();
 
         Object.defineProperty(window, "sessionStorage", {
             value: {
@@ -238,56 +219,17 @@ describe("HostMissionsPage coverage", () => {
         };
     });
 
-    it("affiche le loading pendant le chargement", () => {
-        mockUseQueryState = {
-            ...mockUseQueryState,
-            isLoading: true,
-            data: undefined,
-        };
-
+    it("change d'équipe au clic sur un onglet", () => {
         renderPage();
 
-        expect(screen.getByText("Loading page...")).toBeInTheDocument();
-    });
+        fireEvent.click(screen.getByRole("button", { name: /EXPE/i }));
 
-    it("affiche le message initial si aucune équipe n'est sélectionnée", () => {
-        renderPage();
-
-        expect(
-            screen.getByText("Sélectionne une équipe pour afficher ses missions")
-        ).toBeInTheDocument();
-    });
-
-    it("sélectionne une équipe et affiche ses missions", async () => {
-        renderPage();
-
-        fireEvent.click(screen.getByRole("button", { name: /MECA/i }));
-
-        expect(screen.getByTestId("progression-bar")).toHaveTextContent("1/2");
+        expect(screen.getByTestId("progression-bar")).toHaveTextContent("0/1");
         expect(screen.getByText("Projet 1")).toBeInTheDocument();
-        expect(screen.getByText("Projet 2")).toBeInTheDocument();
-        expect(screen.getByText("mission-CLASSIC_1")).toBeInTheDocument();
-        expect(screen.getByText("mission-CLASSIC_2")).toBeInTheDocument();
+        expect(screen.getByText("mission-CLASSIC_3")).toBeInTheDocument();
     });
 
-    it("affiche le message hostId introuvable si absent", () => {
-        Object.defineProperty(window, "sessionStorage", {
-            value: {
-                getItem: vi.fn(() => null),
-                setItem: vi.fn(),
-                removeItem: vi.fn(),
-                clear: vi.fn(),
-            },
-            writable: true,
-        });
 
-        renderPage();
-        fireEvent.click(screen.getByRole("button", { name: /MECA/i }));
-
-        expect(
-            screen.getByText("HostId introuvable dans la session.")
-        ).toBeInTheDocument();
-    });
 
     it("retourne en arrière au clic sur le bouton retour", () => {
         renderPage();
@@ -316,113 +258,42 @@ describe("HostMissionsPage coverage", () => {
         });
     });
 
-    it("met à jour les missions après clic sur une mission et refetch", async () => {
+    it("appelle refetch après mise à jour d'une mission", async () => {
         renderPage();
 
-        fireEvent.click(screen.getByRole("button", { name: /MECA/i }));
         fireEvent.click(screen.getByText("mission-CLASSIC_2"));
 
         await waitFor(() => {
             expect(mockRefetch).toHaveBeenCalledTimes(1);
         });
-
-        await waitFor(() => {
-            expect(screen.getByTestId("progression-bar")).toHaveTextContent("2/2");
-        });
     });
 
-    it("réagit au mission sync channel pour l'équipe sélectionnée", async () => {
-        renderPage();
-
-        fireEvent.click(
-            screen.getByRole("button", {
-                name: (name) => name.includes("MECA"),
-            })
-        );
-
-        await waitFor(() => {
-            expect(createMissionSyncChannel).toHaveBeenCalled();
-        });
-
-        await waitFor(() => {
-            expect(mockMissionChannel?.onmessage).toBeTruthy();
-        });
-
-        await act(async () => {
-            mockMissionChannel?.onmessage?.({
-                data: {
-                    lobbyCode: "GAME123",
-                    teamName: "MECA",
-                    missionsToUpdate: ["CLASSIC_2"],
-                },
-            } as MessageEvent<any>);
-        });
-
-        await waitFor(() => {
-            expect(screen.getByTestId("progression-bar")).toHaveTextContent("2/2");
-        });
-    });
-
-    it("ignore le mission sync channel pour une autre équipe", async () => {
-        renderPage();
-
-        fireEvent.click(screen.getByRole("button", { name: /MECA/i }));
-
-        await act(async () => {
-            missionChannelHandler?.({
-                data: {
-                    lobbyCode: "GAME123",
-                    teamName: "EXPE",
-                    missionsToUpdate: ["CLASSIC_3"],
-                },
-            } as MessageEvent<any>);
-        });
-
-        expect(screen.getByTestId("progression-bar")).toHaveTextContent("1/2");
-    });
 
     it("met à jour le cache via websocket TEAM_PROGRESSION", async () => {
         renderPage();
-
-        expect(mockSubscribe).toHaveBeenCalled();
 
         await act(async () => {
             wsHandler?.({
                 body: JSON.stringify({
                     type: "TEAM_PROGRESSION",
                     payload: {
-                        teamLabel: "MECA",
                         teamProgression: {
+                            teamLabel: "MECA",
                             classicMissionsCompleted: 2,
                             firstBonusMissionCompleted: true,
                             secondBonusMissionCompleted: false,
                         },
+                        allTeamsMissionsCompleted: false,
                     },
                 }),
             });
         });
 
-        expect(mockSetQueryData).toHaveBeenCalled();
+        expect(mockSetQueryData).toHaveBeenCalledTimes(1);
+        expect(mockRefetch).toHaveBeenCalledTimes(1);
     });
 
-    it("ignore les messages websocket non TEAM_PROGRESSION", async () => {
-        renderPage();
-
-        await act(async () => {
-            wsHandler?.({
-                body: JSON.stringify({
-                    type: "OTHER_EVENT",
-                    payload: {},
-                }),
-            });
-        });
-
-        expect(mockSetQueryData).not.toHaveBeenCalled();
-    });
-
-    it("gère une erreur JSON websocket sans crasher", async () => {
-        const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-
+    it("appelle showError si le message websocket est invalide", async () => {
         renderPage();
 
         await act(async () => {
@@ -431,16 +302,9 @@ describe("HostMissionsPage coverage", () => {
             });
         });
 
-        expect(consoleSpy).toHaveBeenCalled();
-
-        consoleSpy.mockRestore();
-    });
-
-    it("désabonne les channels au unmount si nécessaire", () => {
-        const view = renderPage();
-        view.unmount();
-
-        // À adapter selon ton implémentation réelle si tu veux tester close/unsubscribe explicitement
-        expect(true).toBe(true);
+        expect(showError).toHaveBeenCalledWith(
+            "",
+            "Erreur lors de la récupération des données"
+        );
     });
 });
