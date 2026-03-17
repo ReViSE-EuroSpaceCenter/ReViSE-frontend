@@ -155,16 +155,6 @@ export default function Dashboard() {
 
     return (
         <>
-            <div className="w-full flex justify-end px-8 md:px-26 py-2">
-                <button
-                    disabled={!allTeamsCompleted}
-                    onClick={() => setIsConfirmOpen(true)}
-                    className="px-4 py-2 bg-purpleReViSE hover:bg-purpleReViSE/80 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer rounded-md font-medium text-base transition-colors"
-                >
-                    Terminer les missions
-                </button>
-            </div>
-
             <div className="min-h-[calc(100vh-120px)] w-full max-w-450 mx-auto flex flex-wrap xl:flex-nowrap items-center justify-center px-8 md:px-26 gap-8 xl:gap-0 overflow-x-hidden py-10 xl:py-4">
 
                 <div className="flex flex-col gap-12 xl:gap-28 w-full md:w-[calc(50%-1rem)] xl:flex-1 order-2 xl:order-1 items-center xl:items-start xl:pr-12">
@@ -183,6 +173,7 @@ export default function Dashboard() {
 
 			<div className="w-full max-w-[min(600px,calc(100vh-160px))] shrink-0 order-1 xl:order-2 flex justify-center px-4 xl:px-12">
 				<Toolbox
+                    centerAction={{ label: "Décollage\n🚀", onClick: () => setIsConfirmOpen(true), disabled: !allTeamsCompleted}}
 					actions={[
                         { label: "Fin du tour", onClick: () => setIsChecklistOpen(true) },
                         { label: "Missions terminées", onClick: () => console.log("4") },
