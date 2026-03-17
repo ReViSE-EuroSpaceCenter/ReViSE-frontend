@@ -28,7 +28,9 @@ type TeamProgressionPayload = {
 };
 
 function getHostId() {
-    return typeof globalThis.window === "undefined" ? null : sessionStorage.getItem("hostId");
+    return globalThis.window === undefined
+        ? null
+        : sessionStorage.getItem("hostId");
 }
 
 function parseMissionEvent(messageBody: string): TeamProgressionPayload | null {
