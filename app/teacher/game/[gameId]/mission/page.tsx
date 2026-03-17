@@ -28,7 +28,7 @@ type TeamProgressionPayload = {
 };
 
 function getHostId() {
-    return typeof window === "undefined" ? null : sessionStorage.getItem("hostId");
+    return typeof globalThis.window === "undefined" ? null : sessionStorage.getItem("hostId");
 }
 
 function parseMissionEvent(messageBody: string): TeamProgressionPayload | null {
@@ -84,7 +84,7 @@ function getProjectRoots(missions: (typeof teams)[keyof typeof teams]["missions"
     return projectMissions.filter((mission) => !unlockedIds.has(mission.id));
 }
 
-type ProjectSectionProps = {
+type ProjectSectionProps = Readonly<{
     projectId: number;
     missions: (typeof teams)[keyof typeof teams]["missions"];
     missionMap: Record<number, (typeof teams)[keyof typeof teams]["missions"][number]>;
@@ -92,7 +92,7 @@ type ProjectSectionProps = {
     isBonus2Completed: boolean;
     completedMissions: Record<number, boolean>;
     onMissionUpdated: () => Promise<void>;
-};
+}>;
 
 function ProjectSection({
                             projectId,
