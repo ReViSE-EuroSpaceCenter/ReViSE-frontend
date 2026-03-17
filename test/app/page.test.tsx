@@ -182,7 +182,7 @@ describe("Home page", () => {
 
         await waitFor(() => {
             expect(pushMock).toHaveBeenCalledWith(
-                "/teacher/game/DEF456/setup?nbTeams=6"
+                "/teacher/game/DEF456/setup"
             );
         });
     });
