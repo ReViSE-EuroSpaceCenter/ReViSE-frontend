@@ -155,57 +155,44 @@ export default function Dashboard() {
 
     return (
         <>
-            <div className="min-h-[calc(100vh-120px)] w-full max-w-450 mx-auto flex flex-wrap xl:flex-nowrap items-center justify-center px-8 md:px-26 gap-8 xl:gap-0 overflow-x-hidden py-10 xl:py-4">
-
-                <div className="flex flex-col gap-12 xl:gap-28 w-full md:w-[calc(50%-1rem)] xl:flex-1 order-2 xl:order-1 items-center xl:items-start xl:pr-12">
+            <div className="min-h-[calc(100vh-120px)] w-full max-w-450 mx-auto grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 items-start justify-items-center gap-y-12 gap-x-8 px-8 md:px-16 py-10">
+                <div className="flex flex-col gap-12 xl:gap-28 w-full min-w-0 items-center xl:items-start xl:pr-12 order-2 xl:order-1 lg:col-span-1">
                     {leftTeams.map((teamItem) => (
                         <div key={`left-${teamItem.team}`} className="flex flex-col items-center xl:items-start gap-2">
-                            <ProgressionBar
-                                completed={teamItem.completed}
-                                totalMission={teamItem.team === "MECA" ? 8 : 7}
-                                color={teamColorMap[teamItem.team]}
-                            />
                             <SideRow {...teamItem} />
-
                         </div>
                     ))}
                 </div>
 
-			<div className="w-full max-w-[min(600px,calc(100vh-160px))] shrink-0 order-1 xl:order-2 flex justify-center px-4 xl:px-12">
-				<Toolbox
-                    centerAction={{ label: "Décollage\n🚀", onClick: () => setIsConfirmOpen(true), disabled: !allTeamsCompleted}}
-					actions={[
-                        { label: "Fin du tour", onClick: () => setIsChecklistOpen(true) },
-                        { label: "Missions terminées", onClick: () => console.log("4") },
-						{ label: "Aide\nTechnologies IA", onClick: () => setIsIAOpen(true) },
-						{ label: "Tutoriel", onClick: () => console.log("3") },
-					]}
-				/>
-				<Checklist isOpen={isChecklistOpen} setIsOpen={setIsChecklistOpen} />
-				<IATech isOpen={isIAOpen} setIsOpen={setIsIAOpen} />
-				{text && (
-					<PresentationModal
-						isOpen={isPresentationOpen}
-						setIsOpen={setIsPresentationOpen}
-						icon="/logo.png"
-						text={text}
-						name="TEACHER"
-						color="#fff"
-						onClose={() => router.replace(pathname) }
-					/>
-				)}
-			</div>
+                <div className="w-full max-w-[min(600px,calc(100vh-160px))] flex justify-center order-1 xl:order-2 lg:col-span-2 xl:col-span-1">
+                    <Toolbox
+                        centerAction={{ label: "Décollage\n🚀", onClick: () => setIsConfirmOpen(true), disabled: !allTeamsCompleted}}
+                        actions={[
+                            { label: "Fin du tour", onClick: () => setIsChecklistOpen(true) },
+                            { label: "Missions terminées", onClick: () => console.log("4") },
+                            { label: "Aide\nTechnologies IA", onClick: () => setIsIAOpen(true) },
+                            { label: "Tutoriel", onClick: () => console.log("3") },
+                        ]}
+                    />
+                    <Checklist isOpen={isChecklistOpen} setIsOpen={setIsChecklistOpen} />
+                    <IATech isOpen={isIAOpen} setIsOpen={setIsIAOpen} />
+                    {text && (
+                        <PresentationModal
+                            isOpen={isPresentationOpen}
+                            setIsOpen={setIsPresentationOpen}
+                            icon="/logo.png"
+                            text={text}
+                            name="TEACHER"
+                            color="#fff"
+                            onClose={() => router.replace(pathname) }
+                        />
+                    )}
+                </div>
 
-                <div className="flex flex-col gap-12 xl:gap-28 w-full md:w-[calc(50%-1rem)] xl:flex-1 order-3 items-center xl:items-end xl:pl-12">
+                <div className="flex flex-col gap-12 xl:gap-28 w-full min-w-0 items-center xl:items-end xl:pl-12 order-3 xl:order-3 lg:col-span-1">
                     {rightTeams.map((teamItem) => (
                         <div key={`right-${teamItem.team}`} className="flex flex-col items-center xl:items-end gap-2">
-                            <ProgressionBar
-                                completed={teamItem.completed}
-                                totalMission={teamItem.team === "MECA" ? 8 : 7}
-                                color={teamColorMap[teamItem.team]}
-                            />
                             <SideRow {...teamItem} />
-
                         </div>
                     ))}
                 </div>
