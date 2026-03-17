@@ -1,4 +1,8 @@
+"use client";
+
 import Image from "next/image";
+import {useEffect, useRef} from "react";
+import {showMissionAlert} from "@/utils/alerts";
 
 type StatRowProps = {
     team: string;
@@ -7,7 +11,66 @@ type StatRowProps = {
 };
 
 export default function SideRow({team , mission2_check , mission1_check}: Readonly<StatRowProps>) {
+    const prevMission1 = useRef(mission1_check);
+    const prevMission2 = useRef(mission2_check);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
 
+    useEffect(() => {
+        audioRef.current = new Audio("/sounds/missionBonus.mp3");
+        audioRef.current.volume = 0.7;
+        audioRef.current.load();
+
+        const unlock = () => {
+            const audio = audioRef.current;
+            if (!audio) return;
+            audio.muted = true;
+            audio.play()
+              .then(() => {
+                  audio.pause();
+                  audio.currentTime = 0;
+                  audio.muted = false;
+              })
+              .catch(() => {});
+            document.removeEventListener("click", unlock);
+            document.removeEventListener("touchstart", unlock);
+        };
+
+        document.addEventListener("click", unlock);
+        document.addEventListener("touchstart", unlock);
+
+        return () => {
+            document.removeEventListener("click", unlock);
+            document.removeEventListener("touchstart", unlock);
+        };
+    }, []);
+
+    const playMissionSound = () => {
+        const audio = audioRef.current;
+        if (!audio) return;
+        audio.currentTime = 0;
+        audio.muted = false;
+        audio.play().catch(() => {});
+    };
+
+    useEffect(() => {
+        if (!prevMission1.current && mission1_check) {
+            playMissionSound();
+            setTimeout(() => {
+                showMissionAlert(team, 1);
+            }, 800);
+        }
+        prevMission1.current = mission1_check;
+    }, [mission1_check, team]);
+
+    useEffect(() => {
+        if (!prevMission2.current && mission2_check) {
+            playMissionSound();
+            setTimeout(() => {
+                showMissionAlert(team, 2);
+            }, 800);
+        }
+        prevMission2.current = mission2_check;
+    }, [mission2_check, team]);
 
     return (
         <div className="flex flex-row items-center gap-10 w-full max-w-187.5 py-6 group transition-all">

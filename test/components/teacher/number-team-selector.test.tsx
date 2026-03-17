@@ -85,7 +85,7 @@ describe("NumberTeamSelector", () => {
 
         await waitFor(() => {
             expect(pushMock).toHaveBeenCalledWith(
-                "/teacher/game/ABC123/setup?nbTeams=4"
+                "/teacher/game/ABC123/setup"
             );
         });
     });
@@ -130,7 +130,7 @@ describe("NumberTeamSelector", () => {
 
         await waitFor(() => {
             expect(pushMock).toHaveBeenCalledWith(
-                "/teacher/game/XYZ999/setup?nbTeams=6"
+                "/teacher/game/XYZ999/setup"
             );
         });
     });

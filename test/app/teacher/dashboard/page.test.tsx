@@ -10,10 +10,18 @@ import { showError } from "@/errors/getErrorMessage";
 // ---------- Mocks ----------
 const subscribeMock = vi.fn();
 const unsubscribeMock = vi.fn();
+const replaceMock = vi.fn();
 
 vi.mock("next/navigation", () => ({
     useParams: () => ({
         gameId: "ABC123",
+    }),
+    useRouter: () => ({
+        replace: replaceMock,
+    }),
+    usePathname: () => "/teacher/game/ABC123",
+    useSearchParams: () => ({
+        get: vi.fn(() => null),
     }),
 }));
 
@@ -57,7 +65,7 @@ vi.mock("@/components/IATech", () => ({
     ),
 }));
 
-vi.mock("@/components/SideRow", () => ({
+vi.mock("@/components/teacher/SideRow", () => ({
     default: ({ team, completed }: { team: string; completed: number }) => (
         <div>
             SideRow-{team}-{completed}
@@ -65,7 +73,7 @@ vi.mock("@/components/SideRow", () => ({
     ),
 }));
 
-vi.mock("@/components/student/PogressionBar", () => ({
+vi.mock("@/components/student/ProgressionBar", () => ({
     ProgressionBar: ({
                          completed,
                          totalMission,
@@ -81,12 +89,19 @@ vi.mock("@/components/student/PogressionBar", () => ({
     ),
 }));
 
+vi.mock("@/components/PresentationModal", () => ({
+    default: ({ isOpen }: { isOpen: boolean }) =>
+        isOpen ? <div>Presentation ouverte</div> : null,
+}));
+
 vi.mock("@/utils/teamColor", () => ({
     teamColorMap: {
         MECA: "white",
         AERO: "purple",
         GECO: "green",
         EXPE: "red",
+        MEDI: "blue",
+        COOP: "orange",
     },
 }));
 
@@ -108,72 +123,102 @@ function renderPage() {
 
 const gameInfo4Teams = {
     allTeamsCompleted: true,
-    teamsProgression: {
+    teamsFullProgression: {
         MECA: {
-            teamLabel: "MECA",
-            classicMissionsCompleted: 4,
-            firstBonusMissionCompleted: true,
-            secondBonusMissionCompleted: false,
+            completedMissions: {},
+            teamProgression: {
+                teamLabel: "MECA",
+                classicMissionsCompleted: 4,
+                firstBonusMissionCompleted: true,
+                secondBonusMissionCompleted: false,
+            },
         },
         AERO: {
-            teamLabel: "AERO",
-            classicMissionsCompleted: 3,
-            firstBonusMissionCompleted: false,
-            secondBonusMissionCompleted: true,
+            completedMissions: {},
+            teamProgression: {
+                teamLabel: "AERO",
+                classicMissionsCompleted: 3,
+                firstBonusMissionCompleted: false,
+                secondBonusMissionCompleted: true,
+            },
         },
         GECO: {
-            teamLabel: "GECO",
-            classicMissionsCompleted: 2,
-            firstBonusMissionCompleted: false,
-            secondBonusMissionCompleted: false,
+            completedMissions: {},
+            teamProgression: {
+                teamLabel: "GECO",
+                classicMissionsCompleted: 2,
+                firstBonusMissionCompleted: false,
+                secondBonusMissionCompleted: false,
+            },
         },
         EXPE: {
-            teamLabel: "EXPE",
-            classicMissionsCompleted: 1,
-            firstBonusMissionCompleted: true,
-            secondBonusMissionCompleted: true,
+            completedMissions: {},
+            teamProgression: {
+                teamLabel: "EXPE",
+                classicMissionsCompleted: 1,
+                firstBonusMissionCompleted: true,
+                secondBonusMissionCompleted: true,
+            },
         },
     },
 };
 
 const gameInfo6Teams = {
     allTeamsCompleted: false,
-    teamsProgression: {
+    teamsFullProgression: {
         MECA: {
-            teamLabel: "MECA",
-            classicMissionsCompleted: 4,
-            firstBonusMissionCompleted: true,
-            secondBonusMissionCompleted: false,
+            completedMissions: {},
+            teamProgression: {
+                teamLabel: "MECA",
+                classicMissionsCompleted: 4,
+                firstBonusMissionCompleted: true,
+                secondBonusMissionCompleted: false,
+            },
         },
         AERO: {
-            teamLabel: "AERO",
-            classicMissionsCompleted: 3,
-            firstBonusMissionCompleted: false,
-            secondBonusMissionCompleted: true,
+            completedMissions: {},
+            teamProgression: {
+                teamLabel: "AERO",
+                classicMissionsCompleted: 3,
+                firstBonusMissionCompleted: false,
+                secondBonusMissionCompleted: true,
+            },
         },
         GECO: {
-            teamLabel: "GECO",
-            classicMissionsCompleted: 2,
-            firstBonusMissionCompleted: false,
-            secondBonusMissionCompleted: false,
+            completedMissions: {},
+            teamProgression: {
+                teamLabel: "GECO",
+                classicMissionsCompleted: 2,
+                firstBonusMissionCompleted: false,
+                secondBonusMissionCompleted: false,
+            },
         },
         EXPE: {
-            teamLabel: "EXPE",
-            classicMissionsCompleted: 1,
-            firstBonusMissionCompleted: true,
-            secondBonusMissionCompleted: true,
+            completedMissions: {},
+            teamProgression: {
+                teamLabel: "EXPE",
+                classicMissionsCompleted: 1,
+                firstBonusMissionCompleted: true,
+                secondBonusMissionCompleted: true,
+            },
         },
         MEDI: {
-            teamLabel: "MEDI",
-            classicMissionsCompleted: 5,
-            firstBonusMissionCompleted: false,
-            secondBonusMissionCompleted: false,
+            completedMissions: {},
+            teamProgression: {
+                teamLabel: "MEDI",
+                classicMissionsCompleted: 5,
+                firstBonusMissionCompleted: false,
+                secondBonusMissionCompleted: false,
+            },
         },
         COOP: {
-            teamLabel: "COOP",
-            classicMissionsCompleted: 6,
-            firstBonusMissionCompleted: true,
-            secondBonusMissionCompleted: false,
+            completedMissions: {},
+            teamProgression: {
+                teamLabel: "COOP",
+                classicMissionsCompleted: 6,
+                firstBonusMissionCompleted: true,
+                secondBonusMissionCompleted: false,
+            },
         },
     },
 };
@@ -199,7 +244,7 @@ describe("Dashboard coverage", () => {
         expect(screen.getAllByText("SideRow-GECO-2").length).toBeGreaterThan(0);
 
         const button = screen.getByRole("button", {
-            name: "Encodage des ressources",
+            name: "Terminer les missions",
         });
 
         expect(button).toBeDisabled();
@@ -211,7 +256,7 @@ describe("Dashboard coverage", () => {
         renderPage();
 
         const button = screen.getByRole("button", {
-            name: "Encodage des ressources",
+            name: "Terminer les missions",
         });
 
         await waitFor(() => {
@@ -227,7 +272,7 @@ describe("Dashboard coverage", () => {
         renderPage();
 
         await screen.findByRole("button", {
-            name: "Encodage des ressources",
+            name: "Terminer les missions",
         });
 
         expect(screen.getByText("Checklist fermée")).toBeInTheDocument();
@@ -242,7 +287,48 @@ describe("Dashboard coverage", () => {
         expect(screen.getByText("IA ouverte")).toBeInTheDocument();
     });
 
-    it("appelle endMission avec lobbyCode et hostId quand on clique sur Encodage des ressources", async () => {
+    it("ouvre la modale de confirmation au clic sur Terminer les missions", async () => {
+        const user = userEvent.setup();
+
+        vi.mocked(getGameInfo).mockResolvedValueOnce(gameInfo4Teams as any);
+
+        renderPage();
+
+        const button = await screen.findByRole("button", {
+            name: "Terminer les missions",
+        });
+
+        await user.click(button);
+
+        expect(screen.getByText("Confirmation")).toBeInTheDocument();
+        expect(
+            screen.getByText(/Cette action est irréversible/i)
+        ).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Annuler" })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Continuer" })).toBeInTheDocument();
+    });
+
+    it("ferme la modale quand on clique sur Annuler", async () => {
+        const user = userEvent.setup();
+
+        vi.mocked(getGameInfo).mockResolvedValueOnce(gameInfo4Teams as any);
+
+        renderPage();
+
+        await user.click(
+            await screen.findByRole("button", { name: "Terminer les missions" })
+        );
+
+        expect(screen.getByText("Confirmation")).toBeInTheDocument();
+
+        await user.click(screen.getByRole("button", { name: "Annuler" }));
+
+        await waitFor(() => {
+            expect(screen.queryByText("Confirmation")).not.toBeInTheDocument();
+        });
+    });
+
+    it("appelle endMission avec lobbyCode et hostId quand on confirme", async () => {
         const user = userEvent.setup();
 
         sessionStorage.setItem("hostId", "host-123");
@@ -251,28 +337,31 @@ describe("Dashboard coverage", () => {
 
         renderPage();
 
-        const button = await screen.findByRole("button", {
-            name: "Encodage des ressources",
+        await user.click(
+            await screen.findByRole("button", { name: "Terminer les missions" })
+        );
+
+        await user.click(screen.getByRole("button", { name: "Continuer" }));
+
+        await waitFor(() => {
+            expect(endMission).toHaveBeenCalledWith("ABC123", "host-123");
         });
 
-        await user.click(button);
-
-        expect(endMission).toHaveBeenCalledWith("ABC123", "host-123");
         expect(showError).not.toHaveBeenCalled();
     });
 
-    it("affiche une erreur si hostId est manquant au clic sur Encodage des ressources", async () => {
+    it("affiche une erreur si hostId est manquant quand on confirme", async () => {
         const user = userEvent.setup();
 
         vi.mocked(getGameInfo).mockResolvedValueOnce(gameInfo4Teams as any);
 
         renderPage();
 
-        const button = await screen.findByRole("button", {
-            name: "Encodage des ressources",
-        });
+        await user.click(
+            await screen.findByRole("button", { name: "Terminer les missions" })
+        );
 
-        await user.click(button);
+        await user.click(screen.getByRole("button", { name: "Continuer" }));
 
         expect(endMission).not.toHaveBeenCalled();
         expect(showError).toHaveBeenCalledWith(
@@ -290,11 +379,11 @@ describe("Dashboard coverage", () => {
 
         renderPage();
 
-        const button = await screen.findByRole("button", {
-            name: "Encodage des ressources",
-        });
+        await user.click(
+            await screen.findByRole("button", { name: "Terminer les missions" })
+        );
 
-        await user.click(button);
+        await user.click(screen.getByRole("button", { name: "Continuer" }));
 
         await waitFor(() => {
             expect(showError).toHaveBeenCalledWith(
@@ -336,12 +425,13 @@ describe("Dashboard coverage", () => {
                 body: JSON.stringify({
                     type: "TEAM_PROGRESSION",
                     payload: {
-                        teamLabel: "AERO",
                         teamProgression: {
+                            teamLabel: "AERO",
                             classicMissionsCompleted: 6,
                             firstBonusMissionCompleted: true,
                             secondBonusMissionCompleted: true,
                         },
+                        allTeamsMissionsCompleted: true,
                     },
                 }),
             });
@@ -352,7 +442,7 @@ describe("Dashboard coverage", () => {
         });
     });
 
-    it("met à jour allTeamsCompleted via websocket", async () => {
+    it("met à jour la progression d'équipe via websocket sans activer le bouton", async () => {
         let wsCallback: ((message: { body: string }) => void) | undefined;
 
         subscribeMock.mockImplementation((_channel, callback) => {
@@ -365,21 +455,63 @@ describe("Dashboard coverage", () => {
         renderPage();
 
         const button = await screen.findByRole("button", {
-            name: "Encodage des ressources",
+            name: "Terminer les missions",
         });
 
         expect(button).toBeDisabled();
+        expect(await screen.findAllByText("SideRow-MECA-4")).toHaveLength(2);
 
         act(() => {
             wsCallback?.({
                 body: JSON.stringify({
-                    allTeamsMissionsCompleted: true,
+                    type: "TEAM_PROGRESSION",
+                    payload: {
+                        teamProgression: {
+                            teamLabel: "MECA",
+                            classicMissionsCompleted: 6,
+                            firstBonusMissionCompleted: true,
+                            secondBonusMissionCompleted: false,
+                        },
+                        allTeamsMissionsCompleted: true,
+                    },
                 }),
             });
         });
 
         await waitFor(() => {
-            expect(button).toBeEnabled();
+            expect(screen.getAllByText("SideRow-MECA-6")).toHaveLength(2);
+        });
+
+        expect(button).toBeDisabled();
+    });
+
+    it("ignore les messages websocket invalides", async () => {
+        let wsCallback: ((message: { body: string }) => void) | undefined;
+
+        subscribeMock.mockImplementation((_channel, callback) => {
+            wsCallback = callback;
+            return { unsubscribe: unsubscribeMock };
+        });
+
+        vi.mocked(getGameInfo).mockResolvedValueOnce(gameInfo4Teams as any);
+
+        renderPage();
+
+        await screen.findByRole("button", {
+            name: "Terminer les missions",
+        });
+
+        act(() => {
+            wsCallback?.({
+                body: "{invalid-json",
+            });
+        });
+
+        await waitFor(() => {
+            expect(showError).toHaveBeenCalledWith(
+                "",
+                "Erreur lors de la récupération des données"
+            );
         });
     });
 

@@ -1,27 +1,32 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams, useParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useWebSocket } from "@/contexts/WebSocketProvider";
-import { LobbyEventType } from "@/types/LobbyEventType";
+import { WSEventType } from "@/types/WSEventType";
 import { getLobbyInfo, startLobby } from "@/api/lobbyApi";
 import { showError } from "@/errors/getErrorMessage";
 import { ApiError } from "@/api/apiError";
+import {useLobby} from "@/hooks/useLobby";
 
 export default function SetUpPage() {
     const router = useRouter();
-    const searchParams = useSearchParams();
     const params = useParams();
 
-    // ça a de l'interet d'avoir le nbTeams dans la query, si on peut le trouver dans le lobbyInfo ?
     const lobbyCode = params.gameId?.toString() as string;
+    const { lobbyQuery } = useLobby(lobbyCode);
+    const { data } = lobbyQuery;
+    const nbTeams = data?.allTeams.length ?? 0;
+
     const [joinedTeam, setJoinedTeam] = useState(0);
-    const nbTeams = Number(searchParams.get("nbTeams"));
 
     const { subscribe, connected } = useWebSocket();
     const [loading, setLoading] = useState(false);
 
-    const hostId = sessionStorage.getItem("hostId");
+    const hostId =
+      globalThis.window === undefined
+        ? null
+        : sessionStorage.getItem("hostId");
 
     useEffect(() => {
         if (!connected) return;
@@ -45,7 +50,7 @@ export default function SetUpPage() {
         if (!connected) return;
 
         const subscription = subscribe("lobby", (message) => {
-            const event: LobbyEventType = JSON.parse(message.body);
+            const event: WSEventType = JSON.parse(message.body);
 
             switch (event.type) {
                 case "TEAM_JOINED":
@@ -53,7 +58,7 @@ export default function SetUpPage() {
                     break;
 
                 case "GAME_STARTED":
-                    router.push(`/teacher/game/${lobbyCode}`);
+                    router.push(`/teacher/game/${lobbyCode}?presentation=true`);
                     break;
 
                 default:
