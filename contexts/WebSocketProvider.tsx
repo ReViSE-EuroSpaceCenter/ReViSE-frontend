@@ -10,7 +10,7 @@ import React, {
 import SockJS from "sockjs-client";
 import { Client, IMessage, StompSubscription } from "@stomp/stompjs";
 
-export type UrlDestination = "lobby" | "mission" | "game";
+export type UrlDestination = "lobby" | "mission";
 
 type WebSocketContextType = {
 	subscribe: (destinationType: UrlDestination, callback: (message: IMessage) => void) => StompSubscription | null;
