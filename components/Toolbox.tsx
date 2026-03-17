@@ -205,13 +205,13 @@ export default function Toolbox({ centerAction, actions }: Readonly<RadialMenuPr
 					</g>
 				);
 			})}
-			<circle visibility={!centerAction?.disabled ? "visible" : "hidden"} cx={cx} cy={cy} r={innerR * 0.8 + 4} fill="none" stroke="#834291" strokeWidth={0.8} strokeOpacity={0.5}/>
-			<circle visibility={centerAction?.disabled ? "visible" : "hidden"} cx={cx} cy={cy} r={innerR * 0.8 + 12} fill="#834291" fillOpacity={0.12} filter="url(#tb-glow-soft)"/>
+			<circle visibility={centerAction && !centerAction.disabled ? "visible" : "hidden"} cx={cx} cy={cy} r={innerR * 0.8 + 4} fill="none" stroke="#834291" strokeWidth={0.8} strokeOpacity={0.5}/>
+			<circle visibility={centerAction && !centerAction.disabled ? "visible" : "hidden"}cx={cx} cy={cy} r={innerR * 0.8 + 12} fill="#834291" fillOpacity={0.12} filter="url(#tb-glow-soft)"/>
 
 			<g
-				visibility={!centerAction?.disabled ? "visible" : "hidden"}
+				visibility={centerAction && !centerAction.disabled ? "visible" : "hidden"}
 				cursor="pointer"
-				onClick={!centerAction?.disabled ? centerAction?.onClick : undefined}
+				onClick={centerAction && !centerAction?.disabled ? centerAction?.onClick : undefined}
 				onMouseEnter={() => setCenterHover(true)}
 				onMouseLeave={() => setCenterHover(false)}
 			>
