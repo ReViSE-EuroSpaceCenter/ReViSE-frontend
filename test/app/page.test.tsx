@@ -156,6 +156,37 @@ describe("Home page", () => {
         });
     });
 
+    it("Créer une partie → 6 équipes → createLobby(6) + redirection", async () => {
+        const user = userEvent.setup();
+
+        createLobbyMock.mockResolvedValueOnce({
+            lobbyCode: "DEF456",
+            hostId: "host-yyy",
+        });
+
+        renderPage(<Home />);
+
+        await user.click(
+            screen.getByRole("button", { name: "Créer une partie" })
+        );
+
+        await user.click(
+            screen.getByRole("button", { name: "6 équipes" })
+        );
+
+        await waitFor(() => {
+            expect(createLobbyMock).toHaveBeenCalledWith(6);
+        });
+
+        expect(sessionStorage.getItem("hostId")).toBe("host-yyy");
+
+        await waitFor(() => {
+            expect(pushMock).toHaveBeenCalledWith(
+                "/teacher/game/DEF456/setup"
+            );
+        });
+    });
+
     it("ferme la modale avec Annuler", async () => {
         const user = userEvent.setup();
 

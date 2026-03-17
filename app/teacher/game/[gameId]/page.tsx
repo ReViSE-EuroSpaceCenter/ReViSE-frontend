@@ -12,8 +12,6 @@ import { showError } from "@/errors/getErrorMessage";
 import { ApiError } from "@/api/apiError";
 import {endMission, getGameInfo} from "@/api/missionApi";
 import { useWebSocket } from "@/contexts/WebSocketProvider";
-import { ProgressionBar } from "@/components/student/ProgressionBar";
-import {teamColorMap} from "@/utils/teamColor";
 import {WSEventType} from "@/types/WSEventType";
 const PresentationModal = dynamic(
     () => import("@/components/PresentationModal"),
