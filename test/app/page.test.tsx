@@ -218,11 +218,9 @@ describe("Home page", () => {
 
         renderPage(<Dashboard />);
 
-        const button = await screen.findByRole("button", {
-            name: "Terminer les missions",
-        });
+        const centerButton = screen.getByTestId('center-action-button');
 
-        await user.click(button);
+        await user.click(centerButton);
 
         const continueButton = screen.getByRole("button", { name: "Continuer" });
 
@@ -238,11 +236,9 @@ describe("Home page", () => {
 
         renderPage(<Dashboard />);
 
-        const button = await screen.findByRole("button", {
-            name: "Terminer les missions",
-        });
+        const centerButton = screen.getByTestId('center-action-button');
 
-        await user.click(button);
+        await user.click(centerButton);
 
         const cancelButton = screen.getByRole("button", { name: "Annuler" });
 
@@ -261,11 +257,9 @@ describe("Home page", () => {
 
         renderPage(<Dashboard />);
 
-        const button = await screen.findByRole("button", {
-            name: "Terminer les missions",
-        });
+        const centerButton = screen.getByTestId('center-action-button');
 
-        await user.click(button);
+        await user.click(centerButton);
 
         expect(
             screen.queryByText(/Cette action est irréversible/i)
@@ -280,10 +274,11 @@ describe("Home page", () => {
 
         renderPage(<Dashboard />);
 
-        const button = await screen.findByRole("button", {
-            name: "Terminer les missions",
-        });
+        const centerButton = screen.getByTestId('center-action-button');
 
-        expect(button).toBeDisabled();
+        await waitFor(() => {
+            expect(centerButton).toHaveAttribute('cursor', 'not-allowed');
+            expect(centerButton).not.toHaveAttribute('onClick');
+        });
     });
 });

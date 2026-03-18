@@ -12,8 +12,6 @@ import { showError } from "@/errors/getErrorMessage";
 import { ApiError } from "@/api/apiError";
 import {endMission, getGameInfo} from "@/api/missionApi";
 import { useWebSocket } from "@/contexts/WebSocketProvider";
-import { ProgressionBar } from "@/components/student/ProgressionBar";
-import {teamColorMap} from "@/utils/teamColor";
 import {WSEventType} from "@/types/WSEventType";
 const PresentationModal = dynamic(
     () => import("@/components/PresentationModal"),
@@ -152,125 +150,49 @@ export default function Dashboard() {
             showError(err instanceof ApiError ? err.key : "", "Impossible de clôturer la mission");
         }
     };
-    const isTwoTeams = leftTeams.length === 2;
-
-    const layout = isTwoTeams
-        ? {
-            outerPadding: "px-4 md:px-10 pt-2",
-            innerPadding: "px-4 md:px-10 py-10 xl:py-4",
-            wrapperHeight: "xl:h-[calc(100vh-180px)]",
-            wrapperGap: "gap-8 xl:gap-0",
-            sidePaddingLeft: "xl:pr-12",
-            sidePaddingRight: "xl:pl-12",
-            sideItemGap: "gap-2",
-            toolboxPadding: "px-4 xl:px-12",
-            mobileGap: "gap-8",
-            sideExtra: "",
-        }
-        : {
-            outerPadding: "px-3 md:px-6 pt-1",
-            innerPadding: "px-3 md:px-6 py-2 xl:py-1",
-            wrapperHeight: "xl:h-[calc(100vh-140px)]",
-            wrapperGap: "gap-2 xl:gap-0",
-            sidePaddingLeft: "xl:pr-6",
-            sidePaddingRight: "xl:pl-6",
-            sideItemGap: "gap-0",
-            toolboxPadding: "px-1 xl:px-6",
-            mobileGap: "gap-1",
-            sideExtra: "h-full overflow-hidden",
-        };
 
     return (
         <>
-            <div className="w-full flex justify-end px-8 md:px-26 py-2">
-                <button
-                    disabled={!allTeamsCompleted}
-                    onClick={() => setIsConfirmOpen(true)}
-                    className="px-4 py-2 bg-purpleReViSE hover:bg-purpleReViSE/80 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer rounded-md font-medium text-base transition-colors"
-                >
-                    Terminer les missions
-                </button>
-            </div>
+            <div className="min-h-[calc(100vh-120px)] w-full max-w-450 mx-auto grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-[1fr_2fr_1fr] items-center justify-items-center gap-4 px-8 md:px-16 py-10">
+                <div className="flex flex-col gap-12 xl:gap-18 w-full min-w-0 items-center xl:items-start xl:pr-12 order-2 xl:order-1 lg:col-span-1">
+                    {leftTeams.map((teamItem) => (
+                        <div key={`left-${teamItem.team}`} className="flex flex-col items-center xl:items-start gap-2">
+                            <SideRow {...teamItem} />
+                        </div>
+                    ))}
+                </div>
 
-            <div className={`w-full max-w-screen-2xl mx-auto ${layout.innerPadding}`}>
-                <div
-                    className={`flex flex-col xl:flex-row items-center xl:items-stretch justify-center ${layout.wrapperGap} ${layout.wrapperHeight}`}
-                >
-                    <div
-                        className={`hidden xl:flex flex-col justify-around xl:flex-1 order-1 items-center xl:items-start ${layout.sidePaddingLeft} min-w-0 ${layout.sideExtra}`}
-                    >
-                        {leftTeams.map((teamItem) => (
-                            <div
-                                key={`left-${teamItem.team}`}
-                                className={`flex flex-col items-center xl:items-start ${layout.sideItemGap} min-w-0`}
-                            >
-                                <ProgressionBar
-                                    completed={teamItem.completed}
-                                    totalMission={teamItem.team === "MECA" ? 8 : 7}
-                                    color={teamColorMap[teamItem.team]}
-                                />
-                                <SideRow {...teamItem} />
-                            </div>
-                        ))}
-                    </div>
+                <div className="w-full max-w-[min(800px,100vh)] flex justify-center order-1 xl:order-2 lg:col-span-2 xl:col-span-1 p-16">
+                    <Toolbox
+                        centerAction={{ label: "Décollage\n🚀", onClick: () => setIsConfirmOpen(true), disabled: !allTeamsCompleted}}
+                        actions={[
+                            { label: "Fin du tour", onClick: () => setIsChecklistOpen(true) },
+                            { label: "Missions terminées", onClick: () => router.push(`/teacher/game/${lobbyCode}/mission`)},
+                            { label: "Aide\nTechnologies IA", onClick: () => setIsIAOpen(true) },
+                            { label: "Tutoriel", onClick: () => console.log("3") },
+                        ]}
+                    />
+                    <Checklist isOpen={isChecklistOpen} setIsOpen={setIsChecklistOpen} />
+                    <IATech isOpen={isIAOpen} setIsOpen={setIsIAOpen} />
+                    {text && (
+                        <PresentationModal
+                            isOpen={isPresentationOpen}
+                            setIsOpen={setIsPresentationOpen}
+                            icon="/logo.png"
+                            text={text}
+                            name="TEACHER"
+                            color="#fff"
+                            onClose={() => router.replace(pathname) }
+                        />
+                    )}
+                </div>
 
-			<div className="w-full max-w-[min(600px,calc(100vh-160px))] shrink-0 order-1 xl:order-2 flex justify-center px-4 xl:px-12">
-				<Toolbox
-					actions={[
-                        { label: "Fin du tour", onClick: () => setIsChecklistOpen(true) },
-                        { label: "Missions terminées", onClick: () => router.push(`/teacher/game/${lobbyCode}/mission`)},
-						{ label: "Aide\nTechnologies IA", onClick: () => setIsIAOpen(true) },
-						{ label: "Tutoriel", onClick: () => console.log("3") },
-					]}
-				/>
-				<Checklist isOpen={isChecklistOpen} setIsOpen={setIsChecklistOpen} />
-				<IATech isOpen={isIAOpen} setIsOpen={setIsIAOpen} />
-				{text && (
-					<PresentationModal
-						isOpen={isPresentationOpen}
-						setIsOpen={setIsPresentationOpen}
-						icon="/logo.png"
-						text={text}
-						name="TEACHER"
-						color="#fff"
-						onClose={() => router.replace(pathname) }
-					/>
-				)}
-			</div>
-
-                    <div
-                        className={`hidden xl:flex flex-col justify-around xl:flex-1 order-3 items-center xl:items-end ${layout.sidePaddingRight} min-w-0 ${layout.sideExtra}`}
-                    >
-                        {rightTeams.map((teamItem) => (
-                            <div
-                                key={`right-${teamItem.team}`}
-                                className={`flex flex-col items-center xl:items-end ${layout.sideItemGap} min-w-0`}
-                            >
-                                <ProgressionBar
-                                    completed={teamItem.completed}
-                                    totalMission={teamItem.team === "MECA" ? 8 : 7}
-                                    color={teamColorMap[teamItem.team]}
-                                />
-                                <SideRow {...teamItem} />
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className={`xl:hidden w-full order-2 grid grid-cols-1 md:grid-cols-2 ${layout.mobileGap}`}>
-                        {[...leftTeams, ...rightTeams].map((teamItem) => (
-                            <div
-                                key={`mobile-${teamItem.team}`}
-                                className={`flex flex-col items-center ${layout.sideItemGap} min-w-0`}
-                            >
-                                <ProgressionBar
-                                    completed={teamItem.completed}
-                                    totalMission={teamItem.team === "MECA" ? 8 : 7}
-                                    color={teamColorMap[teamItem.team]}
-                                />
-                                <SideRow {...teamItem} />
-                            </div>
-                        ))}
-                    </div>
+                <div className="flex flex-col gap-12 xl:gap-18 w-full min-w-0 items-center xl:items-end xl:pl-12 order-3 xl:order-3 lg:col-span-1">
+                    {rightTeams.map((teamItem) => (
+                        <div key={`right-${teamItem.team}`} className="flex flex-col items-center xl:items-end gap-2">
+                            <SideRow {...teamItem} />
+                        </div>
+                    ))}
                 </div>
             </div>
 
@@ -310,4 +232,4 @@ export default function Dashboard() {
             )}
         </>
     );
-    }
+}

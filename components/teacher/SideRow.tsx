@@ -3,14 +3,17 @@
 import Image from "next/image";
 import {useEffect, useRef} from "react";
 import {showMissionAlert} from "@/utils/alerts";
+import {ProgressionBar} from "@/components/student/ProgressionBar";
+import {teamColorMap} from "@/utils/teamColor";
 
 type StatRowProps = {
     team: string;
+    completed: number;
     mission1_check: boolean;
     mission2_check: boolean;
 };
 
-export default function SideRow({team , mission2_check , mission1_check}: Readonly<StatRowProps>) {
+export default function SideRow({team , completed ,  mission2_check , mission1_check}: Readonly<StatRowProps>) {
     const prevMission1 = useRef(mission1_check);
     const prevMission2 = useRef(mission2_check);
     const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -73,22 +76,20 @@ export default function SideRow({team , mission2_check , mission1_check}: Readon
     }, [mission2_check, team]);
 
     return (
-        <div className="flex flex-row items-center gap-10 w-full max-w-187.5 py-6 group transition-all">
-            <div className="w-28 h-28 sm:w-36 sm:h-36 shrink-0 flex items-center justify-center">
-                <Image
-                    src={`/badges/${team}.png`}
-                    alt={`Badge ${team}`}
-                    width={120}
-                    height={120}
-                    className="object-contain drop-shadow-[0_0_12px_rgba(139,92,246,0.3)] transition-transform duration-500"
-                />
-            </div>
-
-            <div className="flex flex-col gap-6 flex-1 min-w-0">
-
+        <div className="flex flex-col items-center w-full max-w-187.5 py-6 group transition-all">
+            <div className="flex flex-row items-center ap-10 xl:gap-[clamp(10px,2vw,40px)] w-full justify-center">
+                <div className="w-28 h-28 sm:w-36 sm:h-36 xl:w-[clamp(70px,7vw,140px)] xl:h-[clamp(70px,7vw,140px)] shrink-0 flex items-center justify-center">
+                    <Image
+                        src={`/badges/${team}.png`}
+                        alt={`Badge ${team}`}
+                        width={120}
+                        height={120}
+                        className="object-contain drop-shadow-[0_0_12px_rgba(139,92,246,0.3)] transition-transform duration-500"
+                    />
+                </div>
 
                 <div className="flex flex-row gap-6 px-1">
-                    <div className="w-14 h-14 sm:w-16 sm:h-16 shrink-0 relative">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 xl:w-[clamp(40px,4vw,64px)] xl:h-[clamp(40px,4vw,64px)] shrink-0 relative">
                         <Image
                             src={`/badges_missions/${team}_mission1.png`}
                             alt="Mission 1"
@@ -102,7 +103,7 @@ export default function SideRow({team , mission2_check , mission1_check}: Readon
                         />
                     </div>
 
-                    <div className="w-14 h-14 sm:w-16 sm:h-16 shrink-0 relative">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 xl:w-[clamp(40px,4vw,64px)] xl:h-[clamp(40px,4vw,64px)] shrink-0 relative">
                         <Image
                             src={`/badges_missions/${team}_mission2.png`}
                             alt="Mission 2"
@@ -117,6 +118,17 @@ export default function SideRow({team , mission2_check , mission1_check}: Readon
                     </div>
                 </div>
             </div>
+
+            <div className="w-full flex justify-center">
+                <div className="w-full max-w-xl">
+                    <ProgressionBar
+                        completed={completed}
+                        totalMission={team === "MECA" ? 8 : 7}
+                        color={teamColorMap[team]}
+                    />
+                </div>
+            </div>
+
         </div>
     );
 }

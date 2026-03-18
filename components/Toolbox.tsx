@@ -5,9 +5,11 @@ import React, { useState } from "react";
 type RadialAction = {
 	label: string;
 	onClick: () => void;
+	disabled?: boolean;
 };
 
 type RadialMenuProps = {
+	centerAction?: RadialAction;
 	actions: RadialAction[];
 };
 
@@ -18,8 +20,9 @@ const COLORS = [
 	{ id: "orange", base: "#CD5741", light: "#e8705a", glow: "rgba(205,87,65,0.5)" },
 ];
 
-export default function Toolbox({ actions }: Readonly<RadialMenuProps>) {
+export default function Toolbox({ centerAction, actions }: Readonly<RadialMenuProps>) {
 	const [hovered, setHovered] = useState<number | null>(null);
+	const [centerHover, setCenterHover] = useState(false);
 
 	const S = 520;
 	const cx = S / 2;
@@ -103,7 +106,7 @@ export default function Toolbox({ actions }: Readonly<RadialMenuProps>) {
 	return (
 		<svg
 			viewBox={`0 0 ${S} ${S}`}
-			style={{ display: "block", margin: "0 auto", width: "100%", maxWidth: S, height: "100%", maxHeight: S }}
+			style={{ display: "block", margin: "0 auto", width: "100%", height: "100%" }}
 		>
 			<defs>
 				<filter id="tb-glow-strong">
@@ -119,6 +122,15 @@ export default function Toolbox({ actions }: Readonly<RadialMenuProps>) {
 						<stop offset="100%" stopColor={c.base} stopOpacity="0.8" />
 					</radialGradient>
 				))}
+				<radialGradient id="tb-center-active-grad" cx="50%" cy="50%" r="50%">
+					<stop offset="0%"   stopColor="#5A4A7A" stopOpacity="0.75"/>
+					<stop offset="65%"  stopColor="#2E2452" stopOpacity="0.70"/>
+					<stop offset="100%" stopColor="#140F2E" stopOpacity="0.65"/>
+				</radialGradient>
+				<linearGradient id="tb-center-disabled-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+					<stop offset="0%" stopColor="#999" stopOpacity="0.4" />
+					<stop offset="100%" stopColor="#555" stopOpacity="0.6" />
+				</linearGradient>
 
 				{actions.map((action, i) => {
 					const lines = action.label.split("\n");
@@ -197,6 +209,46 @@ export default function Toolbox({ actions }: Readonly<RadialMenuProps>) {
 					</g>
 				);
 			})}
+			<circle visibility={centerAction && !centerAction.disabled ? "visible" : "hidden"} cx={cx} cy={cy} r={innerR * 0.8 + 4} fill="none" stroke="#834291" strokeWidth={0.8} strokeOpacity={0.5}/>
+			<circle visibility={centerAction && !centerAction.disabled ? "visible" : "hidden"} cx={cx} cy={cy} r={innerR * 0.8 + 12} fill="#834291" fillOpacity={0.12} filter="url(#tb-glow-soft)"/>
+
+			<g
+				data-testid="center-action-button"
+				visibility={centerAction ? "visible" : "hidden"}
+				cursor={centerAction?.disabled ? "not-allowed": "pointer" }
+				onClick={centerAction?.disabled ? undefined : centerAction?.onClick}
+				onMouseEnter={() => setCenterHover(true)}
+				onMouseLeave={() => setCenterHover(false)}
+			>
+				<circle cx={cx} cy={cy} r={innerR * 0.8} fill={!centerAction?.disabled && centerHover ? "url(#tb-center-active-grad)" : "none"} stroke={centerAction && !centerAction.disabled ? "#834291" : "gray"} strokeWidth={1.5} strokeOpacity={0.8}/>
+				<circle cx={cx} cy={cy} r={innerR * 0.8 - 10} fill="none"  stroke={centerAction?.disabled ? "gray" : "#834291"} strokeWidth={0.5} strokeOpacity={0.35}/>
+
+				<text
+					x={cx}
+					y={cy}
+					textAnchor="middle"
+					dominantBaseline="middle"
+					fontSize="17"
+					fontWeight="700"
+					fill={"white"}
+					letterSpacing="0.04em"
+				>
+					{centerAction?.label.split("\n").map((line, index) => (
+						<tspan key={`${line}-${index}`} x={cx} dy={index === 0 ? -5 : 30}>
+							{line}
+						</tspan>
+					))}
+				</text>
+
+				<circle
+					visibility={centerAction?.disabled ? "visible" : "hidden"}
+					cx={cx}
+					cy={cy}
+					r={innerR * 0.8}
+					fill="url(#tb-center-disabled-grad)"
+				/>
+
+			</g>
 		</svg>
 	);
 }
