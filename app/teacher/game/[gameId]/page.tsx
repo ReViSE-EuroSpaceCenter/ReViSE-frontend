@@ -153,8 +153,8 @@ export default function Dashboard() {
 
     return (
         <>
-            <div className="min-h-[calc(100vh-120px)] w-full max-w-450 mx-auto grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 items-start justify-items-center gap-y-12 gap-x-8 px-8 md:px-16 py-10">
-                <div className="flex flex-col gap-12 xl:gap-28 w-full min-w-0 items-center xl:items-start xl:pr-12 order-2 xl:order-1 lg:col-span-1">
+            <div className="min-h-[calc(100vh-120px)] w-full max-w-450 mx-auto grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-[1fr_2fr_1fr] items-center justify-items-center gap-4 px-8 md:px-16 py-10">
+                <div className="flex flex-col gap-12 xl:gap-18 w-full min-w-0 items-center xl:items-start xl:pr-12 order-2 xl:order-1 lg:col-span-1">
                     {leftTeams.map((teamItem) => (
                         <div key={`left-${teamItem.team}`} className="flex flex-col items-center xl:items-start gap-2">
                             <SideRow {...teamItem} />
@@ -162,7 +162,7 @@ export default function Dashboard() {
                     ))}
                 </div>
 
-                <div className="w-full max-w-[min(600px,calc(100vh-160px))] flex justify-center order-1 xl:order-2 lg:col-span-2 xl:col-span-1">
+                <div className="w-full max-w-[min(800px,100vh)] flex justify-center order-1 xl:order-2 lg:col-span-2 xl:col-span-1 p-16">
                     <Toolbox
                         centerAction={{ label: "Décollage\n🚀", onClick: () => setIsConfirmOpen(true), disabled: !allTeamsCompleted}}
                         actions={[
@@ -187,7 +187,7 @@ export default function Dashboard() {
                     )}
                 </div>
 
-                <div className="flex flex-col gap-12 xl:gap-28 w-full min-w-0 items-center xl:items-end xl:pl-12 order-3 xl:order-3 lg:col-span-1">
+                <div className="flex flex-col gap-12 xl:gap-18 w-full min-w-0 items-center xl:items-end xl:pl-12 order-3 xl:order-3 lg:col-span-1">
                     {rightTeams.map((teamItem) => (
                         <div key={`right-${teamItem.team}`} className="flex flex-col items-center xl:items-end gap-2">
                             <SideRow {...teamItem} />

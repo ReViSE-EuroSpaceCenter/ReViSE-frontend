@@ -106,7 +106,7 @@ export default function Toolbox({ centerAction, actions }: Readonly<RadialMenuPr
 	return (
 		<svg
 			viewBox={`0 0 ${S} ${S}`}
-			style={{ display: "block", margin: "0 auto", width: "100%", maxWidth: S, height: "100%", maxHeight: S }}
+			style={{ display: "block", margin: "0 auto", width: "100%", height: "100%" }}
 		>
 			<defs>
 				<filter id="tb-glow-strong">
