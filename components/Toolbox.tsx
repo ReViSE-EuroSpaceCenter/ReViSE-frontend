@@ -234,14 +234,14 @@ export default function Toolbox({ centerAction, actions }: Readonly<RadialMenuPr
 					letterSpacing="0.04em"
 				>
 					{centerAction?.label.split("\n").map((line, index) => (
-						<tspan key={index} x={cx} dy={index === 0 ? -5 : 30}>
+						<tspan key={`${line}-${index}`} x={cx} dy={index === 0 ? -5 : 30}>
 							{line}
 						</tspan>
 					))}
 				</text>
 
 				<circle
-					visibility={centerAction && centerAction.disabled ? "visible" : "hidden"}
+					visibility={centerAction?.disabled ? "visible" : "hidden"}
 					cx={cx}
 					cy={cy}
 					r={innerR * 0.8}
