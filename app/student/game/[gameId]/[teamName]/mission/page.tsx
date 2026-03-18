@@ -111,7 +111,7 @@ export default function MissionPage() {
                         ← Retour
                     </button>
 
-                    <div className="flex flex-col gap-6 ">
+                    <div className="flex flex-col gap-6 w-48 sm:w-64 lg:w-80">
                         <ProgressionBar
                             completed={completedMissionCount}
                             totalMission={totalMissionCount}
