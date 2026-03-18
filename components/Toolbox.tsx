@@ -213,6 +213,7 @@ export default function Toolbox({ centerAction, actions }: Readonly<RadialMenuPr
 			<circle visibility={centerAction && !centerAction.disabled ? "visible" : "hidden"} cx={cx} cy={cy} r={innerR * 0.8 + 12} fill="#834291" fillOpacity={0.12} filter="url(#tb-glow-soft)"/>
 
 			<g
+				data-testid="center-action-button"
 				visibility={centerAction ? "visible" : "hidden"}
 				cursor={centerAction && !centerAction.disabled ? "pointer" : "not-allowed"}
 				onClick={centerAction && !centerAction?.disabled ? centerAction?.onClick : undefined}

@@ -42,15 +42,30 @@ vi.mock("@/contexts/WebSocketProvider", () => ({
 }));
 
 vi.mock("@/components/Toolbox", () => ({
-    default: ({ actions }: { actions: { label: string; onClick: () => void }[] }) => (
-        <div>
-            {actions.map((action) => (
-                <button key={action.label} onClick={action.onClick}>
-                    {action.label}
-                </button>
-            ))}
-        </div>
-    ),
+    default: ({ centerAction, actions }: { centerAction?: { label: string; onClick: () => void, disabled :boolean }; actions: { label: string; onClick: () => void }[] }) => {
+        return (
+            <div>
+                {actions.map((action) => (
+                    <button key={action.label} onClick={action.onClick}>
+                        {action.label}
+                    </button>
+                ))}
+
+                {centerAction && (
+                    <button
+                        data-testid="center-action-button"
+                        disabled={centerAction.disabled}
+                        onClick={centerAction.disabled ? undefined : centerAction.onClick}
+                        style={{
+                            cursor: centerAction.disabled ? "not-allowed" : "pointer",
+                        }}
+                    >
+                        {centerAction.label}
+                    </button>
+                )}
+            </div>
+        );
+    },
 }));
 
 vi.mock("@/components/Checklist", () => ({
@@ -239,13 +254,11 @@ describe("Dashboard coverage", () => {
 
         renderPage();
 
-        expect(await screen.findAllByText("SideRow-MECA-4")).toHaveLength(2);
+        expect(await screen.findAllByText("SideRow-MECA-4")).toHaveLength(1);
         expect(screen.getAllByText("SideRow-AERO-3").length).toBeGreaterThan(0);
         expect(screen.getAllByText("SideRow-GECO-2").length).toBeGreaterThan(0);
 
-        const button = screen.getByRole("button", {
-            name: "Terminer les missions",
-        });
+        const button = await screen.findByTestId('center-action-button')
 
         expect(button).toBeDisabled();
     });
@@ -255,12 +268,11 @@ describe("Dashboard coverage", () => {
 
         renderPage();
 
-        const button = screen.getByRole("button", {
-            name: "Terminer les missions",
-        });
+        const centerButton = await screen.findByTestId('center-action-button');
 
         await waitFor(() => {
-            expect(button).toBeEnabled();
+            expect(centerButton).toHaveStyle({ cursor: "pointer" });
+            expect(centerButton).not.toHaveAttribute("onClick");
         });
     });
 
@@ -271,9 +283,7 @@ describe("Dashboard coverage", () => {
 
         renderPage();
 
-        await screen.findByRole("button", {
-            name: "Terminer les missions",
-        });
+        await screen.findByTestId('center-action-button');
 
         expect(screen.getByText("Checklist fermée")).toBeInTheDocument();
         expect(screen.getByText("IA fermée")).toBeInTheDocument();
@@ -294,9 +304,7 @@ describe("Dashboard coverage", () => {
 
         renderPage();
 
-        const button = await screen.findByRole("button", {
-            name: "Terminer les missions",
-        });
+        const button = await screen.findByTestId('center-action-button');
 
         await user.click(button);
 
@@ -316,7 +324,7 @@ describe("Dashboard coverage", () => {
         renderPage();
 
         await user.click(
-            await screen.findByRole("button", { name: "Terminer les missions" })
+            await screen.findByTestId('center-action-button')
         );
 
         expect(screen.getByText("Confirmation")).toBeInTheDocument();
@@ -338,7 +346,7 @@ describe("Dashboard coverage", () => {
         renderPage();
 
         await user.click(
-            await screen.findByRole("button", { name: "Terminer les missions" })
+            await screen.findByTestId('center-action-button')
         );
 
         await user.click(screen.getByRole("button", { name: "Continuer" }));
@@ -358,7 +366,7 @@ describe("Dashboard coverage", () => {
         renderPage();
 
         await user.click(
-            await screen.findByRole("button", { name: "Terminer les missions" })
+            await screen.findByTestId('center-action-button')
         );
 
         await user.click(screen.getByRole("button", { name: "Continuer" }));
@@ -380,7 +388,7 @@ describe("Dashboard coverage", () => {
         renderPage();
 
         await user.click(
-            await screen.findByRole("button", { name: "Terminer les missions" })
+            await screen.findByTestId('center-action-button')
         );
 
         await user.click(screen.getByRole("button", { name: "Continuer" }));
@@ -418,7 +426,7 @@ describe("Dashboard coverage", () => {
 
         renderPage();
 
-        expect(await screen.findAllByText("SideRow-AERO-3")).toHaveLength(2);
+        expect(await screen.findAllByText("SideRow-AERO-3")).toHaveLength(1);
 
         act(() => {
             wsCallback?.({
@@ -438,7 +446,7 @@ describe("Dashboard coverage", () => {
         });
 
         await waitFor(() => {
-            expect(screen.getAllByText("SideRow-AERO-6")).toHaveLength(2);
+            expect(screen.getAllByText("SideRow-AERO-6")).toHaveLength(1);
         });
     });
 
@@ -454,12 +462,10 @@ describe("Dashboard coverage", () => {
 
         renderPage();
 
-        const button = await screen.findByRole("button", {
-            name: "Terminer les missions",
-        });
+        const button = await screen.findByTestId('center-action-button')
 
         expect(button).toBeDisabled();
-        expect(await screen.findAllByText("SideRow-MECA-4")).toHaveLength(2);
+        expect(await screen.findAllByText("SideRow-MECA-4")).toHaveLength(1);
 
         act(() => {
             wsCallback?.({
@@ -479,7 +485,7 @@ describe("Dashboard coverage", () => {
         });
 
         await waitFor(() => {
-            expect(screen.getAllByText("SideRow-MECA-6")).toHaveLength(2);
+            expect(screen.getAllByText("SideRow-MECA-6")).toHaveLength(1);
         });
 
         expect(button).toBeDisabled();
@@ -497,9 +503,7 @@ describe("Dashboard coverage", () => {
 
         renderPage();
 
-        await screen.findByRole("button", {
-            name: "Terminer les missions",
-        });
+        await screen.findByTestId('center-action-button')
 
         act(() => {
             wsCallback?.({
@@ -520,7 +524,7 @@ describe("Dashboard coverage", () => {
 
         const view = renderPage();
 
-        expect(await screen.findAllByText("SideRow-MECA-4")).toHaveLength(2);
+        expect(await screen.findAllByText("SideRow-MECA-4")).toHaveLength(1);
 
         view.unmount();
 
