@@ -215,13 +215,13 @@ export default function Toolbox({ centerAction, actions }: Readonly<RadialMenuPr
 			<g
 				data-testid="center-action-button"
 				visibility={centerAction ? "visible" : "hidden"}
-				cursor={!centerAction?.disabled ? "pointer" : "not-allowed"}
-				onClick={!centerAction?.disabled ? centerAction?.onClick : undefined}
+				cursor={centerAction?.disabled ? "not-allowed": "pointer" }
+				onClick={centerAction?.disabled ? undefined : centerAction?.onClick}
 				onMouseEnter={() => setCenterHover(true)}
 				onMouseLeave={() => setCenterHover(false)}
 			>
 				<circle cx={cx} cy={cy} r={innerR * 0.8} fill={!centerAction?.disabled && centerHover ? "url(#tb-center-active-grad)" : "none"} stroke={centerAction && !centerAction.disabled ? "#834291" : "gray"} strokeWidth={1.5} strokeOpacity={0.8}/>
-				<circle cx={cx} cy={cy} r={innerR * 0.8 - 10} fill="none"  stroke={!centerAction?.disabled ? "#834291" : "gray"} strokeWidth={0.5} strokeOpacity={0.35}/>
+				<circle cx={cx} cy={cy} r={innerR * 0.8 - 10} fill="none"  stroke={centerAction?.disabled ? "gray" : "#834291"} strokeWidth={0.5} strokeOpacity={0.35}/>
 
 				<text
 					x={cx}
