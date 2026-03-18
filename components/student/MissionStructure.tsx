@@ -7,10 +7,13 @@ import { ValidationMissionModal } from "@/components/student/ValidationMission";
 import React, { useState } from "react";
 import { MissionButton } from "@/components/student/MissionButton";
 import { useMissionContext } from "@/contexts/MissionContext";
-import {showError} from "@/errors/getErrorMessage";
-import {ApiError} from "@/api/apiError";
+import { showError } from "@/errors/getErrorMessage";
+import { ApiError } from "@/api/apiError";
 import { getProjectMissionsToUpdate } from "@/utils/missionUpdate";
-import {getBonusMissionModalMessage, getClassicMissionModalMessage} from "@/utils/missionButtonMessage";
+import {
+    getBonusMissionModalMessage,
+    getClassicMissionModalMessage,
+} from "@/utils/missionButtonMessage";
 
 export function MissionStructure({
                                      mission,
@@ -26,16 +29,15 @@ export function MissionStructure({
     isBonus1Completed: boolean;
     isBonus2Completed: boolean;
     completedMissions: Record<string, boolean>;
-    onMissionUpdated: () => Promise<void>;
+    onMissionUpdated: (missionsToUpdate: string[]) => Promise<void>;
     isUnlocked: boolean;
 }>) {
+    const { lobbyCode, clientId, teamColor, teamName } = useMissionContext();
 
-    const {
-        lobbyCode,
-        clientId,
-        teamColor,
-        teamName,
-    } = useMissionContext();
+    const hostId =
+        globalThis.window === undefined
+            ? null
+            : sessionStorage.getItem("hostId");
 
     const children = mission.unlocks
         .map((id) => missionMap[id])
@@ -50,22 +52,23 @@ export function MissionStructure({
 
     let isCompleted: boolean;
 
-    if (mission.bonus) {
-        isCompleted =
-            missionNumber === "BONUS_1"
-                ? isBonus1Completed
-                : isBonus2Completed;
-    } else {
+    if (!mission.bonus) {
         isCompleted = completedMissions[missionNumber];
+    } else if (missionNumber === "BONUS_1") {
+        isCompleted = isBonus1Completed;
+    } else {
+        isCompleted = isBonus2Completed;
     }
 
     const message = mission.bonus
-      ? getBonusMissionModalMessage(isCompleted)
-      : getClassicMissionModalMessage(isCompleted);
+        ? getBonusMissionModalMessage(isCompleted)
+        : getClassicMissionModalMessage(isCompleted);
 
     const handleMissionClick = () => setShowModal(true);
+
     const handleConfirm = async () => {
         setShowModal(false);
+
         try {
             const missionsToUpdate = getProjectMissionsToUpdate(
                 mission,
@@ -75,12 +78,24 @@ export function MissionStructure({
                 isBonus1Completed,
                 isBonus2Completed
             );
-            await changeTeamMissionState(lobbyCode, clientId, missionsToUpdate);
-            await onMissionUpdated();
+
+            const isHostMode = !!hostId;
+            const idToSend = isHostMode ? hostId : clientId;
+            const teamLabelToSend = isHostMode ? teamName : undefined;
+
+            await changeTeamMissionState(
+                lobbyCode,
+                idToSend,
+                missionsToUpdate,
+                teamLabelToSend
+            );
+
+            await onMissionUpdated(missionsToUpdate);
         } catch (err) {
             showError(err instanceof ApiError ? err.key : "");
         }
     };
+
     const handleCancel = () => setShowModal(false);
 
     const childUnlocked = isUnlocked && isCompleted;

@@ -1,8 +1,19 @@
 import { put, get, post } from './apiClient'
 import { TeamMissionsState } from "@/types/TeamMissionState";
 
-export const changeTeamMissionState = async (lobbyCode: string, id: string, updateMissions: string[]) => {
-    return await put(`/api/missions/${lobbyCode}`, { body: { id, updateMissions } });
+export const changeTeamMissionState = async (
+    lobbyCode: string,
+    id: string,
+    updateMissions: string[],
+    teamLabel?: string
+) => {
+    return await put(`/api/missions/${lobbyCode}`, {
+        body: {
+            id,
+            teamLabel,
+            updateMissions,
+        },
+    });
 };
 
 export const getTeamMissionsState = async (
