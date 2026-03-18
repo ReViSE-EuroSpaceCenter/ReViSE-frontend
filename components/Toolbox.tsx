@@ -127,6 +127,10 @@ export default function Toolbox({ centerAction, actions }: Readonly<RadialMenuPr
 					<stop offset="65%"  stopColor="#2E2452" stopOpacity="0.70"/>
 					<stop offset="100%" stopColor="#140F2E" stopOpacity="0.65"/>
 				</radialGradient>
+				<linearGradient id="tb-center-disabled-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+					<stop offset="0%" stopColor="#999" stopOpacity="0.4" />
+					<stop offset="100%" stopColor="#555" stopOpacity="0.6" />
+				</linearGradient>
 
 				{actions.map((action, i) => {
 					const lines = action.label.split("\n");
@@ -206,17 +210,17 @@ export default function Toolbox({ centerAction, actions }: Readonly<RadialMenuPr
 				);
 			})}
 			<circle visibility={centerAction && !centerAction.disabled ? "visible" : "hidden"} cx={cx} cy={cy} r={innerR * 0.8 + 4} fill="none" stroke="#834291" strokeWidth={0.8} strokeOpacity={0.5}/>
-			<circle visibility={centerAction && !centerAction.disabled ? "visible" : "hidden"}cx={cx} cy={cy} r={innerR * 0.8 + 12} fill="#834291" fillOpacity={0.12} filter="url(#tb-glow-soft)"/>
+			<circle visibility={centerAction && !centerAction.disabled ? "visible" : "hidden"} cx={cx} cy={cy} r={innerR * 0.8 + 12} fill="#834291" fillOpacity={0.12} filter="url(#tb-glow-soft)"/>
 
 			<g
-				visibility={centerAction && !centerAction.disabled ? "visible" : "hidden"}
-				cursor="pointer"
+				visibility={centerAction ? "visible" : "hidden"}
+				cursor={centerAction && !centerAction.disabled ? "pointer" : "not-allowed"}
 				onClick={centerAction && !centerAction?.disabled ? centerAction?.onClick : undefined}
 				onMouseEnter={() => setCenterHover(true)}
 				onMouseLeave={() => setCenterHover(false)}
 			>
-				<circle cx={cx} cy={cy} r={innerR * 0.8} fill={centerHover ? "url(#tb-center-active-grad)" : "none"} stroke="#834291" strokeWidth={1.5} strokeOpacity={0.8}/>
-				<circle cx={cx} cy={cy} r={innerR * 0.8 - 10} fill="none"  stroke="#834291" strokeWidth={0.5} strokeOpacity={0.35}/>
+				<circle cx={cx} cy={cy} r={innerR * 0.8} fill={centerAction && !centerAction?.disabled && centerHover ? "url(#tb-center-active-grad)" : "none"} stroke={centerAction && !centerAction.disabled ? "#834291" : "gray"} strokeWidth={1.5} strokeOpacity={0.8}/>
+				<circle cx={cx} cy={cy} r={innerR * 0.8 - 10} fill="none"  stroke={centerAction && !centerAction.disabled ? "#834291" : "gray"} strokeWidth={0.5} strokeOpacity={0.35}/>
 
 				<text
 					x={cx}
@@ -234,6 +238,15 @@ export default function Toolbox({ centerAction, actions }: Readonly<RadialMenuPr
 						</tspan>
 					))}
 				</text>
+
+				<circle
+					visibility={centerAction && centerAction.disabled ? "visible" : "hidden"}
+					cx={cx}
+					cy={cy}
+					r={innerR * 0.8}
+					fill="url(#tb-center-disabled-grad)"
+				/>
+
 			</g>
 		</svg>
 	);
