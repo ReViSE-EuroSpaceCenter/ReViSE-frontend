@@ -25,15 +25,15 @@ describe("SideRow bonus alert", () => {
 		global.Audio = originalAudio;
 	});
 
-	it("déclenche showMissionAlert quand mission1_check passe de false à true", async () => {
+	it("déclenche showMissionAlert quand bonus1_check passe de false à true", async () => {
 		const showMissionAlertMock = alerts.showMissionAlert;
 
 		const { rerender } = render(
-			<SideRow team="MECA" mission1_check={false} mission2_check={false} />
+			<SideRow team="MECA" bonus1_check={false} bonus2_check={false} completed={0} />
 		);
 
 		rerender(
-			<SideRow team="MECA" mission1_check={true} mission2_check={false} />
+			<SideRow team="MECA" bonus1_check={true} bonus2_check={false} completed={0} />
 		);
 
 		await waitFor(() => {
@@ -41,15 +41,15 @@ describe("SideRow bonus alert", () => {
 		});
 	});
 
-	it("déclenche showMissionAlert quand mission2_check passe de false à true", async () => {
+	it("déclenche showMissionAlert quand bonus2_check passe de false à true", async () => {
 		const showMissionAlertMock = alerts.showMissionAlert;
 
 		const { rerender } = render(
-			<SideRow team="MECA" mission1_check={false} mission2_check={false} />
+			<SideRow team="MECA" bonus1_check={false} bonus2_check={false} completed={0} />
 		);
 
 		rerender(
-			<SideRow team="MECA" mission1_check={false} mission2_check={true} />
+			<SideRow team="MECA" bonus1_check={false} bonus2_check={true} completed={0} />
 		);
 
 		await waitFor(() => {

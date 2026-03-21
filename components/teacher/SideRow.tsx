@@ -9,13 +9,13 @@ import {teamColorMap} from "@/utils/teamColor";
 type StatRowProps = {
     team: string;
     completed: number;
-    mission1_check: boolean;
-    mission2_check: boolean;
+    bonus1_check: boolean;
+    bonus2_check: boolean;
 };
 
-export default function SideRow({team , completed ,  mission2_check , mission1_check}: Readonly<StatRowProps>) {
-    const prevMission1 = useRef(mission1_check);
-    const prevMission2 = useRef(mission2_check);
+export default function SideRow({team , completed ,  bonus2_check , bonus1_check}: Readonly<StatRowProps>) {
+    const prevMission1 = useRef(bonus1_check);
+    const prevMission2 = useRef(bonus2_check);
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
     useEffect(() => {
@@ -56,31 +56,31 @@ export default function SideRow({team , completed ,  mission2_check , mission1_c
     };
 
     useEffect(() => {
-        if (!prevMission1.current && mission1_check) {
+        if (!prevMission1.current && bonus1_check) {
             playMissionSound();
             setTimeout(() => {
                 showMissionAlert(team, 1);
             }, 800);
         }
-        prevMission1.current = mission1_check;
-    }, [mission1_check, team]);
-
-    useEffect(() => {
-        if (!prevMission2.current && mission2_check) {
+        if (!prevMission2.current && bonus2_check) {
             playMissionSound();
             setTimeout(() => {
                 showMissionAlert(team, 2);
             }, 800);
         }
-        prevMission2.current = mission2_check;
-    }, [mission2_check, team]);
+        prevMission1.current = bonus1_check;
+        prevMission2.current = bonus2_check;
+    }, [bonus1_check, bonus2_check, team]);
+
+    const bonus1Badge = `/badges/bonus/${team}_bonus1${bonus1_check ? "" : "_gris"}.svg`;
+    const bonus2Badge = `/badges/bonus/${team}_bonus2${bonus2_check ? "" : "_gris"}.svg`;
 
     return (
         <div className="flex flex-col items-center w-full max-w-187.5 py-6 group transition-all">
-            <div className="flex flex-row items-center ap-10 xl:gap-[clamp(10px,2vw,40px)] w-full justify-center">
+            <div className="flex flex-row items-center gap-10 xl:gap-[clamp(10px,2vw,40px)] w-full justify-center">
                 <div className="w-28 h-28 sm:w-36 sm:h-36 xl:w-[clamp(70px,7vw,140px)] xl:h-[clamp(70px,7vw,140px)] shrink-0 flex items-center justify-center">
                     <Image
-                        src={`/badges/${team}.png`}
+                        src={`/badges/teams/${team}.svg`}
                         alt={`Badge ${team}`}
                         width={120}
                         height={120}
@@ -91,28 +91,28 @@ export default function SideRow({team , completed ,  mission2_check , mission1_c
                 <div className="flex flex-row gap-6 px-1">
                     <div className="w-14 h-14 sm:w-16 sm:h-16 xl:w-[clamp(40px,4vw,64px)] xl:h-[clamp(40px,4vw,64px)] shrink-0 relative">
                         <Image
-                            src={`/badges_missions/${team}_mission1.png`}
-                            alt="Mission 1"
+                            src={bonus1Badge}
+                            alt={`Badge bonus 1 équipe ${team}`}
                             width={64}
                             height={64}
                             className={`object-contain transition-all duration-500 ${
-                                mission1_check
-                                    ? "grayscale-0 opacity-100 scale-105 drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]"
-                                    : "grayscale opacity-25 brightness-125 contrast-75"
+                                bonus1_check
+                                    ? "opacity-100 scale-105 drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]"
+                                    : "opacity-25 brightness-125 contrast-75"
                             }`}
                         />
                     </div>
 
                     <div className="w-14 h-14 sm:w-16 sm:h-16 xl:w-[clamp(40px,4vw,64px)] xl:h-[clamp(40px,4vw,64px)] shrink-0 relative">
                         <Image
-                            src={`/badges_missions/${team}_mission2.png`}
-                            alt="Mission 2"
+                            src={bonus2Badge}
+                            alt={`Badge bonus 2 équipe ${team}`}
                             width={64}
                             height={64}
                             className={`object-contain transition-all duration-500 ${
-                                mission2_check
-                                    ? "grayscale-0 opacity-100 scale-105 drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]"
-                                    : "grayscale opacity-25 brightness-125 contrast-75"
+                                bonus2_check
+                                    ? "opacity-100 scale-105 drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]"
+                                    : "opacity-25 brightness-125 contrast-75"
                             }`}
                         />
                     </div>

@@ -57,7 +57,7 @@ export default function Header() {
                             <MissionHeader
                                 teamName={teamName}
                                 color={teamColor}
-                                badge={`/badges/${teamName}.png`}
+                                badge={`/badges/teams/${teamName}.svg`}
                             />
                         )}
 						{isHomePage && (
