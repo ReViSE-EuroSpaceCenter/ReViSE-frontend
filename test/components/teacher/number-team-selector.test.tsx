@@ -1,8 +1,8 @@
-import {render, screen, waitFor} from "@testing-library/react";
+import {screen, waitFor} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {describe, it, expect, vi, beforeEach} from "vitest";
 import NumberTeamSelector from "@/components/teacher/NumberTeamSelector";
-import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import {renderPage} from "@/test/utils/renderPage";
 
 // ---------- Mocks ----------
 const createLobbyMock = vi.fn();
@@ -17,22 +17,6 @@ vi.mock("next/navigation", () => ({
     useRouter: () => ({push: pushMock}),
 }));
 
-// ---------- Helpers ----------
-function renderWithQuery(ui: React.ReactNode) {
-    const client = new QueryClient({
-        defaultOptions: {
-            queries: {retry: false},
-            mutations: {retry: false},
-        },
-    });
-
-    return render(
-        <QueryClientProvider client={client}>
-            {ui}
-        </QueryClientProvider>
-    );
-}
-
 // ---------- Tests ----------
 describe("NumberTeamSelector", () => {
     beforeEach(() => {
@@ -41,7 +25,7 @@ describe("NumberTeamSelector", () => {
     });
 
     it("affiche la modale quand isOpen=true", () => {
-        renderWithQuery(
+        renderPage(
             <NumberTeamSelector isOpen={true} onClose={() => {
             }}/>
         );
@@ -67,7 +51,7 @@ describe("NumberTeamSelector", () => {
             hostId: "host-xxx",
         });
 
-        renderWithQuery(
+        renderPage(
             <NumberTeamSelector isOpen={true} onClose={() => {
             }}/>
         );
@@ -94,7 +78,7 @@ describe("NumberTeamSelector", () => {
         const user = userEvent.setup();
         const onClose = vi.fn();
 
-        renderWithQuery(
+        renderPage(
             <NumberTeamSelector isOpen={true} onClose={onClose}/>
         );
 
@@ -113,7 +97,7 @@ describe("NumberTeamSelector", () => {
             hostId: "host-yyy",
         });
 
-        renderWithQuery(
+        renderPage(
             <NumberTeamSelector isOpen={true} onClose={() => {
             }}/>
         );

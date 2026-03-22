@@ -19,7 +19,7 @@ export const TeamButton = ({ team, isTaken, onJoin }: TeamButtonProps) => (
 	>
 		<div className="w-32 h-32 flex items-center justify-center">
 			<Image
-				src={`/badges/${team}.png`}
+				src={`/badges/teams/${team}.svg`}
 				alt={`Badge ${team}`}
 				width={128}
 				height={128}

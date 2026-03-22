@@ -23,8 +23,8 @@ type TeamData = {
 	id: number;
 	team: string;
     completed: number;
-	mission1_check: boolean;
-	mission2_check: boolean;
+	bonus1_check: boolean;
+	bonus2_check: boolean;
 };
 
 type TeamStats = {
@@ -48,8 +48,8 @@ interface GameInfoResponse {
 }
 
 const formatTeamStats = (stats: TeamStats) => ({
-    mission1_check: stats.firstBonusMissionCompleted,
-    mission2_check: stats.secondBonusMissionCompleted,
+    bonus1_check: stats.firstBonusMissionCompleted,
+    bonus2_check: stats.secondBonusMissionCompleted,
     completed: stats.classicMissionsCompleted,
 });
 
