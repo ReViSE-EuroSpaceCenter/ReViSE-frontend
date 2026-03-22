@@ -1,8 +1,8 @@
-import {render, screen, waitFor} from "@testing-library/react";
+import {screen, waitFor} from "@testing-library/react";
 import {describe, it, expect, vi, beforeEach} from "vitest";
 import {act} from "react";
 import LobbyPage from "@/app/teacher/game/[gameId]/setup/page";
-import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import {renderPage} from "@/test/utils/renderPage";
 
 // ---------- Mocks ----------
 const pushMock = vi.fn();
@@ -55,24 +55,8 @@ describe("LobbyPage", () => {
         onMessage = null;
     });
 
-    const renderPage = () => {
-        const queryClient = new QueryClient({
-            defaultOptions: {
-                queries: {
-                    retry: false,
-                },
-            },
-        });
-
-        return render(
-          <QueryClientProvider client={queryClient}>
-              <LobbyPage />
-          </QueryClientProvider>
-        );
-    };
-
     it("affiche le code du lobby et les équipes (état initial)", async () => {
-        renderPage();
+        renderPage(<LobbyPage />);
 
         expect(
             screen.queryByText("Choisissez le nombre d'équipes")
@@ -93,7 +77,7 @@ describe("LobbyPage", () => {
     });
 
     it("active le bouton après 4 TEAM_JOINED via WebSocket", async () => {
-        renderPage();
+        renderPage(<LobbyPage />);
 
         await waitFor(() => {
             expect(onMessage).toBeInstanceOf(Function);
@@ -121,7 +105,7 @@ describe("LobbyPage", () => {
     });
 
     it("redirige vers la page de jeu sur GAME_STARTED", async () => {
-        renderPage();
+        renderPage(<LobbyPage />);
 
         await waitFor(() => {
             expect(onMessage).toBeInstanceOf(Function);

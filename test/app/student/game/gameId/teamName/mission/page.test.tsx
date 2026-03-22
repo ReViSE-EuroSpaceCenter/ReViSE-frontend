@@ -1,8 +1,9 @@
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { screen, waitFor, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import MissionPage from "@/app/student/game/[gameId]/[teamName]/mission/page";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/react-query";
 import {TeamMissionsState} from "@/types/TeamMissionState";
+import {renderPage} from "@/test/utils/renderPage";
 
 // ---------- Mocks ----------
 const mockMissionsState: TeamMissionsState = {
@@ -76,14 +77,8 @@ describe("MissionPage", () => {
         global.sessionStorage.setItem("clientId", "clientTest123");
     });
 
-    const renderPage = () => render(
-        <QueryClientProvider client={queryClient}>
-            <MissionPage />
-        </QueryClientProvider>
-    );
-
     it("affiche l'état de chargement puis le contenu", async () => {
-        renderPage();
+        renderPage(<MissionPage />);
         expect(screen.getByText(/chargement/i)).toBeInTheDocument();
         await waitFor(() => {
             expect(screen.getByText(/Projet 1/i)).toBeInTheDocument();
@@ -91,7 +86,7 @@ describe("MissionPage", () => {
     });
 
     it("affiche la progression correcte après chargement", async () => {
-        renderPage();
+        renderPage(<MissionPage />);
 
         await waitFor(() => {
             const progBar = screen.getByTestId("progression-bar");
@@ -100,14 +95,14 @@ describe("MissionPage", () => {
     });
 
     it("appelle router.back lors du clic sur le bouton retour", async () => {
-        renderPage();
+        renderPage(<MissionPage />);
         const backBtn = await screen.findByRole("button", { name: /retour/i });
         fireEvent.click(backBtn);
         expect(backMock).toHaveBeenCalled();
     });
 
     it("ne rend que la mission racine", async () => {
-        renderPage();
+        renderPage(<MissionPage />);
         await waitFor(() => {
             const nodes = screen.getAllByTestId("mission-node");
             expect(nodes).toHaveLength(1);
