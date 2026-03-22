@@ -114,6 +114,18 @@ describe("Dashboard page", () => {
     });
 
     describe("Rendu et Navigation", () => {
+        it("désactive le bouton Décollage si toutes les équipes n'ont pas fini", async () => {
+            vi.mocked(getGameInfo).mockResolvedValue({
+                ...gameInfo,
+                allTeamsCompleted: false
+            } as any);
+
+            renderPage(<Dashboard />);
+
+            const btn = await screen.findByTestId("center-action-button");
+            expect(btn).toBeDisabled();
+        });
+
         it("affiche correctement les équipes et le Toolbox", async () => {
             renderPage(<Dashboard />);
 
@@ -214,21 +226,6 @@ describe("Dashboard page", () => {
                     "Impossible de clôturer la mission"
                 );
             });
-        });
-    });
-
-    describe("Dashboard - Logique métier supplémentaire", () => {
-
-        it("désactive le bouton Décollage si toutes les équipes n'ont pas fini", async () => {
-            vi.mocked(getGameInfo).mockResolvedValue({
-                ...gameInfo,
-                allTeamsCompleted: false
-            } as any);
-
-            renderPage(<Dashboard />);
-
-            const btn = await screen.findByTestId("center-action-button");
-            expect(btn).toBeDisabled();
         });
     });
 });
