@@ -5,17 +5,11 @@ import {useEffect, useRef} from "react";
 import {showMissionAlert} from "@/utils/alerts";
 import {ProgressionBar} from "@/components/student/ProgressionBar";
 import {teamColorMap} from "@/utils/teamColor";
+import {TeamData} from "@/types/TeamData";
 
-type StatRowProps = {
-    team: string;
-    completed: number;
-    bonus1_check: boolean;
-    bonus2_check: boolean;
-};
-
-export default function SideRow({team , completed ,  bonus2_check , bonus1_check}: Readonly<StatRowProps>) {
-    const prevMission1 = useRef(bonus1_check);
-    const prevMission2 = useRef(bonus2_check);
+export default function SideRow({team, classicMissionsCompleted, firstBonusMissionCompleted, secondBonusMissionCompleted}: Readonly<TeamData>) {
+    const prevMission1 = useRef(firstBonusMissionCompleted);
+    const prevMission2 = useRef(secondBonusMissionCompleted);
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
     useEffect(() => {
@@ -56,24 +50,24 @@ export default function SideRow({team , completed ,  bonus2_check , bonus1_check
     };
 
     useEffect(() => {
-        if (!prevMission1.current && bonus1_check) {
+        if (!prevMission1.current && firstBonusMissionCompleted) {
             playMissionSound();
             setTimeout(() => {
                 showMissionAlert(team, 1);
             }, 800);
         }
-        if (!prevMission2.current && bonus2_check) {
+        if (!prevMission2.current && secondBonusMissionCompleted) {
             playMissionSound();
             setTimeout(() => {
                 showMissionAlert(team, 2);
             }, 800);
         }
-        prevMission1.current = bonus1_check;
-        prevMission2.current = bonus2_check;
-    }, [bonus1_check, bonus2_check, team]);
+        prevMission1.current = firstBonusMissionCompleted;
+        prevMission2.current = secondBonusMissionCompleted;
+    }, [firstBonusMissionCompleted, secondBonusMissionCompleted, team]);
 
-    const bonus1Badge = `/badges/bonus/${team}_bonus1${bonus1_check ? "" : "_gris"}.svg`;
-    const bonus2Badge = `/badges/bonus/${team}_bonus2${bonus2_check ? "" : "_gris"}.svg`;
+    const bonus1Badge = `/badges/bonus/${team}_bonus1${firstBonusMissionCompleted ? "" : "_gris"}.svg`;
+    const bonus2Badge = `/badges/bonus/${team}_bonus2${secondBonusMissionCompleted ? "" : "_gris"}.svg`;
 
     return (
         <div className="flex flex-col items-center w-full max-w-187.5 py-6 group transition-all">
@@ -82,47 +76,40 @@ export default function SideRow({team , completed ,  bonus2_check , bonus1_check
                     <Image
                         src={`/badges/teams/${team}.svg`}
                         alt={`Badge ${team}`}
-                        width={120}
-                        height={120}
+                        width={140}
+                        height={140}
                         className="object-contain drop-shadow-[0_0_12px_rgba(139,92,246,0.3)] transition-transform duration-500"
                     />
                 </div>
-
                 <div className="flex flex-row gap-6 px-1">
-                    <div className="w-14 h-14 sm:w-16 sm:h-16 xl:w-[clamp(40px,4vw,64px)] xl:h-[clamp(40px,4vw,64px)] shrink-0 relative">
-                        <Image
-                            src={bonus1Badge}
-                            alt={`Badge bonus 1 équipe ${team}`}
-                            width={64}
-                            height={64}
-                            className={`object-contain transition-all duration-500 ${
-                                bonus1_check
-                                    ? "opacity-100 scale-105 drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]"
-                                    : "opacity-25 brightness-125 contrast-75"
-                            }`}
-                        />
-                    </div>
-
-                    <div className="w-14 h-14 sm:w-16 sm:h-16 xl:w-[clamp(40px,4vw,64px)] xl:h-[clamp(40px,4vw,64px)] shrink-0 relative">
-                        <Image
-                            src={bonus2Badge}
-                            alt={`Badge bonus 2 équipe ${team}`}
-                            width={64}
-                            height={64}
-                            className={`object-contain transition-all duration-500 ${
-                                bonus2_check
-                                    ? "opacity-100 scale-105 drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]"
-                                    : "opacity-25 brightness-125 contrast-75"
-                            }`}
-                        />
-                    </div>
+                    {[
+                        { badge: bonus1Badge, completed: firstBonusMissionCompleted, label: 1 },
+                        { badge: bonus2Badge, completed: secondBonusMissionCompleted, label: 2 },
+                    ].map(({ badge, completed }) => (
+                        <div
+                            key={badge}
+                            className="w-14 h-14 sm:w-16 sm:h-16 xl:w-[clamp(60px,7vw,100px)] xl:h-[clamp(60px,6vw,100px)] shrink-0 relative"
+                        >
+                            <Image
+                                src={badge}
+                                alt={`Badge bonus équipe ${team}`}
+                                width={80}
+                                height={80}
+                                className={`object-contain transition-all duration-500 ${
+                                    completed
+                                        ? "opacity-100 scale-105 drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]"
+                                        : "opacity-25 brightness-125 contrast-75"
+                                }`}
+                            />
+                        </div>
+                    ))}
                 </div>
             </div>
 
             <div className="w-full flex justify-center">
                 <div className="w-full max-w-xl">
                     <ProgressionBar
-                        completed={completed}
+                        completed={classicMissionsCompleted}
                         totalMission={team === "MECA" ? 8 : 7}
                         color={teamColorMap[team]}
                     />

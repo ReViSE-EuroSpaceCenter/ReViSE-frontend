@@ -7,7 +7,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Toolbox from "@/components/Toolbox";
 import Checklist from "@/components/Checklist";
 import IATech from "@/components/IATech";
-import SideRow from "@/components/teacher/SideRow";
 import { showError } from "@/errors/getErrorMessage";
 import { ApiError } from "@/api/apiError";
 import {endMission, getGameInfo} from "@/api/missionApi";
@@ -18,14 +17,8 @@ const PresentationModal = dynamic(
     { ssr: false, loading: () => null }
 );
 import {presentationTexts} from "@/utils/presentation_texts";
-
-type TeamData = {
-	id: number;
-	team: string;
-    completed: number;
-	bonus1_check: boolean;
-	bonus2_check: boolean;
-};
+import {TeamData} from "@/types/TeamData";
+import TeamsColumn from "@/components/teacher/TeamsColumn";
 
 type TeamStats = {
     classicMissionsCompleted: number;
@@ -46,12 +39,6 @@ interface GameInfoResponse {
     allTeamsCompleted: boolean;
     teamsFullProgression: Record<string, TeamFullProgression>;
 }
-
-const formatTeamStats = (stats: TeamStats) => ({
-    bonus1_check: stats.firstBonusMissionCompleted,
-    bonus2_check: stats.secondBonusMissionCompleted,
-    completed: stats.classicMissionsCompleted,
-});
 
 export default function Dashboard() {
     const params = useParams();
@@ -126,10 +113,10 @@ export default function Dashboard() {
     }, [connected, lobbyCode, queryClient, subscribe]);
 
     const teamsData: TeamData[] = gameData
-        ? Object.entries(gameData.teamsFullProgression).map(([key, data], index) => ({
+        ? Object.entries(gameData.teamsFullProgression).map(([team, data], index) => ({
             id: index,
-            team: key,
-            ...formatTeamStats(data.teamProgression),
+            team,
+            ...data.teamProgression,
         }))
         : [];
 
@@ -153,16 +140,12 @@ export default function Dashboard() {
 
     return (
         <>
-            <div className="min-h-[calc(100vh-120px)] w-full max-w-450 mx-auto grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-[1fr_2fr_1fr] items-center justify-items-center gap-4 px-8 md:px-16 py-10">
-                <div className="flex flex-col gap-12 xl:gap-18 w-full min-w-0 items-center xl:items-start xl:pr-12 order-2 xl:order-1 lg:col-span-1">
-                    {leftTeams.map((teamItem) => (
-                        <div key={`left-${teamItem.team}`} className="flex flex-col items-center xl:items-start gap-2">
-                            <SideRow {...teamItem} />
-                        </div>
-                    ))}
+            <div className="min-h-[calc(100vh-120px)] max-h-[calc(100vh-120px)] w-full max-w-450 mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-[1fr_2fr_1fr] items-center justify-items-center gap-4 px-8 md:px-16 py-10 ">
+                <div className="flex flex-col gap-12 xl:gap-18 w-full min-w-0 items-center xl:items-start xl:pr-12 order-2 xl:order-1 md:col-span-1">
+                    <TeamsColumn teams={leftTeams} align="start" side="left" />
                 </div>
 
-                <div className="w-full max-w-[min(800px,100vh)] flex justify-center order-1 xl:order-2 lg:col-span-2 xl:col-span-1 p-16">
+                <div className="w-full max-w-[min(800px,100vh)] flex justify-center order-1 xl:order-2 md:col-span-2 xl:col-span-1 p-4 md:p-8 xl:p-16">
                     <Toolbox
                         centerAction={{ label: "Décollage\n🚀", onClick: () => setIsConfirmOpen(true), disabled: !allTeamsCompleted}}
                         actions={[
@@ -188,11 +171,7 @@ export default function Dashboard() {
                 </div>
 
                 <div className="flex flex-col gap-12 xl:gap-18 w-full min-w-0 items-center xl:items-end xl:pl-12 order-3 xl:order-3 lg:col-span-1">
-                    {rightTeams.map((teamItem) => (
-                        <div key={`right-${teamItem.team}`} className="flex flex-col items-center xl:items-end gap-2">
-                            <SideRow {...teamItem} />
-                        </div>
-                    ))}
+                    <TeamsColumn teams={rightTeams} align="end" side="right" />
                 </div>
             </div>
 
