@@ -14,6 +14,7 @@ import {
     getBonusMissionModalMessage,
     getClassicMissionModalMessage,
 } from "@/utils/missionButtonMessage";
+import {useSessionId} from "@/hooks/useSessionId";
 
 export function MissionStructure({
                                      mission,
@@ -34,10 +35,7 @@ export function MissionStructure({
 }>) {
     const { lobbyCode, clientId, teamColor, teamName } = useMissionContext();
 
-    const hostId =
-        globalThis.window === undefined
-            ? null
-            : sessionStorage.getItem("hostId");
+    const hostId = useSessionId("hostId");
 
     const children = mission.unlocks
         .map((id) => missionMap[id])

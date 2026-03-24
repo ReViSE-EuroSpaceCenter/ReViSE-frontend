@@ -3,7 +3,6 @@ import { screen, waitFor, act } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import Dashboard from "@/app/teacher/game/[gameId]/page";
 import { getGameInfo } from "@/api/missionApi";
-import { showError } from "@/errors/getErrorMessage";
 import {renderPage} from "@/test/utils/renderPage";
 
 // ---------- Websocket mocks ----------
@@ -112,25 +111,6 @@ describe("Dashboard websocket", () => {
 
         await waitFor(() => {
             expect(screen.getByText("SideRow-MECA-6")).toBeInTheDocument();
-        });
-    });
-
-    it("ignore les messages websocket invalides", async () => {
-        renderPage(<Dashboard />);
-
-        await screen.findByTestId("center-action-button");
-
-        act(() => {
-            wsCallback?.({
-                body: "{invalid-json",
-            });
-        });
-
-        await waitFor(() => {
-            expect(showError).toHaveBeenCalledWith(
-                "",
-                "Erreur lors de la récupération des données"
-            );
         });
     });
 

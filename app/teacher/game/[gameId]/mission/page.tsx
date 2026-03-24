@@ -73,7 +73,7 @@ export default function HostMissionsPage() {
       teamProgression?.classicMissionsCompleted ?? 0
     );
 
-    if (isLoading || !gameData) return <LoadingPage />;
+    if (isLoading || !gameData || !teamKeys.length) return <LoadingPage />;
 
     return (
       <MissionProvider

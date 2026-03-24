@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState, useEffect } from "react";
+import {useState, useEffect, useCallback} from "react";
 import {useParams, usePathname, useRouter, useSearchParams} from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Toolbox from "@/components/Toolbox";
@@ -11,13 +11,13 @@ import SideRow from "@/components/teacher/SideRow";
 import { showError } from "@/errors/getErrorMessage";
 import { ApiError } from "@/api/apiError";
 import {endMission, getGameInfo} from "@/api/missionApi";
-import { useWebSocket } from "@/contexts/WebSocketProvider";
-import {WSEventType} from "@/types/WSEventType";
 const PresentationModal = dynamic(
     () => import("@/components/PresentationModal"),
     { ssr: false, loading: () => null }
 );
 import {presentationTexts} from "@/utils/presentation_texts";
+import {useSessionId} from "@/hooks/useSessionId";
+import {useWSSubscription} from "@/hooks/useWSSubscription";
 
 type TeamData = {
 	id: number;
@@ -60,11 +60,7 @@ export default function Dashboard() {
 	const searchParams = useSearchParams();
     const lobbyCode = params.gameId as string;
     const queryClient = useQueryClient();
-    const { connected, subscribe } = useWebSocket();
-    const hostId =
-        globalThis.window === undefined
-            ? null
-            : sessionStorage.getItem("hostId");
+    const hostId = useSessionId("hostId");
 
     const [isChecklistOpen, setIsChecklistOpen] = useState(false);
     const [isIAOpen, setIsIAOpen] = useState(false);
@@ -87,43 +83,29 @@ export default function Dashboard() {
         }
     }, [isError, error]);
 
-    useEffect(() => {
-        if (!connected || !lobbyCode) return;
+    useWSSubscription("mission", useCallback((event) => {
+        if (event.type !== "TEAM_PROGRESSION") return;
 
-        const sub = subscribe("mission", (message) => {
-            try {
-                const event: WSEventType = JSON.parse(message.body);
+        const { teamProgression, allTeamsMissionsCompleted } = event.payload;
 
-                queryClient.setQueryData<GameInfoResponse>(["gameInfo", lobbyCode], (old) => {
-                    if (!old) return old;
-
-                    if (event.type === "TEAM_PROGRESSION") {
-                        const { teamProgression, allTeamsMissionsCompleted } = event.payload;
-                        return {
-                            ...old,
-                            teamsFullProgression: {
-                                ...old.teamsFullProgression,
-                                [teamProgression.teamLabel]: {
-                                    ...old.teamsFullProgression[teamProgression.teamLabel],
-                                    teamProgression: {
-                                        ...old.teamsFullProgression[teamProgression.teamLabel]?.teamProgression,
-                                        ...teamProgression,
-                                    },
-                                },
-                            },
-                            allTeamsMissionsCompleted,
-                        };
-                    }
-
-                    return old;
-                });
-            } catch (err) {
-                showError(err instanceof ApiError ? err.key : "", "Erreur lors de la récupération des données");
-            }
+        queryClient.setQueryData<GameInfoResponse>(["gameInfo", lobbyCode], (old) => {
+            if (!old) return old;
+            return {
+                ...old,
+                teamsFullProgression: {
+                    ...old.teamsFullProgression,
+                    [teamProgression.teamLabel]: {
+                        ...old.teamsFullProgression[teamProgression.teamLabel],
+                        teamProgression: {
+                            ...old.teamsFullProgression[teamProgression.teamLabel]?.teamProgression,
+                            ...teamProgression,
+                        },
+                    },
+                },
+                allTeamsMissionsCompleted,
+            };
         });
-
-        return () => sub?.unsubscribe();
-    }, [connected, lobbyCode, queryClient, subscribe]);
+    }, [lobbyCode, queryClient]));
 
     const teamsData: TeamData[] = gameData
         ? Object.entries(gameData.teamsFullProgression).map(([key, data], index) => ({

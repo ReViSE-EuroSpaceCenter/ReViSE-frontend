@@ -52,7 +52,7 @@ vi.mock("@/api/apiError", () => ({
     },
 }));
 
-vi.mock("@/components/student/MissionButton", () => ({
+vi.mock("@/components/mission/MissionButton", () => ({
     MissionButton: ({
                         mission,
                         isUnlocked,
@@ -81,7 +81,7 @@ vi.mock("@/components/student/MissionButton", () => ({
     ),
 }));
 
-vi.mock("@/components/student/ValidationMission", () => ({
+vi.mock("@/components/mission/ValidationMission", () => ({
     ValidationMissionModal: ({
                                  isOpen,
                                  message,

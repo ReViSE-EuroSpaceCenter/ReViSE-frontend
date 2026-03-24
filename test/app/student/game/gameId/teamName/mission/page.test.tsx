@@ -35,10 +35,14 @@ vi.mock("@/types/Teams", () => ({
     }
 }));
 
-const backMock = vi.fn();
+const pushMock = vi.fn();
 vi.mock("next/navigation", () => ({
     useParams: () => ({ teamName: "MECA", gameId: "LOBBY123" }),
-    useRouter: () => ({ back: backMock, push: vi.fn(), refresh: vi.fn() }),
+    useRouter: () => ({
+        back: vi.fn(),
+        push: pushMock,
+        refresh: vi.fn(),
+    }),
 }));
 
 let storedCallback: (message: { body: string }) => void;
@@ -52,11 +56,11 @@ vi.mock("@/contexts/WebSocketProvider", () => ({
     }),
 }));
 
-vi.mock("@/components/student/MissionStructure", () => ({
+vi.mock("@/components/mission/MissionStructure", () => ({
     MissionStructure: () => <div data-testid="mission-node" />,
 }));
 
-vi.mock("@/components/student/ProgressionBar", () => ({
+vi.mock("@/components/mission/ProgressionBar", () => ({
     ProgressionBar: ({ completed, totalMission}: {
         completed: number;
         totalMission: number;
@@ -94,11 +98,13 @@ describe("MissionPage", () => {
         });
     });
 
-    it("appelle router.back lors du clic sur le bouton retour", async () => {
+    it("redirige vers la page student game lors du clic sur retour", async () => {
         renderPage(<MissionPage />);
+
         const backBtn = await screen.findByRole("button", { name: /retour/i });
         fireEvent.click(backBtn);
-        expect(backMock).toHaveBeenCalled();
+
+        expect(pushMock).toHaveBeenCalledWith("/student/game/LOBBY123/MECA");
     });
 
     it("ne rend que la mission racine", async () => {
