@@ -15,7 +15,7 @@ import { teamColorMap } from "@/utils/teamColor";
 import { useWebSocket } from "@/contexts/WebSocketProvider";
 import { ProgressionBar } from "@/components/student/ProgressionBar";
 import { WSEventType } from "@/types/WSEventType";
-import { GameInfoResponse } from "@/types/Mission";
+import { GameInfoResponse } from "@/types/TeamData";
 
 type TeamProgressionPayload = {
     teamProgression: {

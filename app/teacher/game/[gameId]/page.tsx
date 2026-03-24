@@ -19,26 +19,8 @@ const PresentationModal = dynamic(
 import {presentationTexts} from "@/utils/presentation_texts";
 import {TeamData} from "@/types/TeamData";
 import TeamsColumn from "@/components/teacher/TeamsColumn";
-
-type TeamStats = {
-    classicMissionsCompleted: number;
-    firstBonusMissionCompleted: boolean;
-    secondBonusMissionCompleted: boolean;
-};
-
-interface TeamProgressionResponse extends TeamStats {
-    teamLabel: string;
-}
-
-interface TeamFullProgression {
-    completedMissions: Record<string, boolean>;
-    teamProgression: TeamProgressionResponse;
-}
-
-interface GameInfoResponse {
-    allTeamsCompleted: boolean;
-    teamsFullProgression: Record<string, TeamFullProgression>;
-}
+import {GameInfoResponse} from "@/types/TeamData";
+import {confirmEndMissionMessage} from "@/utils/ConfirmationEndMissionMessage";
 
 export default function Dashboard() {
     const params = useParams();
@@ -59,8 +41,6 @@ export default function Dashboard() {
     const showPresentation = searchParams.get("presentation") === "true";
 	const [isPresentationOpen, setIsPresentationOpen] = useState(showPresentation);
 	const text = showPresentation ? presentationTexts.TEACHER : null
-
-    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
     const { data: gameData, isError, error } = useQuery<GameInfoResponse>({
         queryKey: ["gameInfo", lobbyCode],
@@ -147,7 +127,14 @@ export default function Dashboard() {
 
                 <div className="w-full max-w-[min(800px,100vh)] flex justify-center order-1 xl:order-2 md:col-span-2 xl:col-span-1 p-4 md:p-8 xl:p-16">
                     <Toolbox
-                        centerAction={{ label: "Décollage\n🚀", onClick: () => setIsConfirmOpen(true), disabled: !allTeamsCompleted}}
+                        centerAction={{ label: "Décollage\n🚀", onClick: async () => {
+                                const confirmed = await confirmEndMissionMessage();
+                                if (confirmed) {
+                                    await handleEndMission();
+                                }
+                            },
+                            disabled: !allTeamsCompleted
+                        }}
                         actions={[
                             { label: "Fin du tour", onClick: () => setIsChecklistOpen(true) },
                             { label: "Missions terminées", onClick: () => router.push(`/teacher/game/${lobbyCode}/mission`)},
@@ -174,41 +161,6 @@ export default function Dashboard() {
                     <TeamsColumn teams={rightTeams} align="end" side="right" />
                 </div>
             </div>
-
-            {isConfirmOpen && (
-                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-                    <div className="bg-darkBlueReViSE rounded-lg p-6 max-w-xl w-full shadow-lg">
-                        <h2 className="text-3xl font-semibold mb-5">
-                            Confirmation
-                        </h2>
-
-                        <p className="text-lg text-white mb-6">
-                            Cette action est irréversible. Une fois effectuée, les étudiants ne pourront plus modifier l&#39;état des missions réalisées.
-                            <br />
-                            Êtes-vous sûr de vouloir continuer ?
-                        </p>
-
-                        <div className="flex justify-end gap-3">
-                            <button
-                                onClick={() => setIsConfirmOpen(false)}
-                                className="px-4 py-2 rounded-md border border-gray-400 hover:bg-gray-500 transition cursor-pointer"
-                            >
-                                Annuler
-                            </button>
-
-                            <button
-                                onClick={async () => {
-                                    setIsConfirmOpen(false);
-                                    await handleEndMission();
-                                }}
-                                className="px-4 py-2 rounded-md bg-purpleReViSE text-white hover:bg-purple-700 transition cursor-pointer"
-                            >
-                                Continuer
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </>
     );
 }
