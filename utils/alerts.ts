@@ -8,7 +8,7 @@ export const showMissionAlert = (team: string, nbMission: number) => {
 	Swal.fire({
 		title: "Mission Bonus Accomplie !",
 		text: `L'équipe ${team} a réalisé sa mission bonus ${nbMission}`,
-		imageUrl: `/badges/${team}.png`,
+		imageUrl: `/badges/teams/${team}.svg`,
 		imageWidth: 120,
 		imageHeight: 120,
 		imageAlt: `Badge ${team}`,
