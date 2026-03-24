@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter, usePathname } from "next/navigation";
 import NumberTeamSelector from "@/components/teacher/NumberTeamSelector";
-import { MissionHeader } from "@/components/student/MissionHeader";
+import { MissionHeader } from "@/components/mission/MissionHeader";
 import {teamColorMap} from "@/utils/teamColor";
 
 export default function Header() {

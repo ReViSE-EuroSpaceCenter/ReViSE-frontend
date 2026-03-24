@@ -31,3 +31,8 @@ export interface GameInfoResponse {
     allTeamsCompleted: boolean;
     teamsFullProgression: Record<string, TeamFullProgressionResponse>;
 }
+
+export type TeamProgressionWS = {
+    teamProgression: TeamProgressionResponse;
+    allTeamsMissionsCompleted: boolean;
+};

@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { MissionStructure } from "@/components/student/MissionStructure";
+import { MissionStructure } from "@/components/mission/MissionStructure";
 import { showError } from "@/errors/getErrorMessage";
 import { changeTeamMissionState } from "@/api/missionApi";
 import { getProjectMissionsToUpdate } from "@/utils/missionUpdate";
