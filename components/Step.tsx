@@ -1,7 +1,8 @@
 import { motion } from "framer-motion"
 import { useDrawPath } from "@/hooks/useDrawPath"
+import {StepConfig} from "@/types/StepConfig";
 
-export default function Step({ step, config }: { step: number; config: any }) {
+export default function Step({ step, config }: { step: number; config: StepConfig }) {
     const { segments, segmentConfigs, isOrbit } = useDrawPath(config.id, config.path)
 
     if (step < config.id) return null

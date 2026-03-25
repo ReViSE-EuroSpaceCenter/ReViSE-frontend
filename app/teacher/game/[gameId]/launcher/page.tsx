@@ -8,13 +8,15 @@ export default function Launcher() {
     const [step, setStep] = useState(0)
 
     return (
-        <div className="relative w-full h-full">
-            <button
-                onClick={() => setStep((s) => s + 1)}
-                className="absolute top-4 right-4 z-20 bg-black px-4 py-2 rounded"
-            >
-                Next
-            </button>
+        <div className="relative w-full h-full min-h-screen">
+            {step !== 8 && (
+                <button
+                    className="fixed bottom-5 right-5 z-10 px-8 py-4 bg-purpleReViSE hover:bg-purpleReViSE/80 cursor-pointer rounded-lg font-semibold text-lg transition-colors"
+                    onClick={() => setStep((s) => s + 1)}
+                >
+                    Suivant
+                </button>
+            )}
 
             <div className="absolute inset-0">
                 <LauncherBackground />
