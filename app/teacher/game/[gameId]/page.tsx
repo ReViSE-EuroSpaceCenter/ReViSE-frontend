@@ -14,7 +14,7 @@ const PresentationModal = dynamic(
     () => import("@/components/PresentationModal"),
     { ssr: false, loading: () => null }
 );
-import {presentationTexts} from "@/utils/presentation_texts";
+import {presentationTexts} from "@/utils/presentationTexts";
 import {useSessionId} from "@/hooks/useSessionId";
 import {useWSSubscription} from "@/hooks/useWSSubscription";
 import {TeamData} from "@/types/TeamData";
