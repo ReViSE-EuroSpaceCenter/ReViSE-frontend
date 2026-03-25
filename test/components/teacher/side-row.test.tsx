@@ -29,11 +29,13 @@ describe("SideRow bonus alert", () => {
 		const showMissionAlertMock = alerts.showMissionAlert;
 
 		const { rerender } = render(
-			<SideRow team="MECA" bonus1_check={false} bonus2_check={false} completed={0} />
+			<SideRow team="MECA" id={0} classicMissionsCompleted={0} firstBonusMissionCompleted={false}
+                     secondBonusMissionCompleted={false}/>
 		);
 
 		rerender(
-			<SideRow team="MECA" bonus1_check={true} bonus2_check={false} completed={0} />
+			<SideRow team="MECA" id={0} classicMissionsCompleted={0} firstBonusMissionCompleted={true}
+                     secondBonusMissionCompleted={false}/>
 		);
 
 		await waitFor(() => {
@@ -45,11 +47,13 @@ describe("SideRow bonus alert", () => {
 		const showMissionAlertMock = alerts.showMissionAlert;
 
 		const { rerender } = render(
-			<SideRow team="MECA" bonus1_check={false} bonus2_check={false} completed={0} />
+			<SideRow team="MECA" id={0} classicMissionsCompleted={0} firstBonusMissionCompleted={false}
+                     secondBonusMissionCompleted={false} />
 		);
 
 		rerender(
-			<SideRow team="MECA" bonus1_check={false} bonus2_check={true} completed={0} />
+			<SideRow team="MECA" id={0} classicMissionsCompleted={0} firstBonusMissionCompleted={false}
+                     secondBonusMissionCompleted={true} />
 		);
 
 		await waitFor(() => {
