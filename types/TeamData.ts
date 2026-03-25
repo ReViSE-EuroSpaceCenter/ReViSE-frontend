@@ -6,19 +6,24 @@ export interface TeamData {
     secondBonusMissionCompleted: boolean;
 }
 
-type TeamStats = {
+type TeamProgressionResponse = {
     teamLabel: string;
     classicMissionsCompleted: number;
     firstBonusMissionCompleted: boolean;
     secondBonusMissionCompleted: boolean;
 };
 
-type TeamFullProgression = {
+type TeamFullProgressionResponse = {
     completedMissions: Record<string, boolean>;
-    teamProgression: TeamStats;
+    teamProgression: TeamProgressionResponse;
 };
 
 export type GameInfoResponse = {
     allTeamsCompleted: boolean;
-    teamsFullProgression: Record<string, TeamFullProgression>;
+    teamsFullProgression: Record<string, TeamFullProgressionResponse>;
+};
+
+export type TeamProgressionWS = {
+    teamProgression: TeamProgressionResponse;
+    allTeamsMissionsCompleted: boolean;
 };

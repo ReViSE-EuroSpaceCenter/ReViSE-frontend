@@ -1,7 +1,7 @@
 "use client";
 
 import Toolbox from "@/components/Toolbox";
-import {useEffect, useState} from "react";
+import {useCallback, useState} from "react";
 import {usePathname, useParams, useRouter, useSearchParams} from "next/navigation";
 import Checklist from "@/components/Checklist";
 import IATech from "@/components/IATech";
@@ -11,14 +11,12 @@ const PresentationModal = dynamic(
 	() => import("@/components/PresentationModal"),
 	{ ssr: false, loading: () => null }
 );
-import {WSEventType} from "@/types/WSEventType";
-import {useWebSocket} from "@/contexts/WebSocketProvider";
 import dynamic from "next/dynamic";
+import {useWSSubscription} from "@/hooks/useWSSubscription";
 
 export default function Dashboard() {
 	const router = useRouter();
 	const pathname = usePathname();
-	const { subscribe, connected } = useWebSocket();
 	const params = useParams();
 
 	const lobbyCode = params.gameId as string;
@@ -36,19 +34,11 @@ export default function Dashboard() {
 	const [isPresentationOpen, setIsPresentationOpen] = useState(showPresentation);
 	const text = showPresentation ? presentationTexts[name!] : null
 
-	useEffect(() => {
-		if (!connected) return;
-
-		const subscription = subscribe("mission", (message) => {
-			const event: WSEventType = JSON.parse(message.body);
-
-			if (event.type === "MISSION_ENDED") {
-				router.push(`/student/game/${lobbyCode}/${teamName}/resources`);
-			}
-		});
-
-		return () => subscription?.unsubscribe();
-	}, [teamName, connected, lobbyCode, router, subscribe]);
+	useWSSubscription("mission", useCallback((event) => {
+		if (event.type === "MISSION_ENDED") {
+			router.push(`/student/game/${lobbyCode}/${teamName}/resources`);
+		}
+	}, [router, lobbyCode, teamName]));
 
 	return (
 		<div className="min-h-[calc(100vh-120px)] flex items-center justify-center p-4">

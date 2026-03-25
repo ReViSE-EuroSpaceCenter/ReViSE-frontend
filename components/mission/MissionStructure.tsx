@@ -3,9 +3,9 @@
 import { Mission } from "@/types/Mission";
 import { changeTeamMissionState } from "@/api/missionApi";
 import { missionNameTraduction } from "@/utils/missionName";
-import { ValidationMissionModal } from "@/components/student/ValidationMission";
+import { ValidationMissionModal } from "@/components/mission/ValidationMission";
 import React, { useState } from "react";
-import { MissionButton } from "@/components/student/MissionButton";
+import { MissionButton } from "@/components/mission/MissionButton";
 import { useMissionContext } from "@/contexts/MissionContext";
 import { showError } from "@/errors/getErrorMessage";
 import { ApiError } from "@/api/apiError";
@@ -14,6 +14,7 @@ import {
     getBonusMissionModalMessage,
     getClassicMissionModalMessage,
 } from "@/utils/missionButtonMessage";
+import {useSessionId} from "@/hooks/useSessionId";
 
 export function MissionStructure({
                                      mission,
@@ -34,10 +35,7 @@ export function MissionStructure({
 }>) {
     const { lobbyCode, clientId, teamColor, teamName } = useMissionContext();
 
-    const hostId =
-        globalThis.window === undefined
-            ? null
-            : sessionStorage.getItem("hostId");
+    const hostId = useSessionId("hostId");
 
     const children = mission.unlocks
         .map((id) => missionMap[id])

@@ -1,30 +1,24 @@
 "use client";
 
 import {useParams, useRouter, useSearchParams} from "next/navigation";
-import {useWebSocket} from "@/contexts/WebSocketProvider";
-import {useEffect} from "react";
+import {useCallback, useEffect} from "react";
 import {useQueryClient} from "@tanstack/react-query";
 import {showError} from "@/errors/getErrorMessage";
-import {WSEventType} from "@/types/WSEventType";
 import {ApiError} from "@/api/apiError";
 import LoadingPage from "@/app/loading";
 import {useLobby} from "@/hooks/useLobby";
 import {TeamInfo} from "@/types/TeamInfo";
 import {TeamButton} from "@/components/student/TeamButton";
 import {WaitForStartMissions} from "@/components/student/WaitForStartMissions";
+import {useWSSubscription} from "@/hooks/useWSSubscription";
+import {useSessionId} from "@/hooks/useSessionId";
 
 export default function TeamPage() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const params = useParams();
 	const queryClient = useQueryClient();
-	const { subscribe, connected } = useWebSocket();
-
-    const clientId =
-        globalThis.window === undefined
-            ? null
-            : sessionStorage.getItem("clientId");
-    
+	const clientId = useSessionId("clientId");
 	const lobbyCode = params.gameId as string;
 	const { lobbyQuery, handleJoinTeam } = useLobby(lobbyCode);
 	const { data, isError, error, isLoading } = lobbyQuery;
@@ -44,34 +38,22 @@ export default function TeamPage() {
 	const removeTakenTeam = (teams: string[], teamToRemove: string) =>
 		teams.filter((team) => team !== teamToRemove);
 
-	useEffect(() => {
-		if (!connected) return;
-
-		const subscription = subscribe("lobby", (message) => {
-			const event: WSEventType = JSON.parse(message.body);
-
-			switch (event.type) {
-				case "TEAM_JOINED":
-					queryClient.setQueryData(
-						["lobbyInfo", lobbyCode],
-						(oldData: TeamInfo) => {
-							if (!oldData) return oldData;
-
-							return {
-								...oldData,
-								availableTeams: removeTakenTeam(oldData.availableTeams, event.payload.teamLabel),
-							};
-						}
-					);
-					break;
-				case "GAME_STARTED":
-					router.push(`/student/game/${lobbyCode}/${chosenTeam}?presentation=true`);
-					break;
-			}
-		});
-
-		return () => subscription?.unsubscribe();
-	}, [connected, subscribe, router, chosenTeam, lobbyCode, queryClient]);
+	useWSSubscription("lobby", useCallback((event) => {
+		switch (event.type) {
+			case "TEAM_JOINED":
+				queryClient.setQueryData(["lobbyInfo", lobbyCode], (oldData: TeamInfo) => {
+					if (!oldData) return oldData;
+					return {
+						...oldData,
+						availableTeams: removeTakenTeam(oldData.availableTeams, event.payload.teamLabel),
+					};
+				});
+				break;
+			case "GAME_STARTED":
+				router.push(`/student/game/${lobbyCode}/${chosenTeam}?presentation=true`);
+				break;
+		}
+	}, [lobbyCode, chosenTeam, router, queryClient]));
 
 	if (isLoading) {
 		return <LoadingPage />;

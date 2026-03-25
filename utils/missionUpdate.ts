@@ -1,5 +1,7 @@
 import {missionNameTraduction} from "@/utils/missionName";
 import {Mission} from "@/types/Mission";
+import {teams} from "@/types/Teams";
+import {GameInfoResponse, TeamProgressionWS} from "@/types/TeamData";
 
 function checkCompletion(
     missionNum: string,
@@ -53,4 +55,48 @@ export function getProjectMissionsToUpdate(
     }
 
     return Array.from(missionsToInvalidate);
+}
+
+export function updateTeamProgression(
+  gameData: GameInfoResponse | undefined,
+  payload: TeamProgressionWS
+) {
+    if (!gameData) return gameData;
+
+    const { teamProgression, allTeamsMissionsCompleted } = payload;
+    const teamLabel = teamProgression.teamLabel;
+
+    const teamData = gameData.teamsFullProgression?.[teamLabel];
+    if (!teamData) return gameData;
+
+    const bonusMissions =
+      teams[teamLabel]?.missions.filter((m) => m.bonus) ?? [];
+
+    const updatedCompletedMissions = { ...teamData.completedMissions };
+
+    if (bonusMissions[0]) {
+        updatedCompletedMissions[bonusMissions[0].id] =
+          teamProgression.firstBonusMissionCompleted;
+    }
+
+    if (bonusMissions[1]) {
+        updatedCompletedMissions[bonusMissions[1].id] =
+          teamProgression.secondBonusMissionCompleted;
+    }
+
+    return {
+        ...gameData,
+        teamsFullProgression: {
+            ...gameData.teamsFullProgression,
+            [teamLabel]: {
+                ...teamData,
+                completedMissions: updatedCompletedMissions,
+                teamProgression: {
+                    ...teamData.teamProgression,
+                    ...teamProgression,
+                },
+            },
+        },
+        allTeamsCompleted: allTeamsMissionsCompleted,
+    };
 }
