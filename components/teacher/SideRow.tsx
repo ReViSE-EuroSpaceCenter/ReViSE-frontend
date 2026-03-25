@@ -3,7 +3,7 @@
 import Image from "next/image";
 import {useEffect, useRef} from "react";
 import {showMissionAlert} from "@/utils/alerts";
-import {ProgressionBar} from "@/components/student/ProgressionBar";
+import {ProgressionBar} from "@/components/mission/ProgressionBar";
 import {teamColorMap} from "@/utils/teamColor";
 
 type StatRowProps = {

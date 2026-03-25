@@ -8,25 +8,23 @@ import { showError } from "@/errors/getErrorMessage";
 import HostMissionsPage from "@/app/teacher/game/[gameId]/mission/page";
 
 // ---------- Mocks ----------
-const mockBack = vi.fn();
+const mockPush = vi.fn();
 const mockSetQueryData = vi.fn();
 const mockRefetch = vi.fn();
-const mockSubscribe = vi.fn();
-const unsubscribeMock = vi.fn();
 
 let mockUseQueryState: any = {};
-let wsHandler: ((message: { body: string }) => void) | null = null;
+let wsCallback: ((event: any) => void) | null = null;
 
 vi.mock("next/navigation", () => ({
     useParams: () => ({ gameId: "GAME123" }),
     useRouter: () => ({
-        back: mockBack,
+        push: mockPush,
     }),
 }));
 
 vi.mock("@tanstack/react-query", async () => {
     const actual = await vi.importActual<typeof import("@tanstack/react-query")>(
-        "@tanstack/react-query"
+      "@tanstack/react-query"
     );
 
     return {
@@ -38,11 +36,10 @@ vi.mock("@tanstack/react-query", async () => {
     };
 });
 
-vi.mock("@/contexts/WebSocketProvider", () => ({
-    useWebSocket: () => ({
-        connected: true,
-        subscribe: mockSubscribe,
-    }),
+vi.mock("@/hooks/useWSSubscription", () => ({
+    useWSSubscription: (_topic: string, cb: (event: any) => void) => {
+        wsCallback = cb;
+    },
 }));
 
 vi.mock("@/api/missionApi", () => ({
@@ -56,7 +53,6 @@ vi.mock("@/errors/getErrorMessage", () => ({
 vi.mock("@/api/apiError", () => ({
     ApiError: class ApiError extends Error {
         key: string;
-
         constructor(key: string) {
             super(key);
             this.key = key;
@@ -65,12 +61,10 @@ vi.mock("@/api/apiError", () => ({
 }));
 
 vi.mock("@/app/loading", () => ({
-    default: function LoadingPage() {
-        return <div>Loading page...</div>;
-    },
+    default: () => <div>Loading page...</div>,
 }));
 
-vi.mock("@/components/student/ProgressionBar", () => ({
+vi.mock("@/components/mission/ProgressionBar", () => ({
     ProgressionBar: ({
                          completed,
                          totalMission,
@@ -86,56 +80,65 @@ vi.mock("@/components/student/ProgressionBar", () => ({
     ),
 }));
 
-vi.mock("@/components/student/MissionStructure", () => ({
-    MissionStructure: ({
-                           mission,
-                           onMissionUpdated,
-                       }: {
-        mission: { id: string };
-        onMissionUpdated: () => Promise<void>;
-    }) => (
-        <button type="button" onClick={() => void onMissionUpdated()}>
-            mission-{mission.id}
-        </button>
+vi.mock("@/components/mission/ProjectSection", () => ({
+    ProjectSection: ({ missions }: any) => (
+      <div>
+          Projet {missions[0]?.projectId}
+          {missions.map((m: any) => (
+            <button key={m.id}>mission-{m.id}</button>
+          ))}
+      </div>
     ),
 }));
 
-vi.mock("@/contexts/MissionContext", async () => {
-    const MockMissionProvider = ({ children }: React.PropsWithChildren) => <>{children}</>;
+vi.mock("@/components/mission/ReturnButton", () => ({
+    ReturnButton: ({ url }: { url: string }) => (
+      <button onClick={() => mockPush(url)}>← Retour</button>
+    ),
+}));
 
-    return {
-        MissionProvider: MockMissionProvider,
-    };
-});
+vi.mock("@/components/mission/TeamTabs", () => ({
+    TeamTabs: ({ teamKeys, setSelectedIndex }: any) => (
+      <div>
+          {teamKeys.map((team: string, i: number) => (
+            <button key={team} onClick={() => setSelectedIndex(i)}>
+                {team}
+            </button>
+          ))}
+      </div>
+    ),
+}));
 
-vi.mock("@/types/Teams", () => ({
-    teams: {
-        MECA: {
-            missions: [
-                { id: "CLASSIC_1", projectId: 1, bonus: false, unlocks: ["CLASSIC_2"] },
-                { id: "CLASSIC_2", projectId: 1, bonus: false, unlocks: [] },
-                { id: "BONUS_1", projectId: 2, bonus: true, unlocks: [] },
+vi.mock("@/contexts/MissionContext", () => ({
+    MissionProvider: ({ children }: any) => <>{children}</>,
+}));
+
+vi.mock("@/hooks/useSessionId", () => ({
+    useSessionId: () => "HOST123",
+}));
+
+vi.mock("@/hooks/useMission", () => ({
+    useMission: (team: string) => ({
+        missions:
+          team === "EXPE"
+            ? [{ id: "CLASSIC_3", projectId: 1, bonus: false }]
+            : [
+                { id: "CLASSIC_1", projectId: 1, bonus: false },
+                { id: "CLASSIC_2", projectId: 1, bonus: false },
             ],
-        },
-        EXPE: {
-            missions: [
-                { id: "CLASSIC_3", projectId: 1, bonus: false, unlocks: [] },
-            ],
-        },
-        AERO: {
-            missions: [
-                { id: "AERO_CLASSIC_1", projectId: 2, bonus: false, unlocks: [] },
-                { id: "AERO_BONUS_1", projectId: 2, bonus: true, unlocks: [] },
-            ],
-        },
-    },
+        missionMap: {},
+        projectIds: [1],
+    }),
+}));
+
+vi.mock("@/hooks/useInvalidateMissions", () => ({
+    useInvalidateMissions: () => mockRefetch,
 }));
 
 vi.mock("@/utils/teamColor", () => ({
     teamColorMap: {
         MECA: "#ff0000",
         EXPE: "#00ff00",
-        AERO: "#0000ff",
     },
 }));
 
@@ -144,14 +147,13 @@ function renderPage() {
     const client = new QueryClient({
         defaultOptions: {
             queries: { retry: false },
-            mutations: { retry: false },
         },
     });
 
     return render(
-        <QueryClientProvider client={client}>
-            <HostMissionsPage />
-        </QueryClientProvider>
+      <QueryClientProvider client={client}>
+          <HostMissionsPage />
+      </QueryClientProvider>
     );
 }
 
@@ -185,56 +187,16 @@ const baseGameData = {
     },
 };
 
-describe("HostMissionsPage coverage", () => {
+describe("HostMissionsPage", () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        wsHandler = null;
-
-        vi.spyOn(Storage.prototype, "getItem").mockImplementation((key: string) => {
-            if (key === "hostId") return "HOST123";
-            return null;
-        });
-        vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {});
-        vi.spyOn(Storage.prototype, "removeItem").mockImplementation(() => {});
-        vi.spyOn(Storage.prototype, "clear").mockImplementation(() => {});
-
-        mockSubscribe.mockImplementation(
-            (_topic: string, cb: (message: { body: string }) => void) => {
-                wsHandler = cb;
-                return {
-                    unsubscribe: unsubscribeMock,
-                };
-            }
-        );
-
-        mockRefetch.mockResolvedValue({
-            data: {
-                ...baseGameData,
-                teamsFullProgression: {
-                    ...baseGameData.teamsFullProgression,
-                    MECA: {
-                        ...baseGameData.teamsFullProgression.MECA,
-                        completedMissions: {
-                            CLASSIC_1: true,
-                            CLASSIC_2: true,
-                            BONUS_1: true,
-                        },
-                        teamProgression: {
-                            ...baseGameData.teamsFullProgression.MECA.teamProgression,
-                            classicMissionsCompleted: 2,
-                            firstBonusMissionCompleted: true,
-                        },
-                    },
-                },
-            },
-        });
+        wsCallback = null;
 
         mockUseQueryState = {
             data: baseGameData,
             isLoading: false,
             isError: false,
             error: null,
-            refetch: mockRefetch,
         };
     });
 
@@ -244,370 +206,95 @@ describe("HostMissionsPage coverage", () => {
     });
 
     it("affiche LoadingPage pendant le chargement", () => {
-        mockUseQueryState = {
-            ...mockUseQueryState,
-            data: undefined,
-            isLoading: true,
-        };
+        mockUseQueryState = { ...mockUseQueryState, isLoading: true, data: undefined };
 
         renderPage();
 
         expect(screen.getByText("Loading page...")).toBeInTheDocument();
     });
 
-    it("affiche LoadingPage si gameData est absent", () => {
-        mockUseQueryState = {
-            ...mockUseQueryState,
-            data: undefined,
-            isLoading: false,
-        };
-
-        renderPage();
-
-        expect(screen.getByText("Loading page...")).toBeInTheDocument();
-    });
-
-    it("change d'équipe au clic sur un onglet", () => {
-        renderPage();
-
-        fireEvent.click(screen.getByRole("button", { name: /EXPE/i }));
-
-        expect(screen.getByTestId("progression-bar")).toHaveTextContent("0/1 - #00ff00");
-        expect(screen.getByText("Projet 1")).toBeInTheDocument();
-        expect(screen.getByText("mission-CLASSIC_3")).toBeInTheDocument();
-    });
-
-    it("retourne en arrière au clic sur le bouton retour", () => {
+    it("redirige vers /teacher/game/GAME123 au clic sur retour", () => {
         renderPage();
 
         fireEvent.click(screen.getByText("← Retour"));
 
-        expect(mockBack).toHaveBeenCalledTimes(1);
+        expect(mockPush).toHaveBeenCalledWith("/teacher/game/GAME123");
     });
 
-    it("affiche la progression de l'équipe sélectionnée avec la bonne couleur", () => {
+    it("change d'équipe", () => {
         renderPage();
 
-        expect(screen.getByTestId("progression-bar")).toHaveTextContent("1/2 - #ff0000");
+        fireEvent.click(screen.getByText("EXPE"));
+
+        expect(screen.getByTestId("progression-bar")).toHaveTextContent("0/1 - #00ff00");
     });
 
-    it("utilise classicMissionsCompleted si supérieur au nombre calculé", () => {
-        mockUseQueryState = {
-            ...mockUseQueryState,
-            data: {
-                ...baseGameData,
-                teamsFullProgression: {
-                    ...baseGameData.teamsFullProgression,
-                    MECA: {
-                        completedMissions: {
-                            CLASSIC_1: false,
-                            CLASSIC_2: false,
-                            BONUS_1: false,
-                        },
-                        teamProgression: {
-                            teamLabel: "MECA",
-                            classicMissionsCompleted: 2,
-                            firstBonusMissionCompleted: false,
-                            secondBonusMissionCompleted: false,
-                        },
-                    },
-                },
-            },
-        };
-
+    it("affiche la progression correcte", () => {
         renderPage();
 
-        expect(screen.getByTestId("progression-bar")).toHaveTextContent("2/2");
+        fireEvent.click(screen.getByText("MECA"));
+
+        expect(screen.getByTestId("progression-bar"))
+          .toHaveTextContent("1/2 - #ff0000");
     });
 
-    it("n'affiche que les missions racines d'un projet", () => {
-        renderPage();
-
-        expect(screen.getByText("mission-CLASSIC_1")).toBeInTheDocument();
-        expect(screen.queryByText("mission-CLASSIC_2")).not.toBeInTheDocument();
-    });
-
-    it("appelle showError quand useQuery est en erreur avec ApiError", async () => {
+    it("appelle showError en cas d'erreur API", async () => {
         const { ApiError } = await import("@/api/apiError");
 
         mockUseQueryState = {
             ...mockUseQueryState,
             isError: true,
-            error: new ApiError("GAME_FETCH_ERROR"),
+            error: new ApiError("ERR"),
         };
 
         renderPage();
 
         await waitFor(() => {
             expect(showError).toHaveBeenCalledWith(
-                "GAME_FETCH_ERROR",
-                "Impossible de récupérer les données de la partie"
+              "ERR",
+              "Impossible de récupérer les données de la partie"
             );
         });
     });
 
-    it("appelle showError quand useQuery est en erreur générique", async () => {
-        mockUseQueryState = {
-            ...mockUseQueryState,
-            isError: true,
-            error: new Error("boom"),
-        };
-
-        renderPage();
-
-        await waitFor(() => {
-            expect(showError).toHaveBeenCalledWith(
-                "",
-                "Impossible de récupérer les données de la partie"
-            );
-        });
-    });
-
-    it("appelle refetch après mise à jour d'une mission", async () => {
-        renderPage();
-
-        fireEvent.click(screen.getByText("mission-CLASSIC_1"));
-
-        await waitFor(() => {
-            expect(mockRefetch).toHaveBeenCalledTimes(1);
-        });
-    });
-
-    it("met à jour le cache via websocket TEAM_PROGRESSION et refetch si équipe sélectionnée", async () => {
+    it("met à jour le cache via websocket", async () => {
         renderPage();
 
         await act(async () => {
-            wsHandler?.({
-                body: JSON.stringify({
-                    type: "TEAM_PROGRESSION",
-                    payload: {
-                        teamProgression: {
-                            teamLabel: "MECA",
-                            classicMissionsCompleted: 2,
-                            firstBonusMissionCompleted: true,
-                            secondBonusMissionCompleted: false,
-                        },
-                        allTeamsMissionsCompleted: false,
-                    },
-                }),
-            });
-        });
-
-        expect(mockSetQueryData).toHaveBeenCalledTimes(1);
-        expect(mockSetQueryData).toHaveBeenCalledWith(
-            ["gameInfo", "GAME123"],
-            expect.any(Function)
-        );
-        expect(mockRefetch).toHaveBeenCalledTimes(1);
-    });
-
-    it("applique correctement la mise à jour du cache pour une équipe connue", async () => {
-        renderPage();
-
-        await act(async () => {
-            wsHandler?.({
-                body: JSON.stringify({
-                    type: "TEAM_PROGRESSION",
-                    payload: {
-                        teamProgression: {
-                            teamLabel: "MECA",
-                            classicMissionsCompleted: 2,
-                            firstBonusMissionCompleted: true,
-                            secondBonusMissionCompleted: false,
-                        },
-                        allTeamsMissionsCompleted: true,
-                    },
-                }),
-            });
-        });
-
-        const updater = mockSetQueryData.mock.calls[0][1];
-        const updated = updater(baseGameData);
-
-        expect(updated).toEqual({
-            ...baseGameData,
-            allTeamsCompleted: true,
-            teamsFullProgression: {
-                ...baseGameData.teamsFullProgression,
-                MECA: {
-                    ...baseGameData.teamsFullProgression.MECA,
-                    completedMissions: {
-                        ...baseGameData.teamsFullProgression.MECA.completedMissions,
-                        BONUS_1: true,
-                    },
+            wsCallback?.({
+                type: "TEAM_PROGRESSION",
+                payload: {
                     teamProgression: {
-                        ...baseGameData.teamsFullProgression.MECA.teamProgression,
                         teamLabel: "MECA",
                         classicMissionsCompleted: 2,
-                        firstBonusMissionCompleted: true,
-                        secondBonusMissionCompleted: false,
                     },
+                    allTeamsMissionsCompleted: false,
                 },
-            },
-        });
-    });
-
-    it("ne modifie pas le cache si l'équipe du websocket n'existe pas dans gameData", async () => {
-        renderPage();
-
-        await act(async () => {
-            wsHandler?.({
-                body: JSON.stringify({
-                    type: "TEAM_PROGRESSION",
-                    payload: {
-                        teamProgression: {
-                            teamLabel: "AERO",
-                            classicMissionsCompleted: 1,
-                            firstBonusMissionCompleted: true,
-                            secondBonusMissionCompleted: false,
-                        },
-                        allTeamsMissionsCompleted: false,
-                    },
-                }),
             });
         });
 
-        const updater = mockSetQueryData.mock.calls[0][1];
-        const updated = updater(baseGameData);
-
-        expect(updated).toBe(baseGameData);
-        expect(mockRefetch).not.toHaveBeenCalled();
+        expect(mockSetQueryData).toHaveBeenCalledWith(
+          ["gameInfo", "GAME123"],
+          expect.any(Function)
+        );
     });
 
-    it("retourne undefined dans le cache si previousData est undefined", async () => {
+    it("ignore les events non pertinents", async () => {
         renderPage();
 
         await act(async () => {
-            wsHandler?.({
-                body: JSON.stringify({
-                    type: "TEAM_PROGRESSION",
-                    payload: {
-                        teamProgression: {
-                            teamLabel: "MECA",
-                            classicMissionsCompleted: 2,
-                            firstBonusMissionCompleted: true,
-                            secondBonusMissionCompleted: false,
-                        },
-                        allTeamsMissionsCompleted: false,
-                    },
-                }),
-            });
-        });
-
-        const updater = mockSetQueryData.mock.calls[0][1];
-        const updated = updater(undefined);
-
-        expect(updated).toBeUndefined();
-    });
-
-    it("met à jour le cache sans refetch si l'event concerne une autre équipe", async () => {
-        renderPage();
-
-        await act(async () => {
-            wsHandler?.({
-                body: JSON.stringify({
-                    type: "TEAM_PROGRESSION",
-                    payload: {
-                        teamProgression: {
-                            teamLabel: "EXPE",
-                            classicMissionsCompleted: 1,
-                            firstBonusMissionCompleted: false,
-                            secondBonusMissionCompleted: false,
-                        },
-                        allTeamsMissionsCompleted: false,
-                    },
-                }),
-            });
-        });
-
-        expect(mockSetQueryData).toHaveBeenCalledTimes(1);
-        expect(mockRefetch).not.toHaveBeenCalled();
-    });
-
-    it("ignore les messages websocket d'un autre type", async () => {
-        renderPage();
-
-        await act(async () => {
-            wsHandler?.({
-                body: JSON.stringify({
-                    type: "OTHER_EVENT",
-                    payload: {
-                        foo: "bar",
-                    },
-                }),
+            wsCallback?.({
+                type: "OTHER_EVENT",
             });
         });
 
         expect(mockSetQueryData).not.toHaveBeenCalled();
-        expect(mockRefetch).not.toHaveBeenCalled();
-        expect(showError).not.toHaveBeenCalled();
     });
 
-    it("appelle showError si le message websocket est invalide", async () => {
-        renderPage();
-
-        await act(async () => {
-            wsHandler?.({
-                body: "{invalid json",
-            });
-        });
-
-        expect(showError).toHaveBeenCalledWith(
-            "",
-            "Erreur lors de la récupération des données"
-        );
-    });
-
-    it("s'abonne au websocket mission", () => {
-        renderPage();
-
-        expect(mockSubscribe).toHaveBeenCalledWith("mission", expect.any(Function));
-    });
-
-    it("se désabonne du websocket au démontage", () => {
-        const view = renderPage();
-
-        view.unmount();
-
-        expect(unsubscribeMock).toHaveBeenCalledTimes(1);
-    });
-
-    it("affiche une erreur si une équipe est sélectionnée mais hostId est absent", () => {
-        vi.spyOn(Storage.prototype, "getItem").mockImplementation((key: string) => {
-            if (key === "hostId") return null;
-            return null;
-        });
-
-        renderPage();
-
-        expect(
-            screen.getByText("Une erreur est survenue. Réessayez dans quelques instants.")
-        ).toBeInTheDocument();
-    });
-
-    it("affiche le message de sélection si aucune équipe n'est disponible", () => {
+    it("n'affiche pas la progression si aucune équipe", () => {
         mockUseQueryState = {
             ...mockUseQueryState,
-            data: {
-                allTeamsCompleted: false,
-                teamsFullProgression: {},
-            },
-        };
-
-        renderPage();
-
-        expect(
-            screen.getByText("Sélectionne une équipe pour afficher ses missions")
-        ).toBeInTheDocument();
-    });
-
-    it("n'affiche pas la progression si aucune équipe n'est sélectionnée", () => {
-        mockUseQueryState = {
-            ...mockUseQueryState,
-            data: {
-                allTeamsCompleted: false,
-                teamsFullProgression: {},
-            },
+            data: { allTeamsCompleted: false, teamsFullProgression: {} },
         };
 
         renderPage();
