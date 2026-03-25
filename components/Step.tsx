@@ -1,27 +1,44 @@
-import {useDrawPath} from "@/hooks/useDrawPath";
+import { motion } from "framer-motion"
+import { useDrawPath } from "@/hooks/useDrawPath"
 
 export default function Step({ step, config }: { step: number; config: any }) {
-    const { pathRef, style } = useDrawPath(step, config.id)
-    
+    const { segments, segmentConfigs, isOrbit } = useDrawPath(config.id, config.path)
+
+    if (step < config.id) return null
+
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
-            xmlSpace="preserve"
+            viewBox="300 0 2800 1400"
             style={{
                 fillRule: "evenodd",
                 clipRule: "evenodd",
                 strokeLinecap: "round",
                 strokeLinejoin: "round",
-                strokeMiterlimit: 1.5,
             }}
-            viewBox="300 0 2800 1400"
         >
             <g transform={config.transform}>
                 <clipPath id={config.clipId}>
                     <path d={config.clipPath} />
                 </clipPath>
+
                 <g clipPath={`url(#${config.clipId})`}>
-                    <path ref={pathRef} d={config.path} style={style} />
+                    {segments.map((seg, i) => (
+                        <motion.path key={i} d={seg.d}
+                            stroke="#da7eb2"
+                            fill="none"
+                            strokeWidth={isOrbit ? 16.67 : 30.76}
+                            strokeDasharray={seg.length}
+                            strokeDashoffset={seg.length}
+                            initial={{ strokeDashoffset: seg.length, opacity: isOrbit ? 1 : 0 }}
+                            animate={{ strokeDashoffset: 0, opacity: 1 }}
+                            transition={{
+                                duration: segmentConfigs[i].duration,
+                                delay: segmentConfigs[i].delay,
+                                ease: "linear",
+                            }}
+                        />
+                    ))}
                 </g>
             </g>
         </svg>
