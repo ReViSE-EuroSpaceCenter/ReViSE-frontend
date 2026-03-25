@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { MissionStructure } from "@/components/student/MissionStructure";
+import { MissionStructure } from "@/components/mission/MissionStructure";
 import { showError } from "@/errors/getErrorMessage";
 import { changeTeamMissionState } from "@/api/missionApi";
 import { getProjectMissionsToUpdate } from "@/utils/missionUpdate";
@@ -52,7 +52,7 @@ vi.mock("@/api/apiError", () => ({
     },
 }));
 
-vi.mock("@/components/student/MissionButton", () => ({
+vi.mock("@/components/mission/MissionButton", () => ({
     MissionButton: ({
                         mission,
                         isUnlocked,
@@ -81,7 +81,7 @@ vi.mock("@/components/student/MissionButton", () => ({
     ),
 }));
 
-vi.mock("@/components/student/ValidationMission", () => ({
+vi.mock("@/components/mission/ValidationMission", () => ({
     ValidationMissionModal: ({
                                  isOpen,
                                  message,

@@ -1,13 +1,13 @@
 "use client"
 
-import { useEffect, useState } from "react";
+import {useCallback, useEffect, useState} from "react";
 import { useRouter, useParams } from "next/navigation";
-import { useWebSocket } from "@/contexts/WebSocketProvider";
-import { WSEventType } from "@/types/WSEventType";
 import { getLobbyInfo, startLobby } from "@/api/lobbyApi";
 import { showError } from "@/errors/getErrorMessage";
 import { ApiError } from "@/api/apiError";
 import {useLobby} from "@/hooks/useLobby";
+import {useSessionId} from "@/hooks/useSessionId";
+import {useWSSubscription} from "@/hooks/useWSSubscription";
 
 export default function SetUpPage() {
     const router = useRouter();
@@ -19,18 +19,11 @@ export default function SetUpPage() {
     const nbTeams = data?.allTeams.length ?? 0;
 
     const [joinedTeam, setJoinedTeam] = useState(0);
-
-    const { subscribe, connected } = useWebSocket();
     const [loading, setLoading] = useState(false);
 
-    const hostId =
-      globalThis.window === undefined
-        ? null
-        : sessionStorage.getItem("hostId");
+    const hostId = useSessionId("hostId");
 
     useEffect(() => {
-        if (!connected) return;
-
         void (async () => {
             try {
                 const lobby = await getLobbyInfo(lobbyCode);
@@ -44,31 +37,22 @@ export default function SetUpPage() {
                 showError(err instanceof ApiError ? err.key : "");
             }
         })();
-    }, [connected, lobbyCode]);
+    }, [lobbyCode]);
 
-    useEffect(() => {
-        if (!connected) return;
+    useWSSubscription("lobby", useCallback((event) => {
+        switch (event.type) {
+            case "TEAM_JOINED":
+                setJoinedTeam((prev) => prev + 1);
+                break;
 
-        const subscription = subscribe("lobby", (message) => {
-            const event: WSEventType = JSON.parse(message.body);
+            case "GAME_STARTED":
+                router.push(`/teacher/game/${lobbyCode}?presentation=true`);
+                break;
 
-            switch (event.type) {
-                case "TEAM_JOINED":
-                    setJoinedTeam((prev) => prev + 1);
-                    break;
-
-                case "GAME_STARTED":
-                    router.push(`/teacher/game/${lobbyCode}?presentation=true`);
-                    break;
-
-                default:
-                    break;
-            }
-        });
-
-        return () => subscription?.unsubscribe();
-    }, [router, subscribe, connected, lobbyCode, nbTeams]);
-
+            default:
+                break;
+        }
+    }, [lobbyCode, router]));
 
     const startGame = async () => {
         if (!hostId) {

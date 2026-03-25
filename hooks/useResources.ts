@@ -3,14 +3,12 @@ import {updateResources} from "@/api/launcherApi";
 import {showError} from "@/errors/getErrorMessage";
 import {ApiError} from "@/api/apiError";
 import {useParams, useRouter} from "next/navigation";
+import {useSessionId} from "@/hooks/useSessionId";
 
 export const useResources = () => {
 	const router = useRouter();
 	const params = useParams();
-	const clientId =
-		globalThis.window === undefined
-			? null
-			: sessionStorage.getItem("clientId");
+	const clientId = useSessionId("clientId");
 
 	const lobbyCode = params.gameId as string;
 	const teamName = params.teamName as string;
