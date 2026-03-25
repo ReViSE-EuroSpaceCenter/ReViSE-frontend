@@ -94,46 +94,36 @@ export default function Dashboard() {
             try {
                 const event: WSEventType = JSON.parse(message.body);
 
-                switch (event.type) {
-                    case "RESSOURCES_ENCODED":
-                        router.push(`/teacher/game/${lobbyCode}/launcher`);
-                        break;
+                queryClient.setQueryData<GameInfoResponse>(["gameInfo", lobbyCode], (old) => {
+                    if (!old) return old;
 
-                    case "TEAM_PROGRESSION":
-                        queryClient.setQueryData<GameInfoResponse>(["gameInfo", lobbyCode], (old) => {
-                                if (!old) return old;
-
-                                const { teamProgression, allTeamsMissionsCompleted } = event.payload;
-                                return {
-                                    ...old,
-                                    teamsFullProgression: {
-                                        ...old.teamsFullProgression,
-                                        [teamProgression.teamLabel]: {
-                                            ...old.teamsFullProgression[teamProgression.teamLabel],
-                                            teamProgression: {
-                                                ...old.teamsFullProgression[
-                                                    teamProgression.teamLabel
-                                                    ]?.teamProgression,
-                                                ...teamProgression,
-                                            },
-                                        },
+                    if (event.type === "TEAM_PROGRESSION") {
+                        const { teamProgression, allTeamsMissionsCompleted } = event.payload;
+                        return {
+                            ...old,
+                            teamsFullProgression: {
+                                ...old.teamsFullProgression,
+                                [teamProgression.teamLabel]: {
+                                    ...old.teamsFullProgression[teamProgression.teamLabel],
+                                    teamProgression: {
+                                        ...old.teamsFullProgression[teamProgression.teamLabel]?.teamProgression,
+                                        ...teamProgression,
                                     },
-                                    allTeamsMissionsCompleted,
-                                };
-                            }
-                        );
-                        break;
+                                },
+                            },
+                            allTeamsMissionsCompleted,
+                        };
+                    }
 
-                    default:
-                        break;
-                }
+                    return old;
+                });
             } catch (err) {
                 showError(err instanceof ApiError ? err.key : "", "Erreur lors de la récupération des données");
             }
         });
 
         return () => sub?.unsubscribe();
-    }, [connected, lobbyCode, router, queryClient, subscribe]);
+    }, [connected, lobbyCode, queryClient, subscribe]);
 
     const teamsData: TeamData[] = gameData
         ? Object.entries(gameData.teamsFullProgression).map(([key, data], index) => ({
