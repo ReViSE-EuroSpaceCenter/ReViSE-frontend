@@ -53,7 +53,7 @@ export default function Resources() {
 						{
 							label: "Horloge restante",
 							value: time,
-							max: 6,
+							max: 14,
 							setter: setTime,
 						},
 					].map(({ label, value, max, setter }) => (

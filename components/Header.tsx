@@ -42,7 +42,7 @@ export default function Header() {
 					<div className="flex items-center justify-between">
 						<div className="flex items-center gap-4">
 							<Image
-								src="/logo.png"
+								src="/logo.svg"
 								alt="ReViSE"
 								width={160}
 								height={48}

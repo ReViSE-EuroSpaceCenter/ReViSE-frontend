@@ -148,7 +148,7 @@ export default function Dashboard() {
                         <PresentationModal
                             isOpen={isPresentationOpen}
                             setIsOpen={setIsPresentationOpen}
-                            icon="/logo.png"
+                            icon="/logo.svg"
                             text={text}
                             name="TEACHER"
                             color="#fff"
