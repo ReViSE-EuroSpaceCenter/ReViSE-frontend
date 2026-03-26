@@ -1,26 +1,26 @@
 "use client";
 
+import {useState, useEffect, useCallback, useMemo} from "react";
 import dynamic from "next/dynamic";
-import {useState, useEffect, useCallback} from "react";
 import {useParams, usePathname, useRouter, useSearchParams} from "next/navigation";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
 import Toolbox from "@/components/Toolbox";
 import Checklist from "@/components/Checklist";
 import IATech from "@/components/IATech";
-import { showError } from "@/errors/getErrorMessage";
-import { ApiError } from "@/api/apiError";
+import TeamsColumn from "@/components/teacher/TeamsColumn";
+import {showError} from "@/errors/getErrorMessage";
+import {ApiError} from "@/api/apiError";
 import {endMission, getGameInfo} from "@/api/missionApi";
+import {useSessionId} from "@/hooks/useSessionId";
+import {useWSSubscription} from "@/hooks/useWSSubscription";
+import {GameInfoResponse} from "@/types/TeamData";
+import {presentationTexts} from "@/utils/presentationTexts";
+import {confirmEndMissionMessage} from "@/utils/ConfirmationEndMissionMessage";
+import {getTeamsColumns} from "@/utils/calculTeamColumn";
 const PresentationModal = dynamic(
     () => import("@/components/PresentationModal"),
     { ssr: false, loading: () => null }
 );
-import {presentationTexts} from "@/utils/presentationTexts";
-import {useSessionId} from "@/hooks/useSessionId";
-import {useWSSubscription} from "@/hooks/useWSSubscription";
-import {TeamData} from "@/types/TeamData";
-import TeamsColumn from "@/components/teacher/TeamsColumn";
-import {GameInfoResponse} from "@/types/TeamData";
-import {confirmEndMissionMessage} from "@/utils/ConfirmationEndMissionMessage";
 
 export default function Dashboard() {
     const params = useParams();
@@ -74,19 +74,11 @@ export default function Dashboard() {
         });
     }, [lobbyCode, queryClient]));
 
-    const teamsData: TeamData[] = gameData
-        ? Object.entries(gameData.teamsFullProgression).map(([team, data], index) => ({
-            id: index,
-            team,
-            ...data.teamProgression,
-        }))
-        : [];
-
+    const { leftTeams, rightTeams } = useMemo(
+        () => getTeamsColumns(gameData),
+        [gameData]
+    );
     const allTeamsCompleted = gameData?.allTeamsCompleted ?? false;
-
-	const half = Math.ceil(teamsData.length / 2);
-	const leftTeams = teamsData.slice(0, half);
-	const rightTeams = teamsData.slice(half);
 
     const handleEndMission = async () => {
         if (!hostId) {
@@ -100,6 +92,11 @@ export default function Dashboard() {
         }
     };
 
+    const confirmAndEndMission = async () => {
+        const confirmed = await confirmEndMissionMessage();
+        if (confirmed) await handleEndMission();
+    };
+
     return (
         <>
             <div className="min-h-[calc(100vh-120px)] max-h-[calc(100vh-120px)] w-full max-w-450 mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-[1fr_2fr_1fr] items-center justify-items-center gap-4 px-8 md:px-16 py-10 ">
@@ -109,12 +106,7 @@ export default function Dashboard() {
 
                 <div className="w-full max-w-[min(800px,100vh)] flex justify-center order-1 xl:order-2 md:col-span-2 xl:col-span-1 p-4 md:p-8 xl:p-16">
                     <Toolbox
-                        centerAction={{ label: "Décollage\n🚀", onClick: async () => {
-                                const confirmed = await confirmEndMissionMessage();
-                                if (confirmed) {
-                                    await handleEndMission();
-                                }
-                            },
+                        centerAction={{ label: "Décollage\n🚀", onClick: confirmAndEndMission,
                             disabled: !allTeamsCompleted
                         }}
                         actions={[
