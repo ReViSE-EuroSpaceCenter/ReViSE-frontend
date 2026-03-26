@@ -82,9 +82,12 @@ export default function PresentationModal({ isOpen, setIsOpen, icon, text, name,
                     />
 
                     <DialogTitle className="text-2xl md:text-2xl font-bold mb-2 md:mb-6 text-center" style={{ color }}>
-                        {name === "TEACHER"
-                            ? "Présentation du jeu - ReViSE"
-                            : `Présentation de l'équipe - ${name}`}
+                        {name === "PRESENTATION"
+                            ? "Présentation du voyage vers Europe"
+                            : name === "TEACHER"
+                                ? "Présentation du jeu - ReViSE"
+                                : `Présentation de l'équipe - ${name}`
+                        }
                     </DialogTitle>
 
                     <div className="text-center text-lg">{renderText(text)}</div>

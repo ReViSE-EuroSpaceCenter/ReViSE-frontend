@@ -1,11 +1,26 @@
 "use client";
 
+import dynamic from "next/dynamic";
+
+const PresentationModal = dynamic(
+    () => import("@/components/PresentationModal"),
+    { ssr: false, loading: () => null }
+);
 import LauncherBackground from "@/components/LauncherBackground";
 import LauncherPath from "@/components/LauncherPath";
 import {useState} from "react";
+import {launcherTexts} from "@/utils/launcherTexts";
+import {usePathname, useRouter, useSearchParams} from "next/navigation";
 
 export default function Launcher() {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const pathname = usePathname();
+
     const [step, setStep] = useState(0)
+    const showPresentation = searchParams.get("presentation") === "true";
+    const [isPresentationOpen, setIsPresentationOpen] = useState(showPresentation);
+    const text = showPresentation ? launcherTexts.PRESENTATION : null
 
     return (
         <div className="relative w-full h-full min-h-screen">
@@ -26,6 +41,17 @@ export default function Launcher() {
                 <LauncherPath step={step} />
             </div>
 
+            {text && (
+                <PresentationModal
+                    isOpen={isPresentationOpen}
+                    setIsOpen={setIsPresentationOpen}
+                    icon="/logo.png"
+                    text={text}
+                    name="PRESENTATION"
+                    color="#fff"
+                    onClose={() => router.replace(pathname) }
+                />
+            )}
         </div>
     );
 }

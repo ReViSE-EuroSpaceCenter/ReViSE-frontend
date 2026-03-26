@@ -64,6 +64,7 @@ export default function Dashboard() {
 
     const [isChecklistOpen, setIsChecklistOpen] = useState(false);
     const [isIAOpen, setIsIAOpen] = useState(false);
+    const [toolboxDisabled, setToolboxDisabled] = useState(false);
 
     const showPresentation = searchParams.get("presentation") === "true";
 	const [isPresentationOpen, setIsPresentationOpen] = useState(showPresentation);
@@ -146,12 +147,12 @@ export default function Dashboard() {
 
                 <div className="w-full max-w-[min(800px,100vh)] flex justify-center order-1 xl:order-2 lg:col-span-2 xl:col-span-1 p-16">
                     <Toolbox
-                        centerAction={{ label: "Décollage\n🚀", onClick: () => setIsConfirmOpen(true), disabled: !allTeamsCompleted}}
+                        centerAction={{ label: "Décollage\n🚀", onClick: () => setIsConfirmOpen(true), disabled: !allTeamsCompleted || toolboxDisabled}}
                         actions={[
-                            { label: "Fin du tour", onClick: () => setIsChecklistOpen(true) },
-                            { label: "Missions terminées", onClick: () => router.push(`/teacher/game/${lobbyCode}/mission`)},
-                            { label: "Aide\nTechnologies IA", onClick: () => setIsIAOpen(true) },
-                            { label: "Tutoriel", onClick: () => console.log("3") },
+                            { label: "Fin du tour", onClick: () => setIsChecklistOpen(true), disabled: toolboxDisabled },
+                            { label: "Missions terminées", onClick: () => router.push(`/teacher/game/${lobbyCode}/mission`), disabled: toolboxDisabled },
+                            { label: "Aide\nTechnologies IA", onClick: () => setIsIAOpen(true), disabled: toolboxDisabled },
+                            { label: "Tutoriel", onClick: () => console.log("3"), disabled: toolboxDisabled },
                         ]}
                     />
                     <Checklist isOpen={isChecklistOpen} setIsOpen={setIsChecklistOpen} />
@@ -202,6 +203,7 @@ export default function Dashboard() {
                             <button
                                 onClick={async () => {
                                     setIsConfirmOpen(false);
+                                    setToolboxDisabled(true);
                                     await handleEndMission();
                                 }}
                                 className="px-4 py-2 rounded-md bg-purpleReViSE text-white hover:bg-purple-700 transition cursor-pointer"
