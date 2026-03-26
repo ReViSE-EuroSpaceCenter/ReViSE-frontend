@@ -1,23 +1,21 @@
+import React from "react";
+
 type Props = {
-		pending: boolean;
+		isPending: boolean;
 }
 
 export const JoinSubmitButton = (props: Props) => {
 	return (
 		<button
 			type="submit"
-			disabled={props.pending}
-			className={`
-           group w-full px-8 py-4 sm:py-5 rounded-xl font-black text-sm sm:text-xl 
-           transition-all duration-300 flex items-center justify-center gap-3 shadow-xl
-           ${
-				props.pending
-					? "bg-white/5 text-white/10 cursor-not-allowed scale-[0.98]"
-					: "bg-purpleReViSE hover:bg-purpleReViSE/90 text-white cursor-pointer hover:shadow-purpleReViSE/20 active:scale-95"
-			}
-         `}
+			disabled={props.isPending}
+			className={`w-full py-3 sm:py-5 rounded-xl sm:rounded-2xl font-black text-sm sm:text-xl transition-all duration-500 flex items-center justify-center shadow-xl ${
+				props.isPending
+					? "bg-white/5 text-white/10 cursor-not-allowed border border-white/5"
+					: "bg-purpleReViSE hover:bg-purpleReViSE/80 text-white cursor-pointer shadow-purpleReViSE/20"
+			}`}
 		>
-			{props.pending ? (
+			{props.isPending ? (
 				<div className="flex items-center gap-3">
 					<svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
 						<circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
@@ -34,12 +32,7 @@ export const JoinSubmitButton = (props: Props) => {
 					</div>
 				</div>
 			) : (
-				<>
-					<span className="text-lg">REJOINDRE LA SESSION</span>
-					<span className="text-xl sm:text-2xl transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110">
-                    🚀
-             </span>
-				</>
+				<span>REJOINDRE</span>
 			)}
 		</button>
 	);
