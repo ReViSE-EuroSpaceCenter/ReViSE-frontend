@@ -79,6 +79,49 @@ describe("DecollagePage", () => {
         expect(screen.getByText("Aucune donnée trouvée.")).toBeInTheDocument();
     });
 
+    it("laisse un bonus en not-completed si aucune équipe correspondante n'est trouvée", () => {
+        setSessionStorageValue({
+            nbTeams: 4,
+            step: "1",
+            teamsBonuses: [
+                {
+                    team: "Autre équipe",
+                    bonus1_check: true,
+                    bonus2_check: true,
+                },
+            ],
+        });
+
+        render(<DecollagePage />);
+
+        expect(
+            screen.getByTestId("bonus-card-coop1")
+        ).toHaveTextContent("not-completed");
+    });
+
+    it("utilise bien getBonusTeamKey pour mapper les bonus (ex: geco)", () => {
+        setSessionStorageValue({
+            nbTeams: 4,
+            step: "6",
+            teamsBonuses: [
+                {
+                    team: "Equipe GECO",
+                    bonus1_check: true,
+                    bonus2_check: false,
+                },
+            ],
+        });
+
+        render(<DecollagePage />);
+
+        expect(
+            screen.getByTestId("bonus-card-geco1")
+        ).toHaveTextContent("completed");
+    });
+
+
+
+
     it("ferme la modal quand on clique sur cancel", () => {
         setSessionStorageValue({
             nbTeams: 4,

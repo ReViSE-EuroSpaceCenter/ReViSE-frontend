@@ -212,7 +212,7 @@ const stepContents: Record<StepKey, StepContent> = {
         description:
             "Votre vaisseau mesure 142 mètres de haut pour une masse de 5200 tonnes. Faire décoller votre vaisseau depuis la Terre est un défi colossal.",
         bonusTexts: {
-            coop1: "Bonus COOP – Intelligence artificielle de supervision d’IA. La coordination des IA du vaisseau facilite la gestion de l’énergie et la priorisation des tâches.",
+            coop1: "Intelligence artificielle de supervision d’IA. La coordination des IA du vaisseau facilite la gestion de l’énergie et la priorisation des tâches.",
         },
     },
     "2": {
@@ -220,7 +220,7 @@ const stepContents: Record<StepKey, StepContent> = {
         description:
             "Pour atteindre Europe en 6 ans, vous devez atteindre la vitesse de 20 km/s (72 000 km/h). Utilisez la manœuvre la moins couteuse : l’assistance gravitationnelle. Profitez de la force d’attraction de Vénus pour accélérer votre vaisseau. Pendant cette manœuvre près de Vénus vous perdez la communication avec le centre de commande de la Terre.",
         bonusTexts: {
-            coop2: "Bonus COOP – Centre de commandement virtuel embarqué. Un centre de commandement virtuel vous accompagnera dans la prise de décision, coupés de toutes communication avec la Terre.",
+            coop2: "Centre de commandement virtuel embarqué. Un centre de commandement virtuel vous accompagnera dans la prise de décision, coupés de toutes communication avec la Terre.",
         },
     },
     "3": {
@@ -228,7 +228,7 @@ const stepContents: Record<StepKey, StepContent> = {
         description:
             "Dans votre trajectoire elliptique, vous repassez près de la Terre pour récupérer eau, air et nourriture. Amarrez à votre vaisseau à pleine vitesse un cargo de ravitaillement.",
         bonusTexts: {
-            meca1: "Bonus MECA – Pilotage en réalité virtuelle. Une interface de pilotage en réalité virtuelle facilite la prise en charge de l’amarrage.",
+            meca1: "Pilotage en réalité virtuelle. Une interface de pilotage en réalité virtuelle facilite la prise en charge de l’amarrage.",
         },
     },
     "4": {
@@ -236,8 +236,8 @@ const stepContents: Record<StepKey, StepContent> = {
         description:
             "Une tempête solaire menace votre vaisseau. Les puissantes radiations peuvent endommager les systèmes électroniques et la santé des astronautes : Préparez-vous y pour limiter les dégâts !",
         bonusTexts: {
-            aero1: "Bonus AERO – Automatisation du bouclier magnétique. Le bouclier magnétique permet de dévier une partie des radiations.",
-            expe1: "Bonus EXPE – Combinaison adaptative de sortie extravéhiculaire. Des combinaisons adaptées réduisent l’impact des radiations sur le corps des astronautes.",
+            aero1: "Automatisation du bouclier magnétique. Le bouclier magnétique permet de dévier une partie des radiations.",
+            expe1: "Combinaison adaptative de sortie extravéhiculaire. Des combinaisons adaptées réduisent l’impact des radiations sur le corps des astronautes.",
         },
     },
     "5": {
@@ -245,8 +245,8 @@ const stepContents: Record<StepKey, StepContent> = {
         description:
             "Après deux ans de voyage, vous arrivez aux abords de la ceinture d’astéroïdes. Les gros astéroïdes seront facilement évitables, mais les plus petits sont imprévisibles. Limitez les dégâts causés par leur impact à 72 000 km/h.",
         bonusTexts: {
-            aero2: "Bonus AERO – Bras robotisé autonome de réparation. Un bras robotique permet de réparer les dégâts externes et de repousser les petits astéroïdes lors de la traversée.",
-            expe2: "Bonus EXPE – Cobot d’exploration. Les cobots facilitent les réparations des dégâts interne au vaisseau subis lors de la traversée en accompagnant les astronautes.",
+            aero2: "Bras robotisé autonome de réparation. Un bras robotique permet de réparer les dégâts externes et de repousser les petits astéroïdes lors de la traversée.",
+            expe2: "Cobot d’exploration. Les cobots facilitent les réparations des dégâts interne au vaisseau subis lors de la traversée en accompagnant les astronautes.",
         },
     },
     "6": {
@@ -254,8 +254,8 @@ const stepContents: Record<StepKey, StepContent> = {
         description:
             "Après plus de trois ans de voyage, l’équipage, confiné les uns sur les autres les uns sur les autres dans un environnement confiné et stressant. Le problème que vous rencontrez est cette fois-ci interne au vaisseau. Des tensions apparaissent au sein de l’équipage, mettant la mission en danger.",
         bonusTexts: {
-            medi1: "Bonus MEDI – Activités collectives pour la cohésion de groupe. Des systèmes favorisant les interactions sociales, compte tenu des préférences de chacun, aident à apaiser les tensions sociales et à recréer du lien.",
-            geco1: "Bonus GECO – Plantes utiles au bien-être de l’équipage. Un environnement végétalisé ainsi qu’une assiette variée permet de remonter le moral de l’équipage et d’apaiser les tensions.",
+            medi1: "Activités collectives pour la cohésion de groupe. Des systèmes favorisant les interactions sociales, compte tenu des préférences de chacun, aident à apaiser les tensions sociales et à recréer du lien.",
+            geco1: "Plantes utiles au bien-être de l’équipage. Un environnement végétalisé ainsi qu’une assiette variée permet de remonter le moral de l’équipage et d’apaiser les tensions.",
         },
     },
     "7": {
@@ -263,8 +263,8 @@ const stepContents: Record<StepKey, StepContent> = {
         description:
             "Après plus de quatre ans de recyclage biologique continu, des déséquilibres apparaissent dans l’air, l’eau et les micro-organismes (maladies). Assainissez votre environnement.",
         bonusTexts: {
-            medi2: "Bonus MEDI – Suivi des souches bactériennes. Un système de veille sanitaire permet d’éviter le développement de maladies bactériologiques ou virales.",
-            geco2: "Bonus GECO – Système mécanique de recyclage de secours. Un système mécanique de recyclage aide à compenser les manquements des systèmes biologiques pour stabiliser les paramètres de l’environnement.",
+            medi2: "Suivi des souches bactériennes. Un système de veille sanitaire permet d’éviter le développement de maladies bactériologiques ou virales.",
+            geco2: "Système mécanique de recyclage de secours. Un système mécanique de recyclage aide à compenser les manquements des systèmes biologiques pour stabiliser les paramètres de l’environnement.",
         },
     },
     "8": {
@@ -272,13 +272,13 @@ const stepContents: Record<StepKey, StepContent> = {
         description:
             "Après 6 ans de voyage, vous vous installez enfin en orbite d’Europe. Depuis la Terre, nous n’avons pu qu’estimer les conditions à la surface et dans les profondeurs d’Europe. Afin d’adapter vos plans à la réalité de terrain, envoyez une flotte robotique d’exploration.",
         bonusTexts: {
-            meca2: "Bonus MECA – Robots mous adaptés à l’exploration. Des robots mous spécialisés dans la collecte de données topographiques et climatiques vous faciliteront la collecte de données.",
+            meca2: "Robots mous adaptés à l’exploration. Des robots mous spécialisés dans la collecte de données topographiques et climatiques vous faciliteront la collecte de données.",
         },
     },
 };
 
 function getInitialDecollageData(): DecollageData | null {
-    if (typeof window === "undefined") return null;
+    if (typeof globalThis.window === "undefined") return null;
 
     const raw = sessionStorage.getItem("decollageData");
     if (!raw) return null;
@@ -295,12 +295,43 @@ function getInitialDecollageData(): DecollageData | null {
     }
 }
 
+function normalizeTeamName(teamName: string | undefined): string {
+    if (!teamName) return "";
+
+    const value = teamName.toLowerCase().trim();
+
+    if (value.includes("coop")) return "coop";
+    if (value.includes("meca")) return "meca";
+    if (value.includes("aero")) return "aero";
+    if (value.includes("expe")) return "expe";
+    if (value.includes("medi")) return "medi";
+    if (value.includes("geco")) return "geco";
+
+    return value;
+}
+
+function getBonusTeamKey(bonusKey: BonusKey): string {
+    if (bonusKey.startsWith("coop")) return "coop";
+    if (bonusKey.startsWith("meca")) return "meca";
+    if (bonusKey.startsWith("aero")) return "aero";
+    if (bonusKey.startsWith("expe")) return "expe";
+    if (bonusKey.startsWith("medi")) return "medi";
+    return "geco";
+}
+
 function isBonusCompleted(
     bonusKey: BonusKey,
     teamsBonuses: TeamBonusState[]
 ): boolean {
-    const field = bonusKey.endsWith("1") ? "bonus1_check" : "bonus2_check";
-    return teamsBonuses.some((team) => team[field]);
+    const expectedTeam = getBonusTeamKey(bonusKey);
+    const field: keyof Pick<TeamBonusState, "bonus1_check" | "bonus2_check"> =
+        bonusKey.endsWith("1") ? "bonus1_check" : "bonus2_check";
+
+    const matchingTeam = teamsBonuses.find(
+        (team) => normalizeTeamName(team.team) === expectedTeam
+    );
+
+    return Boolean(matchingTeam?.[field]);
 }
 
 function normalizeTeamCount(nbTeams: number): TeamCount {
@@ -330,15 +361,18 @@ function getBonusSubstitute(
 const handleGoToDecollage = () => {
         const data = {
             nbTeams: teamsData.length,
-            step: "2",
+            step: "1",
             teamsBonuses: teamsData.map((teamItem) => ({
+                team: teamItem.team,
                 bonus1_check: teamItem.bonus1_check,
                 bonus2_check: teamItem.bonus2_check,
             })),
         };
+
         sessionStorage.setItem("decollageData", JSON.stringify(data));
         router.push(`/teacher/game/${lobbyCode}/decollage`);
     };
+
  */
 
 export default function DecollagePage() {
@@ -363,7 +397,7 @@ export default function DecollagePage() {
             alt: `Badge mission bonus ${bonusKey}`,
             substitute: getBonusSubstitute(nbTeams, step, bonusKey),
         }));
-
+        console.log(bonusBadges)
         const resources: ResourceItem[] = config.resources.map((key) => ({
             key,
             image: resourceImages[key],
@@ -383,9 +417,9 @@ export default function DecollagePage() {
 
     return (
         <>
-            <div className="min-h-[calc(100vh-120px)] w-full max-w-6xl mx-auto px-4 md:px-8 py-6 md:py-10">
-                <div className="w-full overflow-hidden rounded-md bg-darkBlueReViSE shadow-lg flex flex-col">
-                    <div className="flex flex-1 flex-col px-6 py-6 md:px-10 md:py-8">
+            <div className=" flex items-center justify-center px-2 py-3">
+                <div className="w-full max-w-2xl min-h-[70vh] overflow-hidden rounded-md bg-darkBlueReViSE shadow-lg flex flex-col">
+                    <div className="flex flex-1 flex-col px-4 py-4">
                         <div className="flex items-center gap-3">
                             <div className="flex h-12 w-12 items-center justify-center rounded-full border-[3px] border-[#f3b29c] text-2xl font-bold text-[#f3b29c] md:h-14 md:w-14 md:text-3xl">
                                 {pageData.step}

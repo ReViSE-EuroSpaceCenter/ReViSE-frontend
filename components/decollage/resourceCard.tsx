@@ -14,7 +14,7 @@ export default function ResourceCard({
                                          label,
                                          alt,
                                          iconSize = "w-[100px] h-[100px] md:w-[120px] md:h-[120px]",
-                                     }: ResourceCardProps) {
+                                     }: Readonly<ResourceCardProps>) {
     return (
         <div className="flex max-w-35 flex-col items-center text-center">
             <div className={`${iconSize} relative`}>
