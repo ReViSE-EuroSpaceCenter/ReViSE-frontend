@@ -92,7 +92,7 @@ export default function SetUpPage() {
               <div data-testid="lobby-code-container" className="flex flex-wrap justify-center gap-2 sm:gap-3">
                   {lobbyCode.toUpperCase().split("").map((char, i) => (
                     <div key={"key-"+i} className="w-9 h-12 sm:w-22 sm:h-26 flex items-center justify-center bg-white text-black font-black rounded-xl sm:rounded-2xl overflow-hidden">
-                <span className="text-[clamp(2rem,6vw,5rem)] leading-none">
+                <span className="text-[clamp(2rem,6vw,5rem)] leading-none" data-testid={`lobby-code-char-${i}`}>
                     {char}
                 </span>
                     </div>
