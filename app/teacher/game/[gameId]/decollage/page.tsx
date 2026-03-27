@@ -19,7 +19,7 @@ type DecollageData = {
     teamsBonuses: TeamBonusState[];
 };
 
-type ResourceKey = "check" | "recycle" | "ring" | "time" | "tools";
+type ResourceKey = "preparer" | "adapter" | "forcer" | "anticiper" | "reparer";
 type StepKey = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8";
 type TeamCount = 4 | 6;
 
@@ -38,11 +38,11 @@ type BonusKey =
     | "geco2";
 
 type BonusSubstituteType =
-    | "check_no_bonus"
-    | "recycle_no_bonus"
-    | "ring_no_bonus"
-    | "time_no_bonus"
-    | "tools_no_bonus"
+    | "preparer_no_bonus"
+    | "adapter_no_bonus"
+    | "forcer_no_bonus"
+    | "anticiper_no_bonus"
+    | "reparer_no_bonus"
     | "energy";
 
 type ResourceItem = {
@@ -82,28 +82,28 @@ const ICON_SIZE = "w-[100px] h-[100px] md:w-[120px] md:h-[120px]";
 const SUBSTITUTE_SIZE = "w-[70px] h-[70px] md:w-[85px] md:h-[85px]";
 
 const resourceImages: Record<ResourceKey, string> = {
-    check: "/badges/decollage/check.png",
-    recycle: "/badges/decollage/recycle.png",
-    ring: "/badges/decollage/ring.png",
-    time: "/badges/decollage/time.png",
-    tools: "/badges/decollage/tools.png",
+    preparer: "/badges/decollage/preparer_orange.svg",
+    adapter: "/badges/decollage/adapter_orange.svg",
+    forcer: "/badges/decollage/forcer_orange.svg",
+    anticiper: "/badges/decollage/anticiper_orange.svg",
+    reparer: "/badges/decollage/reparer_orange.svg",
 };
 
 const noBonusImages: Record<BonusSubstituteType, string> = {
-    check_no_bonus: "/badges/decollage/check_no_bonus.png",
-    recycle_no_bonus: "/badges/decollage/recycle_no_bonus.png",
-    ring_no_bonus: "/badges/decollage/ring_no_bonus.png",
-    time_no_bonus: "/badges/decollage/time_no_bonus.png",
-    tools_no_bonus: "/badges/decollage/tools_no_bonus.png",
-    energy: "/badges/decollage/energy.png",
+    preparer_no_bonus: "/badges/decollage/preparer_rose.svg",
+    adapter_no_bonus: "/badges/decollage/adapter_rose.svg",
+    forcer_no_bonus: "/badges/decollage/forcer_rose.svg",
+    anticiper_no_bonus: "/badges/decollage/anticiper_rose.svg",
+    reparer_no_bonus: "/badges/decollage/reparer_rose.svg",
+    energy: "/badges/decollage/energie.svg",
 };
 
 const resourceLabels: Record<ResourceKey, string> = {
-    check: "Check",
-    recycle: "Recyclage",
-    ring: "Anneau",
-    time: "Temps",
-    tools: "Outils",
+    preparer: "Check",
+    adapter: "Recyclage",
+    forcer: "Anneau",
+    anticiper: "Temps",
+    reparer: "Outils",
 };
 
 const bonusImages: Record<BonusKey, string> = {
@@ -138,71 +138,71 @@ const bonusLabels: Record<BonusKey, string> = {
 
 const stepConfigs: Record<TeamCount, Record<StepKey, StepConfig>> = {
     4: {
-        "1": { bonuses: ["coop1"], resources: ["check"] },
-        "2": { bonuses: ["coop2"], resources: ["time", "recycle"] },
-        "3": { bonuses: ["meca1"], resources: ["time", "check"] },
-        "4": { bonuses: ["aero1", "expe1"], resources: ["recycle", "tools"] },
-        "5": { bonuses: ["aero2", "expe2"], resources: ["ring", "tools"] },
-        "6": { bonuses: ["medi1", "geco1"], resources: ["check", "tools"] },
-        "7": { bonuses: ["medi2", "geco2"], resources: ["time", "ring"] },
-        "8": { bonuses: ["meca2"], resources: ["recycle"] },
+        "1": { bonuses: ["coop1"], resources: ["preparer"] },
+        "2": { bonuses: ["coop2"], resources: ["anticiper", "adapter"] },
+        "3": { bonuses: ["meca1"], resources: ["anticiper", "preparer"] },
+        "4": { bonuses: ["aero1", "expe1"], resources: ["adapter", "reparer"] },
+        "5": { bonuses: ["aero2", "expe2"], resources: ["forcer", "reparer"] },
+        "6": { bonuses: ["medi1", "geco1"], resources: ["preparer", "reparer"] },
+        "7": { bonuses: ["medi2", "geco2"], resources: ["anticiper", "forcer"] },
+        "8": { bonuses: ["meca2"], resources: ["adapter"] },
     },
     6: {
-        "1": { bonuses: ["coop1"], resources: ["check", "ring"] },
-        "2": { bonuses: ["coop2"], resources: ["time", "check"] },
-        "3": { bonuses: ["meca1"], resources: ["time", "ring"] },
-        "4": { bonuses: ["aero1", "expe1"], resources: ["recycle", "tools", "check"] },
-        "5": { bonuses: ["aero2", "expe2"], resources: ["ring", "tools", "time"] },
-        "6": { bonuses: ["medi1", "geco1"], resources: ["check", "tools", "recycle"] },
-        "7": { bonuses: ["medi2", "geco2"], resources: ["time", "ring", "tools"] },
-        "8": { bonuses: ["meca2"], resources: ["recycle", "ring"] },
+        "1": { bonuses: ["coop1"], resources: ["preparer", "forcer"] },
+        "2": { bonuses: ["coop2"], resources: ["anticiper", "preparer"] },
+        "3": { bonuses: ["meca1"], resources: ["anticiper", "forcer"] },
+        "4": { bonuses: ["aero1", "expe1"], resources: ["adapter", "reparer", "preparer"] },
+        "5": { bonuses: ["aero2", "expe2"], resources: ["forcer", "reparer", "anticiper"] },
+        "6": { bonuses: ["medi1", "geco1"], resources: ["preparer", "reparer", "adapter"] },
+        "7": { bonuses: ["medi2", "geco2"], resources: ["anticiper", "forcer", "reparer"] },
+        "8": { bonuses: ["meca2"], resources: ["adapter", "forcer"] },
     },
 };
 
 const bonusSubstitutes: Record<TeamCount, Record<StepKey, Partial<Record<BonusKey, BonusSubstituteConfig>>>> = {
     4: {
-        "1": { coop1: { type: "ring_no_bonus" } },
+        "1": { coop1: { type: "forcer_no_bonus" } },
         "2": { coop2: { type: "energy", quantity: 3 } },
         "3": { meca1: { type: "energy", quantity: 3 } },
         "4": {
-            aero1: { type: "tools_no_bonus" },
-            expe1: { type: "recycle_no_bonus" },
+            aero1: { type: "reparer_no_bonus" },
+            expe1: { type: "adapter_no_bonus" },
         },
         "5": {
-            aero2: { type: "time_no_bonus" },
-            expe2: { type: "recycle_no_bonus" },
+            aero2: { type: "anticiper_no_bonus" },
+            expe2: { type: "adapter_no_bonus" },
         },
         "6": {
-            medi1: { type: "time_no_bonus" },
-            geco1: { type: "check_no_bonus" },
+            medi1: { type: "anticiper_no_bonus" },
+            geco1: { type: "preparer_no_bonus" },
         },
         "7": {
-            medi2: { type: "check_no_bonus" },
-            geco2: { type: "tools_no_bonus" },
+            medi2: { type: "preparer_no_bonus" },
+            geco2: { type: "reparer_no_bonus" },
         },
-        "8": { meca2: { type: "ring_no_bonus" } },
+        "8": { meca2: { type: "forcer_no_bonus" } },
     },
     6: {
-        "1": { coop1: { type: "ring_no_bonus" } },
+        "1": { coop1: { type: "forcer_no_bonus" } },
         "2": { coop2: { type: "energy", quantity: 5 } },
         "3": { meca1: { type: "energy", quantity: 5 } },
         "4": {
-            aero1: { type: "tools_no_bonus" },
-            expe1: { type: "recycle_no_bonus" },
+            aero1: { type: "reparer_no_bonus" },
+            expe1: { type: "adapter_no_bonus" },
         },
         "5": {
-            aero2: { type: "time_no_bonus" },
-            expe2: { type: "recycle_no_bonus" },
+            aero2: { type: "anticiper_no_bonus" },
+            expe2: { type: "adapter_no_bonus" },
         },
         "6": {
-            medi1: { type: "time_no_bonus" },
-            geco1: { type: "check_no_bonus" },
+            medi1: { type: "anticiper_no_bonus" },
+            geco1: { type: "preparer_no_bonus" },
         },
         "7": {
-            medi2: { type: "check_no_bonus" },
-            geco2: { type: "tools_no_bonus" },
+            medi2: { type: "preparer_no_bonus" },
+            geco2: { type: "reparer_no_bonus" },
         },
-        "8": { meca2: { type: "ring_no_bonus" } },
+        "8": { meca2: { type: "forcer_no_bonus" } },
     },
 };
 

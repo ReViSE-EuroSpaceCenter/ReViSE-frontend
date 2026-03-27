@@ -3,11 +3,11 @@
 import Image from "next/image";
 
 type BonusSubstituteType =
-    | "check_no_bonus"
-    | "recycle_no_bonus"
-    | "ring_no_bonus"
-    | "time_no_bonus"
-    | "tools_no_bonus"
+    | "preparer_no_bonus"
+    | "adapter_no_bonus"
+    | "forcer_no_bonus"
+    | "anticiper_no_bonus"
+    | "reparer_no_bonus"
     | "energy";
 
 type BonusBadgeItem = {
