@@ -1,10 +1,10 @@
-export interface TeamData {
+export type TeamData = {
     id: number;
     team: string;
     classicMissionsCompleted: number;
     firstBonusMissionCompleted: boolean;
     secondBonusMissionCompleted: boolean;
-}
+};
 
 type TeamProgressionResponse = {
     teamLabel: string;
