@@ -17,22 +17,14 @@ export default function Launcher() {
     const searchParams = useSearchParams();
     const pathname = usePathname();
 
-    const [step, setStep] = useState(0)
+    const stepParam = parseInt(searchParams.get("step") || "0", 10);
+    const step = isNaN(stepParam) ? 0 : stepParam
     const showPresentation = searchParams.get("presentation") === "true";
     const [isPresentationOpen, setIsPresentationOpen] = useState(showPresentation);
     const text = showPresentation ? launcherTexts.PRESENTATION : null
 
     return (
         <div className="relative w-full h-full min-h-screen">
-            {step !== 8 && (
-                <button
-                    className="fixed bottom-5 right-5 z-10 px-8 py-4 bg-purpleReViSE hover:bg-purpleReViSE/80 cursor-pointer rounded-lg font-semibold text-lg transition-colors"
-                    onClick={() => setStep((s) => s + 1)}
-                >
-                    Suivant
-                </button>
-            )}
-
             <div className="absolute inset-0">
                 <LauncherBackground />
             </div>

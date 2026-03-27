@@ -4,7 +4,7 @@ import {StepConfig} from "@/types/StepConfig";
 
 export default function Step({ step, config }: { step: number; config: StepConfig }) {
     const { segments, segmentConfigs, isOrbit } = useDrawPath(config.id, config.path)
-
+    const isPast = step > config.id;
     if (step < config.id) return null
 
     return (
@@ -30,14 +30,22 @@ export default function Step({ step, config }: { step: number; config: StepConfi
                             fill="none"
                             strokeWidth={isOrbit ? 16.67 : 30.76}
                             strokeDasharray={seg.length}
-                            strokeDashoffset={seg.length}
-                            initial={{ strokeDashoffset: seg.length, opacity: isOrbit ? 1 : 0 }}
+                            strokeDashoffset={isPast ? 0 : seg.length}
+                            initial={
+                                isPast
+                                    ? { strokeDashoffset: 0, opacity: 1 }
+                                    : { strokeDashoffset: seg.length, opacity: isOrbit ? 1 : 0 }
+                            }
                             animate={{ strokeDashoffset: 0, opacity: 1 }}
-                            transition={{
-                                duration: segmentConfigs[i].duration,
-                                delay: segmentConfigs[i].delay,
-                                ease: "linear",
-                            }}
+                            transition={
+                                isPast
+                                    ? { duration: 0 }
+                                    : {
+                                        duration: segmentConfigs[i].duration,
+                                        delay: segmentConfigs[i].delay,
+                                        ease: "linear",
+                                    }
+                            }
                         />
                     ))}
                 </g>
