@@ -68,9 +68,9 @@ vi.mock("@/components/IATech", () => ({
 }));
 
 vi.mock("@/components/teacher/SideRow", () => ({
-    default: ({ team, completed }: { team: string; completed: number }) => (
+    default: ({ team, classicMissionsCompleted }: { team: string; classicMissionsCompleted: number }) => (
         <div>
-            SideRow-{team}-{completed}
+            SideRow-{team}-{classicMissionsCompleted}
         </div>
     ),
 }));

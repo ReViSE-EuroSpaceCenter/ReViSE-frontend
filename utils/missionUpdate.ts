@@ -1,6 +1,7 @@
 import {missionNameTraduction} from "@/utils/missionName";
-import {GameInfoResponse, Mission, TeamProgressionWS} from "@/types/Mission";
+import {Mission} from "@/types/Mission";
 import {teams} from "@/types/Teams";
+import {GameInfoResponse, TeamProgressionWS} from "@/types/TeamData";
 
 function checkCompletion(
     missionNum: string,
