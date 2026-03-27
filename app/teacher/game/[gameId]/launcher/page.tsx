@@ -18,10 +18,15 @@ export default function Launcher() {
     const pathname = usePathname();
 
     const stepParam = parseInt(searchParams.get("step") || "0", 10);
-    const step = isNaN(stepParam) ? 0 : stepParam
+    let step = isNaN(stepParam) ? 0 : stepParam
     const showPresentation = searchParams.get("presentation") === "true";
     const [isPresentationOpen, setIsPresentationOpen] = useState(showPresentation);
     const text = showPresentation ? launcherTexts.PRESENTATION : null
+
+    const handleStepAnimationComplete = () => {
+        step++;
+        router.replace(`${pathname}?step=${step}`);
+    }
 
     return (
         <div className="relative w-full h-full min-h-screen">
@@ -30,7 +35,7 @@ export default function Launcher() {
             </div>
 
             <div className="absolute inset-0">
-                <LauncherPath step={step} />
+                <LauncherPath step={step} onStepAnimationComplete={handleStepAnimationComplete} />
             </div>
 
             {text && (

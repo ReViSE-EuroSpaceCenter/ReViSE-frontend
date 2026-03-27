@@ -1,11 +1,15 @@
 import { motion } from "framer-motion"
 import { useDrawPath } from "@/hooks/useDrawPath"
-import {StepConfig} from "@/types/StepConfig";
+import { StepConfig } from "@/types/StepConfig"
 
-export default function Step({ step, config }: { step: number; config: StepConfig }) {
+export default function Step({ step, config, onAnimationComplete }: { step: number; config: StepConfig; onAnimationComplete: () => void }) {
     const { segments, segmentConfigs, isOrbit } = useDrawPath(config.id, config.path)
     const isPast = step > config.id;
     if (step < config.id) return null
+
+    const tokenDelay = isPast
+        ? 0
+        : segmentConfigs.at(segmentConfigs.length-1)?.delay
 
     return (
         <svg
@@ -50,6 +54,42 @@ export default function Step({ step, config }: { step: number; config: StepConfi
                     ))}
                 </g>
             </g>
+
+            <motion.g
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                    duration: isPast ? 0 : 0.3,
+                    delay: tokenDelay,
+                    ease: "backOut",
+                }}
+                style={{ transformOrigin: `${config.token.x}px ${config.token.y}px` }}
+                onAnimationComplete={() => {
+                    if (!isPast) {
+                        onAnimationComplete();
+                    }
+                }}
+            >
+                <circle
+                    cx={config.token.x}
+                    cy={config.token.y}
+                    r={30}
+                    fill="none"
+                    stroke="rgb(250,186,163)"
+                    strokeWidth={3}
+                />
+                <text
+                    x={config.token.x}
+                    y={config.token.y}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    fontFamily="Impact, sans-serif"
+                    fontSize={34}
+                    fill="rgb(250,186,163)"
+                >
+                    {config.id}
+                </text>
+            </motion.g>
         </svg>
     )
 }
