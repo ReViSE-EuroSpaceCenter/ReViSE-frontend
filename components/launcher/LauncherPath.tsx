@@ -3,7 +3,7 @@ import * as React from "react"
 import Step from "@/components/launcher/Step"
 import { stepsConfig } from "@/utils/stepsConfig"
 
-export default function LauncherPath({ step, onStepAnimationComplete }: { step: number; onStepAnimationComplete: () => void }) {
+export default function LauncherPath({ step, onStepAnimationComplete }: { readonly step: number; readonly onStepAnimationComplete: () => void }) {
     return (
         <div className="relative w-full h-full">
             {stepsConfig.map((config) => (

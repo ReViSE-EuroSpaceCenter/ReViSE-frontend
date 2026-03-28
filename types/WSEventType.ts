@@ -14,5 +14,4 @@ export type WSEventType =
 				};
 			};
 		}
-	| { type: "MISSION_ENDED"}
-	| { type: "RESSOURCES_ENCODED"};
+	| { type: "MISSION_ENDED"};

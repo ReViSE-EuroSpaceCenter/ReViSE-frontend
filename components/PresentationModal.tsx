@@ -59,6 +59,16 @@ export default function PresentationModal({ isOpen, setIsOpen, icon, text, name,
             );
         });
 
+    let title: string;
+
+    if (name === "PRESENTATION") {
+        title = "Présentation du voyage vers Europe";
+    } else if (name === "TEACHER") {
+        title = "Présentation du jeu - ReViSE";
+    } else {
+        title = `Présentation de l'équipe - ${name}`;
+    }
+
     return (
         <Dialog
             open={isOpen}
@@ -82,12 +92,7 @@ export default function PresentationModal({ isOpen, setIsOpen, icon, text, name,
                     />
 
                     <DialogTitle className="text-2xl md:text-2xl font-bold mb-2 md:mb-6 text-center" style={{ color }}>
-                        {name === "PRESENTATION"
-                            ? "Présentation du voyage vers Europe"
-                            : name === "TEACHER"
-                                ? "Présentation du jeu - ReViSE"
-                                : `Présentation de l'équipe - ${name}`
-                        }
+                        {title}
                     </DialogTitle>
 
                     <div className="text-center text-lg">{renderText(text)}</div>

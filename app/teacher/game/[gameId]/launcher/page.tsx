@@ -17,8 +17,8 @@ export default function Launcher() {
     const searchParams = useSearchParams();
     const pathname = usePathname();
 
-    const stepParam = parseInt(searchParams.get("step") || "0", 10);
-    let step = isNaN(stepParam) ? 0 : stepParam
+    const stepParam = Number.parseInt(searchParams.get("step") || "0", 10);
+    let step = Number.isNaN(stepParam) ? 0 : stepParam
     const showPresentation = searchParams.get("presentation") === "true";
     const [isPresentationOpen, setIsPresentationOpen] = useState(showPresentation);
     const text = showPresentation ? launcherTexts.PRESENTATION : null

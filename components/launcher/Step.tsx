@@ -2,14 +2,14 @@ import { motion } from "framer-motion"
 import { useDrawPath } from "@/hooks/useDrawPath"
 import { StepConfig } from "@/types/StepConfig"
 
-export default function Step({ step, config, onAnimationComplete }: { step: number; config: StepConfig; onAnimationComplete: () => void }) {
+export default function Step({step, config, onAnimationComplete}: { readonly step: number; readonly config: StepConfig; readonly onAnimationComplete: () => void; }) {
     const { segments, segmentConfigs, isOrbit } = useDrawPath(config.id, config.path)
     const isPast = step > config.id;
     if (step < config.id) return null
 
     const tokenDelay = isPast
         ? 0
-        : segmentConfigs.at(segmentConfigs.length-1)?.delay
+        : segmentConfigs.at(-1)?.delay
 
     return (
         <svg
@@ -29,7 +29,7 @@ export default function Step({ step, config, onAnimationComplete }: { step: numb
 
                 <g clipPath={`url(#${config.clipId})`}>
                     {segments.map((seg, i) => (
-                        <motion.path key={i} d={seg.d}
+                        <motion.path key={`${seg.d}-${i}`} d={seg.d}
                             stroke="#da7eb2"
                             fill="none"
                             strokeWidth={isOrbit ? 16.67 : 30.76}
