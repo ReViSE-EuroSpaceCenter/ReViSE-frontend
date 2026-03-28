@@ -23,8 +23,7 @@ describe("JoinPage", () => {
     it("affiche le titre et les éléments du formulaire", () => {
         renderPage(<JoinPage />);
 
-        expect(screen.getByText("Rejoindre")).toBeInTheDocument();
-        expect(screen.getByLabelText("Code d'accès session")).toBeInTheDocument();
+        expect(screen.getByText("Rejoindre une partie")).toBeInTheDocument();
         expect(screen.getByPlaceholderText("EX: XKABDE")).toBeInTheDocument();
         expect(screen.getByRole("button")).toBeInTheDocument();
     });

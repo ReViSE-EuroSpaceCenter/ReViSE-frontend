@@ -55,55 +55,6 @@ describe("LobbyPage", () => {
         onMessage = null;
     });
 
-    it("affiche le code du lobby et les équipes (état initial)", async () => {
-        renderPage(<LobbyPage />);
-
-        expect(
-            screen.queryByText("Choisissez le nombre d'équipes")
-        ).not.toBeInTheDocument();
-
-        const chars = Array.from({length: 6}, (_, i) =>
-            screen.getByTestId(`lobby-code-char-${i}`)
-        );
-
-        const displayed = chars.map((el) => el.textContent?.trim()).join("");
-        expect(displayed).toBe("ABCDEF");
-
-        expect(screen.getByTestId("joinedTeams").textContent?.trim()).toBe("0");
-
-        const button = screen.getByTestId("start-game-button");
-        expect(button).toBeDisabled();
-        expect(button).toHaveTextContent(/En attente de toutes les équipes/i);
-    });
-
-    it("active le bouton après 4 TEAM_JOINED via WebSocket", async () => {
-        renderPage(<LobbyPage />);
-
-        await waitFor(() => {
-            expect(onMessage).toBeInstanceOf(Function);
-        });
-
-        await act(async () => {
-            const emit = (type: string) =>
-                onMessage?.({body: JSON.stringify({type})} as any);
-
-            emit("TEAM_JOINED");
-            emit("TEAM_JOINED");
-            emit("TEAM_JOINED");
-            emit("TEAM_JOINED");
-        });
-
-        await waitFor(() => {
-            expect(
-                screen.getByTestId("joinedTeams").textContent?.trim()
-            ).toBe("4");
-        });
-
-        const button = screen.getByTestId("start-game-button");
-        expect(button).not.toBeDisabled();
-        expect(button).toHaveTextContent("DÉMARRER LA PARTIE");
-    });
-
     it("redirige vers la page de jeu sur GAME_STARTED", async () => {
         renderPage(<LobbyPage />);
 

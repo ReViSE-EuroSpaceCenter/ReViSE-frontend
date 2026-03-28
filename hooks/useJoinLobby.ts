@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { joinLobby } from "@/api/lobbyApi";
 import { ApiError } from "@/api/apiError";
 import { showError } from "@/errors/getErrorMessage";
+import {startTransition} from "react";
 
 export const useJoinLobby = () => {
 	const router = useRouter();
@@ -17,7 +18,9 @@ export const useJoinLobby = () => {
 
 		onSuccess: ({ clientId, lobbyCode }) => {
 			sessionStorage.setItem("clientId", clientId);
-			router.replace(`/student/game/${lobbyCode}/team`);
+			startTransition(() => {
+				router.replace(`/student/game/${lobbyCode}/team`);
+			});
 		},
 
 		onError: (error) => {
