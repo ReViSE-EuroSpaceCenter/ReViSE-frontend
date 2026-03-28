@@ -22,11 +22,11 @@ vi.mock("next/navigation", () => ({
 }));
 
 // Mock des composants enfants
-vi.mock("@/components/LauncherBackground", () => ({
+vi.mock("@/components/launcher/LauncherBackground", () => ({
     default: () => <div data-testid="background" />,
 }));
 
-vi.mock("@/components/LauncherPath", () => ({
+vi.mock("@/components/launcher/LauncherPath", () => ({
     default: ({ step, onStepAnimationComplete }: any) => (
         <div>
             <span data-testid="step">{step}</span>
