@@ -10,7 +10,7 @@ import { ApiError } from "@/api/apiError";
 import LoadingPage from "@/app/loading";
 import { teamColorMap } from "@/utils/teamColor";
 import { ProgressionBar } from "@/components/mission/ProgressionBar";
-import { GameInfoResponse } from "@/types/Mission";
+import { GameInfoResponse } from "@/types/TeamData";
 import { ProjectSection } from "@/components/mission/ProjectSection";
 import { ReturnButton } from "@/components/mission/ReturnButton";
 import { TeamTabs } from "@/components/mission/TeamTabs";
