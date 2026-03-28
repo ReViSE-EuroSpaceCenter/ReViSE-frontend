@@ -6,8 +6,8 @@ const PresentationModal = dynamic(
     () => import("@/components/PresentationModal"),
     { ssr: false, loading: () => null }
 );
-import LauncherBackground from "@/components/LauncherBackground";
-import LauncherPath from "@/components/LauncherPath";
+import LauncherBackground from "@/components/launcher/LauncherBackground";
+import LauncherPath from "@/components/launcher/LauncherPath";
 import {useState} from "react";
 import {launcherTexts} from "@/utils/launcherTexts";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";

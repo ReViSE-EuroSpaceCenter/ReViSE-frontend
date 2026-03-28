@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import Step from "@/components/Step"
+import Step from "@/components/launcher/Step"
 import { stepsConfig } from "@/utils/stepsConfig"
 
 export default function LauncherPath({ step, onStepAnimationComplete }: { step: number; onStepAnimationComplete: () => void }) {
