@@ -23,7 +23,7 @@ export default function Resources() {
 		<div className="min-h-[calc(100vh-80px)] flex items-start justify-center px-4 py-8 sm:py-12">
 			<div className="w-full max-w-md space-y-8">
 
-				<div className="space-y-2">
+				<div className="space-y-2 text-center">
 					<h1 className="text-2xl sm:text-3xl font-bold text-white leading-tight">
 						Ressources de votre équipe
 					</h1>

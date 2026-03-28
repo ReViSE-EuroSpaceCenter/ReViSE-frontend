@@ -4,6 +4,7 @@ import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import {useMutation} from "@tanstack/react-query";
 import {useRouter} from "next/navigation";
 import {createLobby} from "@/api/lobbyApi";
+import {startTransition} from "react";
 
 type Props = {
   isOpen: boolean;
@@ -17,8 +18,10 @@ export default function NumberTeamSelector({ isOpen, onClose }: Readonly<Props>)
     mutationFn: (nbTeams: number) => createLobby(nbTeams),
     onSuccess: ({ lobbyCode, hostId }) => {
       sessionStorage.setItem("hostId", hostId);
-      onClose();
-      router.push(`/teacher/game/${lobbyCode}/setup`);
+      startTransition(() => {
+        onClose();
+        router.push(`/teacher/game/${lobbyCode}/setup`);
+      });
     },
   });
 
