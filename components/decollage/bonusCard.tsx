@@ -1,26 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import {BonusBadgeItem} from "@/types/decollage";
 
-type BonusSubstituteType =
-    | "preparer_no_bonus"
-    | "adapter_no_bonus"
-    | "forcer_no_bonus"
-    | "anticiper_no_bonus"
-    | "reparer_no_bonus"
-    | "energy";
 
-type BonusBadgeItem = {
-    key: string;
-    image: string;
-    completed: boolean;
-    alt: string;
-    substitute?: {
-        type: BonusSubstituteType;
-        image: string;
-        quantity?: number;
-    };
-};
 
 type BonusCardProps = {
     bonus: BonusBadgeItem;
@@ -44,7 +27,6 @@ export default function BonusCard({
 
     const showEnergyReward =
         bonus.completed && substitute?.type === "energy";
-    console.log(bonus)
 
     return (
         <div className="flex max-w-72 flex-col items-center text-center">

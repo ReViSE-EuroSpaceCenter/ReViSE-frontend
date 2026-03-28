@@ -2,6 +2,10 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import DecollagePage from "@/app/teacher/game/[gameId]/decollage/page";
+import { useQuery } from "@tanstack/react-query";
+import { getGameInfo } from "@/api/missionApi";
+import { showError } from "@/errors/getErrorMessage";
+import { ApiError } from "@/api/apiError";
 
 const pushMock = vi.fn();
 
@@ -12,6 +16,21 @@ vi.mock("next/navigation", () => ({
     useParams: () => ({
         gameId: "ABC123",
     }),
+    useSearchParams: () => ({
+        get: (key: string) => (key === "utm" ? "6" : null),
+    }),
+}));
+
+vi.mock("@tanstack/react-query", () => ({
+    useQuery: vi.fn(),
+}));
+
+vi.mock("@/api/missionApi", () => ({
+    getGameInfo: vi.fn(),
+}));
+
+vi.mock("@/errors/getErrorMessage", () => ({
+    showError: vi.fn(),
 }));
 
 vi.mock("@/components/decollage/bonusCard", () => ({
@@ -61,73 +80,69 @@ vi.mock("@/components/mission/ValidationMission", () => ({
         ) : null,
 }));
 
-function setSessionStorageValue(value: unknown) {
-    window.sessionStorage.setItem("decollageData", JSON.stringify(value));
+vi.mock("@/app/loading", () => ({
+    default: () => <div>Loading...</div>,
+}));
+
+const mockedUseQuery = vi.mocked(useQuery);
+const mockedGetGameInfo = vi.mocked(getGameInfo);
+const mockedShowError = vi.mocked(showError);
+
+function getUseQueryOptions() {
+    const firstCall = mockedUseQuery.mock.calls[0];
+    expect(firstCall).toBeDefined();
+
+    return firstCall[0] as {
+        queryKey: [string, string];
+        queryFn: () => Promise<unknown>;
+        enabled: boolean;
+        staleTime: number;
+    };
 }
 
 describe("DecollagePage", () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        window.sessionStorage.clear();
     });
 
-    it("affiche 'Aucune donnée trouvée.' quand le JSON est invalide", () => {
-        window.sessionStorage.setItem("decollageData", "{invalid-json");
+    it("queryFn appelle showError et relance l'erreur pour une ApiError", async () => {
+        mockedUseQuery.mockReturnValue({
+            data: undefined,
+            isLoading: false,
+            isError: false,
+        } as any);
+
+        const error = new ApiError("TEST_KEY");
+        mockedGetGameInfo.mockRejectedValue(error);
 
         render(<DecollagePage />);
 
-        expect(screen.getByText("Aucune donnée trouvée.")).toBeInTheDocument();
+        const useQueryArg = getUseQueryOptions();
+
+        let caughtError: unknown;
+        try {
+            await useQueryArg.queryFn();
+        } catch (e) {
+            caughtError = e;
+        }
+
+        expect(caughtError).toBe(error);
+        expect(mockedShowError).toHaveBeenCalledTimes(1);
+        expect(mockedShowError).toHaveBeenCalledWith(
+            "TEST_KEY",
+            "Erreur lors de la récupération des données"
+        );
     });
-
-    it("laisse un bonus en not-completed si aucune équipe correspondante n'est trouvée", () => {
-        setSessionStorageValue({
-            nbTeams: 4,
-            step: "1",
-            teamsBonuses: [
-                {
-                    team: "Autre équipe",
-                    bonus1_check: true,
-                    bonus2_check: true,
-                },
-            ],
-        });
-
-        render(<DecollagePage />);
-
-        expect(
-            screen.getByTestId("bonus-card-coop1")
-        ).toHaveTextContent("not-completed");
-    });
-
-    it("utilise bien getBonusTeamKey pour mapper les bonus (ex: geco)", () => {
-        setSessionStorageValue({
-            nbTeams: 4,
-            step: "6",
-            teamsBonuses: [
-                {
-                    team: "Equipe GECO",
-                    bonus1_check: true,
-                    bonus2_check: false,
-                },
-            ],
-        });
-
-        render(<DecollagePage />);
-
-        expect(
-            screen.getByTestId("bonus-card-geco1")
-        ).toHaveTextContent("completed");
-    });
-
-
-
 
     it("ferme la modal quand on clique sur cancel", () => {
-        setSessionStorageValue({
-            nbTeams: 4,
-            step: "1",
-            teamsBonuses: [],
-        });
+        mockedUseQuery.mockReturnValue({
+            data: {
+                allTeamsCompleted: false,
+                teamsProgression: {},
+            },
+            isLoading: false,
+            isError: false,
+        } as any);
 
         render(<DecollagePage />);
 
@@ -140,11 +155,14 @@ describe("DecollagePage", () => {
     });
 
     it("ferme la modal et navigue vers /teacher/game/[gameId] quand on confirme", () => {
-        setSessionStorageValue({
-            nbTeams: 4,
-            step: "1",
-            teamsBonuses: [],
-        });
+        mockedUseQuery.mockReturnValue({
+            data: {
+                allTeamsCompleted: false,
+                teamsProgression: {},
+            },
+            isLoading: false,
+            isError: false,
+        } as any);
 
         render(<DecollagePage />);
 
@@ -156,5 +174,15 @@ describe("DecollagePage", () => {
         expect(screen.queryByTestId("validation-modal")).not.toBeInTheDocument();
     });
 
+    it("affiche le loading pendant le chargement", () => {
+        mockedUseQuery.mockReturnValue({
+            data: undefined,
+            isLoading: true,
+            isError: false,
+        } as any);
 
+        render(<DecollagePage />);
+
+        expect(screen.getByText("Loading...")).toBeInTheDocument();
+    });
 });
