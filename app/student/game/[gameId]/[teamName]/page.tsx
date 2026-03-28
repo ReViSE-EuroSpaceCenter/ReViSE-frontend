@@ -6,7 +6,7 @@ import {usePathname, useParams, useRouter, useSearchParams} from "next/navigatio
 import Checklist from "@/components/Checklist";
 import IATech from "@/components/IATech";
 import {teamColorMap} from "@/utils/teamColor";
-import {presentationTexts} from "@/utils/presentation_texts";
+import {presentationTexts} from "@/utils/presentationTexts";
 const PresentationModal = dynamic(
 	() => import("@/components/PresentationModal"),
 	{ ssr: false, loading: () => null }

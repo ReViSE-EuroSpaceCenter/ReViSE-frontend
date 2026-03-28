@@ -26,7 +26,7 @@ export default function IATech({ isOpen, setIsOpen }: Readonly<Props>) {
 					</button>
 
 					<Image
-						src="/IA.png"
+						src="/IA.svg"
 						alt="Technologies d'IA"
 						width={1100}
 						height={800}

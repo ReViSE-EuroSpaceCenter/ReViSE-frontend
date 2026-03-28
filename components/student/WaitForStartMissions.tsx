@@ -6,7 +6,7 @@ export const WaitForStartMissions = ({ chosenTeam }: { chosenTeam: string}) => {
 			<div className="max-w-md w-full bg-slate-800/30 border border-purpleReViSE/50 rounded-lg p-10 text-center space-y-6">
 				<div className="w-36 h-36 mx-auto">
 					<Image
-						src={`/badges/${chosenTeam}.png`}
+						src={`/badges/teams/${chosenTeam}.svg`}
 						alt={`Badge ${chosenTeam}`}
 						width={144}
 						height={144}

@@ -12,7 +12,7 @@ If not, please create one.
     - Feature branch: feature/\<story number>_\<developer initials>\_\<descriptor>
     - Bugfix branch: bugfix/\<ticket>_\<developer initials>\_\<descriptor>
     - Hotfix branch: hotfix/\<ticket>\_\<developer initials>\_\<descriptor>
-4. Make your updates using the Conventional Commits nomenclature:
+3. Make your updates using the Conventional Commits nomenclature:
   ```
     <type>[optional scope]: <description>
 
@@ -25,7 +25,7 @@ If not, please create one.
   ```bash
   git config commit.template .gitmessage
   ```
-6. Open a **Pull Request**, and **link it to the related issue**
+4. Open a **Pull Request**, and **link it to the related issue**
 
 ## ✔️ Pull Request Rules
 - Keep changes focused on a single issue  

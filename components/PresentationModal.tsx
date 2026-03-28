@@ -78,7 +78,7 @@ export default function PresentationModal({ isOpen, setIsOpen, icon, text, name,
                         alt={`${icon} image`}
                         width={100}
                         height={100}
-                        className={icon == '/logo.png' ? "w-35 h-35 object-contain my-4" : "w-20 h-20 object-contain mb-2"}
+                        className={icon == '/logo.svg' ? "w-35 h-35 object-contain my-4" : "w-20 h-20 object-contain mb-2"}
                     />
 
                     <DialogTitle className="text-2xl md:text-2xl font-bold mb-2 md:mb-6 text-center" style={{ color }}>
