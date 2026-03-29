@@ -10,7 +10,8 @@ import {useSessionId} from "@/hooks/useSessionId";
 import {useWSSubscription} from "@/hooks/useWSSubscription";
 import {useQueryClient} from "@tanstack/react-query";
 import {TeamInfo} from "@/types/TeamInfo";
-import Image from "next/image";
+import TeamBadgeGrid from "@/components/teacher/TeamBadgeGrid";
+import {TeamBadgeItem} from "@/types/TeamBadge";
 
 export default function SetUpPage() {
     const router = useRouter();
@@ -74,13 +75,16 @@ export default function SetUpPage() {
         }
     };
 
+    const badgeItems: TeamBadgeItem[] = (data?.allTeams ?? []).map((team) => ({
+        label: team,
+        status: data && !data.availableTeams.includes(team) ? "validated" : "waiting",
+    }));
+
     const getTeamGridCols = (nbTeams: number): string => {
         if (nbTeams === 4) return "grid-cols-4";
         if (nbTeams === 6) return "grid-cols-3";
         return "grid-cols-2 sm:grid-cols-3";
     };
-
-    const teamGridCols = getTeamGridCols(nbTeams);
 
     return (
       <div className="flex items-center justify-center pt-10 sm:pt-16 p-4 sm:p-6 w-full">
@@ -98,32 +102,7 @@ export default function SetUpPage() {
                     </div>
                   ))}
               </div>
-
-              <div className={`grid w-full gap-3 ${teamGridCols}`}>
-                  {data?.allTeams.map((team) => {
-                      const isJoined = data && !data.availableTeams.includes(team);
-
-                      return (
-                        <div
-                          key={team}
-                          className={`flex flex-col items-center gap-2 p-3 rounded-2xl border transition-all duration-500 ${
-                            isJoined
-                              ? "bg-purpleReViSE/10 border-purpleReViSE/40"
-                              : "bg-white/5 border-white/5 opacity-35 grayscale"
-                          }`}
-                        >
-                            <Image
-                              src={`/badges/teams/${team}.svg`}
-                              alt={team}
-                              width={80}
-                              height={80}
-                              className="sm:w-24 sm:h-24"
-                            />
-                        </div>
-                      );
-                  })}
-              </div>
-
+              <TeamBadgeGrid teams={badgeItems} gridColsClass={getTeamGridCols(nbTeams)} />
               <button
                 data-testid="start-game-button"
                 onClick={startGame}

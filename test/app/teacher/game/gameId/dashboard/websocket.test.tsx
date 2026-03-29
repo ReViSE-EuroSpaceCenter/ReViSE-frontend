@@ -1,23 +1,19 @@
 import React from "react";
-import { screen, waitFor, act } from "@testing-library/react";
+import { screen, act } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import Dashboard from "@/app/teacher/game/[gameId]/page";
 import { getGameInfo } from "@/api/missionApi";
-import {renderPage} from "@/test/utils/renderPage";
+import { renderPage } from "@/test/utils/renderPage";
 
-// ---------- Websocket mocks ----------
-const subscribeMock = vi.fn();
-const unsubscribeMock = vi.fn();
-
-let wsCallback: ((message: { body: string }) => void) | undefined;
-
+// ---------- Navigation mocks ----------
 vi.mock("next/navigation", () => ({
     useParams: () => ({ gameId: "ABCDEF" }),
-    useRouter: () => ({ replace: vi.fn() }),
+    useRouter: () => ({ replace: vi.fn(), push: vi.fn() }),
     usePathname: () => "/teacher/game/ABCDEF",
     useSearchParams: () => ({ get: vi.fn(() => null) }),
 }));
 
+// ---------- API mocks ----------
 vi.mock("@/api/missionApi", () => ({
     getGameInfo: vi.fn(),
     endMission: vi.fn(),
@@ -27,38 +23,63 @@ vi.mock("@/errors/getErrorMessage", () => ({
     showError: vi.fn(),
 }));
 
-vi.mock("@/contexts/WebSocketProvider", () => ({
-    useWebSocket: () => ({
-        connected: true,
-        subscribe: subscribeMock,
-    }),
+// ---------- WebSocket mock ----------
+let missionWsCallback: ((event: any) => void) | undefined;
+let launcherWsCallback: ((event: any) => void) | undefined;
+
+vi.mock("@/hooks/useWSSubscription", () => ({
+    useWSSubscription: (channel: string, callback: (event: any) => void) => {
+        if (channel === "mission") missionWsCallback = callback;
+        if (channel === "launcher") launcherWsCallback = callback;
+    },
 }));
 
-vi.mock("@/components/teacher/SideRow", () => ({
-    default: ({ team, classicMissionsCompleted }: { team: string; classicMissionsCompleted: number }) => (
-        <div>
-            SideRow-{team}-{classicMissionsCompleted}
-        </div>
+// ---------- Component mocks ----------
+vi.mock("@/components/teacher/TeamsColumn", () => ({
+    default: ({ teams }: any) => (
+      <div>
+          {teams?.map((team: any) => (
+            <div key={team.teamLabel}>
+                SideRow-{team.teamLabel}-{team.classicMissionsCompleted}
+            </div>
+          ))}
+      </div>
     ),
-}))
+}));
 
-vi.mock("@/components/student/ProgressionBar", () => ({
-    ProgressionBar: () => <div>ProgressionBar</div>,
+vi.mock("@/utils/calculTeamColumn", () => ({
+    getTeamsColumns: vi.fn((gameData) => {
+        const entries = Object.values(gameData?.teamsFullProgression ?? {}) as any[];
+        const teams = entries.map((e) => e.teamProgression);
+        return { leftTeams: teams, rightTeams: [] };
+    }),
 }));
 
 vi.mock("@/components/Toolbox", () => ({
     default: ({ centerAction }: any) => (
-        <button
-            data-testid="center-action-button"
-            disabled={centerAction?.disabled}
-            onClick={centerAction?.onClick}
-        >
-            {centerAction?.label}
-        </button>
+      <button
+        data-testid="center-action-button"
+        disabled={centerAction?.disabled}
+        onClick={centerAction?.onClick}
+      >
+          {centerAction?.label}
+      </button>
     ),
 }));
 
-// ---------- Helpers ----------
+vi.mock("@/components/Checklist", () => ({
+    default: () => <div>Checklist</div>,
+}));
+
+vi.mock("@/components/IATech", () => ({
+    default: () => <div>IATech</div>,
+}));
+
+vi.mock("@/components/teacher/MissionModal", () => ({
+    default: () => <div>MissionModal</div>,
+}));
+
+// ---------- Fixtures ----------
 const gameInfo = {
     allTeamsCompleted: false,
     teamsFullProgression: {
@@ -78,12 +99,8 @@ const gameInfo = {
 describe("Dashboard websocket", () => {
     beforeEach(() => {
         vi.clearAllMocks();
-
-        subscribeMock.mockImplementation((_channel, callback) => {
-            wsCallback = callback;
-            return { unsubscribe: unsubscribeMock };
-        });
-
+        missionWsCallback = undefined;
+        launcherWsCallback = undefined;
         vi.mocked(getGameInfo).mockResolvedValue(gameInfo as any);
     });
 
@@ -92,35 +109,44 @@ describe("Dashboard websocket", () => {
 
         expect(await screen.findByText("SideRow-MECA-4")).toBeInTheDocument();
 
-        act(() => {
-            wsCallback?.({
-                body: JSON.stringify({
-                    type: "TEAM_PROGRESSION",
-                    payload: {
-                        teamProgression: {
-                            teamLabel: "MECA",
-                            classicMissionsCompleted: 6,
-                            firstBonusMissionCompleted: true,
-                            secondBonusMissionCompleted: false,
-                        },
-                        allTeamsMissionsCompleted: false,
+        await act(async () => {
+            missionWsCallback?.({
+                type: "TEAM_PROGRESSION",
+                payload: {
+                    teamProgression: {
+                        teamLabel: "MECA",
+                        classicMissionsCompleted: 6,
+                        firstBonusMissionCompleted: true,
+                        secondBonusMissionCompleted: false,
                     },
-                }),
+                    allTeamsMissionsCompleted: false,
+                },
             });
         });
 
-        await waitFor(() => {
-            expect(screen.getByText("SideRow-MECA-6")).toBeInTheDocument();
-        });
+        expect(await screen.findByText("SideRow-MECA-6")).toBeInTheDocument();
     });
 
-    it("désabonne le websocket au unmount", async () => {
-        const view = renderPage(<Dashboard />);
+    it("ignore les événements websocket qui ne sont pas TEAM_PROGRESSION", async () => {
+        renderPage(<Dashboard />);
 
-        await screen.findByTestId("center-action-button");
+        expect(await screen.findByText("SideRow-MECA-4")).toBeInTheDocument();
 
-        view.unmount();
+        await act(async () => {
+            missionWsCallback?.({
+                type: "UNKNOWN_EVENT",
+                payload: {},
+            });
+        });
 
-        expect(unsubscribeMock).toHaveBeenCalled();
+        expect(screen.getByText("SideRow-MECA-4")).toBeInTheDocument();
+        expect(screen.queryByText("SideRow-MECA-6")).not.toBeInTheDocument();
+    });
+
+    it("désactive le bouton de décollage quand toutes les équipes n'ont pas terminé", async () => {
+        renderPage(<Dashboard />);
+
+        const button = await screen.findByTestId("center-action-button");
+        expect(button).toBeDisabled();
     });
 });
