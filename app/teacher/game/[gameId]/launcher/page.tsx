@@ -25,7 +25,7 @@ export default function Launcher() {
 
     const handleStepAnimationComplete = () => {
         step++;
-        /*router.replace(`${pathname}?step=${step}`);*/
+        router.replace(`${pathname}?step=${step}`);
     }
 
     return (
