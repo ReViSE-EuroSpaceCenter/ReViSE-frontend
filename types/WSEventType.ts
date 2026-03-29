@@ -14,4 +14,11 @@ export type WSEventType =
 				};
 			};
 		}
-	| { type: "MISSION_ENDED"};
+	| { type: "MISSION_ENDED"}
+	| {
+			type: "RESOURCE_UPDATED";
+			payload: {
+				teamLabel: string;
+				resources: Record<string, number>
+			};
+		}

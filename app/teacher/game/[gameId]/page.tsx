@@ -17,6 +17,7 @@ import {GameInfoResponse} from "@/types/TeamData";
 import {presentationTexts} from "@/utils/presentationTexts";
 import {confirmEndMissionMessage} from "@/utils/ConfirmationEndMissionMessage";
 import {getTeamsColumns} from "@/utils/calculTeamColumn";
+import MissionModal from "@/components/teacher/MissionModal";
 const PresentationModal = dynamic(
     () => import("@/components/PresentationModal"),
     { ssr: false, loading: () => null }
@@ -24,19 +25,21 @@ const PresentationModal = dynamic(
 
 export default function Dashboard() {
     const params = useParams();
-	const router = useRouter();
-	const pathname = usePathname();
-	const searchParams = useSearchParams();
+	  const router = useRouter();
+	  const pathname = usePathname();
+	  const searchParams = useSearchParams();
     const lobbyCode = params.gameId as string;
     const queryClient = useQueryClient();
     const hostId = useSessionId("hostId");
 
     const [isChecklistOpen, setIsChecklistOpen] = useState(false);
     const [isIAOpen, setIsIAOpen] = useState(false);
+    const [isMissionModalOpen, setIsMissionModalOpen] = useState(false);
+    const [submittedTeams, setSubmittedTeams] = useState<Set<string>>(new Set());
 
     const showPresentation = searchParams.get("presentation") === "true";
-	const [isPresentationOpen, setIsPresentationOpen] = useState(showPresentation);
-	const text = showPresentation ? presentationTexts.TEACHER : null
+	  const [isPresentationOpen, setIsPresentationOpen] = useState(showPresentation);
+	  const text = showPresentation ? presentationTexts.TEACHER : null
 
     const { data: gameData, isError, error } = useQuery<GameInfoResponse>({
         queryKey: ["gameInfo", lobbyCode],
@@ -74,11 +77,23 @@ export default function Dashboard() {
         });
     }, [lobbyCode, queryClient]));
 
+    useWSSubscription("launcher", useCallback((event) => {
+      if (event.type !== "RESOURCE_UPDATED") return;
+      const { teamLabel } = event.payload;
+      setSubmittedTeams((prev) => new Set(prev).add(teamLabel));
+    }, []))
+
     const { leftTeams, rightTeams } = useMemo(
         () => getTeamsColumns(gameData),
         [gameData]
     );
     const allTeamsCompleted = gameData?.allTeamsCompleted ?? false;
+    const allTeamLabels = useMemo(
+      () => Object.keys(gameData?.teamsFullProgression ?? {}),
+      [gameData]
+    );
+    const allResourcesSubmitted = allTeamLabels.length > 0 && allTeamLabels.every((label) => submittedTeams.has(label));
+
 
     const handleEndMission = async () => {
         if (!hostId) {
@@ -87,6 +102,7 @@ export default function Dashboard() {
         }
         try {
             await endMission(lobbyCode, hostId);
+            setIsMissionModalOpen(true);
         } catch (err) {
             showError(err instanceof ApiError ? err.key : "", "Impossible de clôturer la mission");
         }
@@ -98,7 +114,6 @@ export default function Dashboard() {
     };
 
     return (
-
         <div className="min-h-[calc(100vh-120px)] max-h-[calc(100vh-120px)] w-full max-w-450 mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-[1fr_2fr_1fr] items-center justify-items-center gap-4 px-8 md:px-16 py-10 ">
             <div className="flex flex-col gap-12 xl:gap-18 w-full min-w-0 items-center xl:items-start xl:pr-12 order-2 xl:order-1 md:col-span-1">
                 <TeamsColumn teams={leftTeams} align="start" side="left" />
@@ -118,6 +133,13 @@ export default function Dashboard() {
                 />
                 <Checklist isOpen={isChecklistOpen} setIsOpen={setIsChecklistOpen} />
                 <IATech isOpen={isIAOpen} setIsOpen={setIsIAOpen} />
+                <MissionModal
+                    isOpen={isMissionModalOpen}
+                    gameData={gameData}
+                    submittedTeams={submittedTeams}
+                    allResourcesSubmitted={allResourcesSubmitted}
+                    onConfirm={() => router.push(`/teacher/game/${lobbyCode}/launcher?step=1`)}
+                />
                 {text && (
                     <PresentationModal
                         isOpen={isPresentationOpen}
