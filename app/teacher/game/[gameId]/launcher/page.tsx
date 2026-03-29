@@ -25,7 +25,7 @@ export default function Launcher() {
 
     const handleStepAnimationComplete = () => {
         step++;
-        router.replace(`${pathname}?step=${step}`);
+        /*router.replace(`${pathname}?step=${step}`);*/
     }
 
     return (
@@ -42,7 +42,7 @@ export default function Launcher() {
                 <PresentationModal
                     isOpen={isPresentationOpen}
                     setIsOpen={setIsPresentationOpen}
-                    icon="/logo.png"
+                    icon="/logo.svg"
                     text={text}
                     name="PRESENTATION"
                     color="#fff"
