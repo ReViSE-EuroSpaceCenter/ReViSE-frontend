@@ -1,7 +1,7 @@
 import {missionNameTraduction} from "@/utils/missionName";
 import {Mission} from "@/types/Mission";
 import {teams} from "@/types/Teams";
-import {GameInfoResponse, TeamProgressionWS} from "@/types/TeamData";
+import {TeamsFullProgression, TeamProgressionWS} from "@/types/TeamData";
 
 function checkCompletion(
     missionNum: string,
@@ -58,7 +58,7 @@ export function getProjectMissionsToUpdate(
 }
 
 export function updateTeamProgression(
-  gameData: GameInfoResponse | undefined,
+  gameData: TeamsFullProgression | undefined,
   payload: TeamProgressionWS
 ) {
     if (!gameData) return gameData;
@@ -92,7 +92,7 @@ export function updateTeamProgression(
                 ...teamData,
                 completedMissions: updatedCompletedMissions,
                 teamProgression: {
-                    ...teamData.teamProgression,
+                    ...teamData.teamProgressionDTO,
                     ...teamProgression,
                 },
             },
