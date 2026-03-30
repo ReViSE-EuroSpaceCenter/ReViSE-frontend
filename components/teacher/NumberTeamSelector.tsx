@@ -38,14 +38,14 @@ export default function NumberTeamSelector({ isOpen, onClose }: Readonly<Props>)
 
           <button
             onClick={() => mutation.mutate(4)}
-            className="w-full px-4 py-4 bg-orangeReViSE text-white rounded-xl font-semibold transition-all duration-200 hover:brightness-110 hover:scale-[1.02] active:scale-[0.98]"
+            className="w-full px-4 py-4 bg-orangeReViSE cursor-pointer text-white rounded-xl font-semibold transition-all duration-200 hover:brightness-110 hover:scale-[1.02] active:scale-[0.98]"
           >
             4 équipes
           </button>
 
           <button
             onClick={() => mutation.mutate(6)}
-            className="w-full px-4 py-4 bg-orangeReViSE text-white rounded-xl font-semibold transition-all duration-200 hover:brightness-110 hover:scale-[1.02] active:scale-[0.98]"
+            className="w-full px-4 py-4 bg-orangeReViSE text-white cursor-pointer rounded-xl font-semibold transition-all duration-200 hover:brightness-110 hover:scale-[1.02] active:scale-[0.98]"
           >
             6 équipes
           </button>
@@ -53,7 +53,7 @@ export default function NumberTeamSelector({ isOpen, onClose }: Readonly<Props>)
           <button
             type="button"
             onClick={onClose}
-            className="text-sm text-slate-400 hover:text-white transition-colors"
+            className="text-sm text-slate-400 cursor-pointer hover:text-white transition-colors"
           >
             Annuler
           </button>
