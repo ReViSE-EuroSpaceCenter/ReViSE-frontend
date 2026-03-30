@@ -10,10 +10,10 @@ import IATech from "@/components/IATech";
 import TeamsColumn from "@/components/teacher/TeamsColumn";
 import {showError} from "@/errors/getErrorMessage";
 import {ApiError} from "@/api/apiError";
-import {endMission, getGameInfo} from "@/api/missionApi";
+import {endMission, getTeamsFullProgression} from "@/api/missionApi";
 import {useSessionId} from "@/hooks/useSessionId";
 import {useWSSubscription} from "@/hooks/useWSSubscription";
-import {GameInfoResponse} from "@/types/TeamData";
+import {TeamsFullProgression} from "@/types/TeamData";
 import {presentationTexts} from "@/utils/presentationTexts";
 import {confirmEndMissionMessage} from "@/utils/ConfirmationEndMissionMessage";
 import {getTeamsColumns} from "@/utils/calculTeamColumn";
@@ -41,9 +41,9 @@ export default function Dashboard() {
 	  const [isPresentationOpen, setIsPresentationOpen] = useState(showPresentation);
 	  const text = showPresentation ? presentationTexts.TEACHER : null
 
-    const { data: gameData, isError, error } = useQuery<GameInfoResponse>({
+    const { data: gameData, isError, error } = useQuery<TeamsFullProgression>({
         queryKey: ["gameInfo", lobbyCode],
-        queryFn: () => getGameInfo(lobbyCode),
+        queryFn: () => getTeamsFullProgression(lobbyCode),
         enabled: !!lobbyCode,
     });
 
@@ -56,23 +56,26 @@ export default function Dashboard() {
     useWSSubscription("mission", useCallback((event) => {
         if (event.type !== "TEAM_PROGRESSION") return;
 
-        const { teamProgression, allTeamsMissionsCompleted } = event.payload;
+        const { teamLabel, allTeamsMissionsCompleted } = event.payload;
 
-        queryClient.setQueryData<GameInfoResponse>(["gameInfo", lobbyCode], (old) => {
+        queryClient.setQueryData<TeamsFullProgression>(["gameInfo", lobbyCode], (old) => {
             if (!old) return old;
+
+            const oldTeamData = old.teamsFullProgression[teamLabel];
+
             return {
                 ...old,
                 teamsFullProgression: {
                     ...old.teamsFullProgression,
-                    [teamProgression.teamLabel]: {
-                        ...old.teamsFullProgression[teamProgression.teamLabel],
+                    [teamLabel]: {
+                        ...oldTeamData,
                         teamProgression: {
-                            ...old.teamsFullProgression[teamProgression.teamLabel]?.teamProgression,
-                            ...teamProgression,
+                            ...oldTeamData?.teamProgression,
+                            ...event.payload,
                         },
                     },
                 },
-                allTeamsMissionsCompleted,
+                allTeamsCompleted: allTeamsMissionsCompleted,
             };
         });
     }, [lobbyCode, queryClient]));

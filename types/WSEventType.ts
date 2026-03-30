@@ -6,12 +6,10 @@ export type WSEventType =
 			type: "TEAM_PROGRESSION";
 			payload: {
 				allTeamsMissionsCompleted: boolean;
-				teamProgression: {
-					teamLabel: string;
-					classicMissionsCompleted: number;
-					firstBonusMissionCompleted: boolean;
-					secondBonusMissionCompleted: boolean;
-				};
+				teamLabel: string;
+				classicMissionsCompleted: number;
+				firstBonusMissionCompleted: boolean;
+				secondBonusMissionCompleted: boolean;
 			};
 		}
 	| { type: "MISSION_ENDED"}

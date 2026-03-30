@@ -3,20 +3,20 @@
 import { useParams, useRouter } from "next/navigation";
 import {useCallback, useEffect} from "react";
 import { ProgressionBar } from "@/components/mission/ProgressionBar";
-import { getTeamMissionsState } from "@/api/missionApi";
+import { getTeamFullProgression } from "@/api/missionApi";
 import { MissionProvider } from "@/contexts/MissionContext";
 import { showError } from "@/errors/getErrorMessage";
 import { ApiError } from "@/api/apiError";
 import LoadingPage from "@/app/loading";
 import { teamColorMap } from "@/utils/teamColor";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { TeamMissionsState } from "@/types/TeamMissionState";
 import { ProjectSection } from "@/components/mission/ProjectSection";
 import { ReturnButton } from "@/components/mission/ReturnButton";
 import { useMission } from "@/hooks/useMission";
 import {useSessionId} from "@/hooks/useSessionId";
 import {useWSSubscription} from "@/hooks/useWSSubscription";
 import {useInvalidateMissions} from "@/hooks/useInvalidateMissions";
+import {TeamFullProgression} from "@/types/TeamData";
 
 export default function MissionPage() {
     const params = useParams();
@@ -38,9 +38,9 @@ export default function MissionPage() {
 
     const teamColor = teamColorMap[teamName];
 
-    const { data, isError, error, isLoading } = useQuery<TeamMissionsState>({
+    const { data, isError, error, isLoading } = useQuery<TeamFullProgression>({
         queryKey: ["missions", lobbyCode, clientId],
-        queryFn: () => getTeamMissionsState(lobbyCode, clientId as string),
+        queryFn: () => getTeamFullProgression(lobbyCode, clientId as string),
         enabled: !!lobbyCode && !!clientId,
     });
 
@@ -56,27 +56,23 @@ export default function MissionPage() {
             return;
         }
 
-        if (event.type !== "TEAM_PROGRESSION" || event.payload.teamProgression.teamLabel !== teamName) return;
+        if (event.type !== "TEAM_PROGRESSION" || event.payload.teamLabel !== teamName) return;
 
-        queryClient.setQueryData<TeamMissionsState>(["missions", lobbyCode, clientId], (old) => {
+        queryClient.setQueryData<TeamFullProgression>(["missions", lobbyCode, clientId], (old) => {
             if (!old) return old;
             return {
                 ...old,
-                teamFullProgression: {
-                    ...old.teamFullProgression,
-                    teamProgression: event.payload.teamProgression,
-                },
+                teamProgression: event.payload,
             };
         });
     }, [lobbyCode, teamName, clientId, router, queryClient]));
 
     if (isLoading || !data) return <LoadingPage />;
+    const completedMissionsCount = data.teamProgression.classicMissionsCompleted;
 
-    const completedMissions = data.teamFullProgression.completedMissions;
-    const isBonus1Completed = data.teamFullProgression.teamProgression.firstBonusMissionCompleted;
-    const isBonus2Completed = data.teamFullProgression.teamProgression.secondBonusMissionCompleted;
-
-    const completedMissionCount = Object.values(completedMissions).filter(Boolean).length;
+    const completedMissions = data.completedMissions;
+    const isBonus1Completed = data.teamProgression.firstBonusMissionCompleted;
+    const isBonus2Completed = data.teamProgression.secondBonusMissionCompleted;
 
     return (
         <MissionProvider
@@ -91,7 +87,7 @@ export default function MissionPage() {
                     <ReturnButton url={`/student/game/${lobbyCode}/${teamName}`} />
                     <div className="flex flex-col gap-6 w-48 sm:w-64 lg:w-80">
                         <ProgressionBar
-                            completed={completedMissionCount}
+                            completed={completedMissionsCount}
                             totalMission={totalMissionCount}
                             color={teamColor}
                         />

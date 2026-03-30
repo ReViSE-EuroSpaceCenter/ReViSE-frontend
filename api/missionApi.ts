@@ -1,5 +1,5 @@
 import { put, get, post } from './apiClient'
-import { TeamMissionsState } from "@/types/TeamMissionState";
+import {TeamFullProgression} from "@/types/TeamData";
 
 export const changeTeamMissionState = async (
     lobbyCode: string,
@@ -10,35 +10,36 @@ export const changeTeamMissionState = async (
     return await put(`/api/missions/${lobbyCode}`, {
         body: {
             id,
-            teamLabel,
             updateMissions,
+            teamLabel,
         },
     });
 };
 
-export const getTeamMissionsState = async (
+export const getTeamFullProgression = async (
   lobbyCode: string,
   clientId: string
-): Promise<TeamMissionsState> => {
-    const response = await get(`/api/missions/${lobbyCode}?clientId=${clientId}`);
+): Promise<TeamFullProgression> => {
+    const response = await get(`/api/missions/${lobbyCode}/team?clientId=${clientId}`);
 
     if (!response) {
         return {
-            teamFullProgression: {
-                completedMissions: {},
-                teamProgression: {
-                    classicMissionsCompleted: 0,
-                    firstBonusMissionCompleted: false,
-                    secondBonusMissionCompleted: false,
-                },
-            },
-        };
+            completedMissions: {},
+            teamProgression: {
+                teamLabel: "",
+                classicMissionsCompleted: 0,
+                firstBonusMissionCompleted: false,
+                secondBonusMissionCompleted: false,
+                allTeamsMissionsCompleted: false
+            }
+        }
+
     }
 
-    return response as TeamMissionsState;
+    return response as TeamFullProgression;
 };
 
-export const getGameInfo = async (lobbyCode: string) => {
+export const getTeamsFullProgression = async (lobbyCode: string) => {
     return await get(`/api/missions/${lobbyCode}`);
 };
 
