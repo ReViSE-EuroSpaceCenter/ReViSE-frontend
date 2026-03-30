@@ -2,17 +2,17 @@ import { screen, waitFor, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import MissionPage from "@/app/student/game/[gameId]/[teamName]/mission/page";
 import { QueryClient } from "@tanstack/react-query";
-import {TeamProgression} from "@/types/TeamData";
+import {TeamFullProgression} from "@/types/TeamData";
 import {renderPage} from "@/test/utils/renderPage";
 
 // ---------- Mocks ----------
-const mockMissionsState: TeamProgression = {
+const mockMissionsState: TeamFullProgression = {
 
         completedMissions: {
             "Mission 1": true,
             "Mission 2": false
         },
-        teamProgressionDTO: {
+        teamProgression: {
             teamLabel: "MECA",
             classicMissionsCompleted: 1,
             firstBonusMissionCompleted: false,

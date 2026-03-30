@@ -50,7 +50,7 @@ export default function HostMissionsPage() {
 
         const wsPayload: TeamProgressionWS = {
             teamProgression: {
-                ...event.payload.teamProgression,
+                ...event.payload,
                 allTeamsMissionsCompleted: event.payload.allTeamsMissionsCompleted,
             },
             allTeamsMissionsCompleted: event.payload.allTeamsMissionsCompleted,
@@ -72,11 +72,11 @@ export default function HostMissionsPage() {
         const data = gameData?.teamsFullProgression?.[selectedTeam];
         return {
             completedMissions: data?.completedMissions ?? {},
-            teamProgression: data?.teamProgressionDTO,
+            teamProgression: data?.teamProgression,
         };
     }, [gameData, selectedTeam]);
 
-    const completedMissionsCount = gameData?.teamsFullProgression?.[selectedTeam]?.teamProgressionDTO?.classicMissionsCompleted ?? 0;
+    const completedMissionsCount = gameData?.teamsFullProgression?.[selectedTeam]?.teamProgression?.classicMissionsCompleted ?? 0;
 
     if (isLoading || !gameData || !teamKeys.length) return <LoadingPage />;
 

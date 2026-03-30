@@ -56,22 +56,22 @@ export default function Dashboard() {
     useWSSubscription("mission", useCallback((event) => {
         if (event.type !== "TEAM_PROGRESSION") return;
 
-        const { teamProgression, allTeamsMissionsCompleted } = event.payload;
+        const { teamLabel, allTeamsMissionsCompleted } = event.payload;
 
         queryClient.setQueryData<TeamsFullProgression>(["gameInfo", lobbyCode], (old) => {
             if (!old) return old;
 
-            const oldTeamData = old.teamsFullProgression[teamProgression.teamLabel];
+            const oldTeamData = old.teamsFullProgression[teamLabel];
 
             return {
                 ...old,
                 teamsFullProgression: {
                     ...old.teamsFullProgression,
-                    [teamProgression.teamLabel]: {
+                    [teamLabel]: {
                         ...oldTeamData,
-                        teamProgressionDTO: {
-                            ...oldTeamData?.teamProgressionDTO,
-                            ...teamProgression,
+                        teamProgression: {
+                            ...oldTeamData?.teamProgression,
+                            ...event.payload,
                         },
                     },
                 },

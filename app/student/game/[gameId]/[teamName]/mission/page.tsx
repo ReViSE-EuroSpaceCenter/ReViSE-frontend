@@ -16,7 +16,7 @@ import { useMission } from "@/hooks/useMission";
 import {useSessionId} from "@/hooks/useSessionId";
 import {useWSSubscription} from "@/hooks/useWSSubscription";
 import {useInvalidateMissions} from "@/hooks/useInvalidateMissions";
-import {TeamProgression} from "@/types/TeamData";
+import {TeamFullProgression} from "@/types/TeamData";
 
 export default function MissionPage() {
     const params = useParams();
@@ -38,7 +38,7 @@ export default function MissionPage() {
 
     const teamColor = teamColorMap[teamName];
 
-    const { data, isError, error, isLoading } = useQuery<TeamProgression>({
+    const { data, isError, error, isLoading } = useQuery<TeamFullProgression>({
         queryKey: ["missions", lobbyCode, clientId],
         queryFn: () => getTeamFullProgression(lobbyCode, clientId as string),
         enabled: !!lobbyCode && !!clientId,
@@ -56,27 +56,26 @@ export default function MissionPage() {
             return;
         }
 
-        if (event.type !== "TEAM_PROGRESSION" || event.payload.teamProgression.teamLabel !== teamName) return;
+        if (event.type !== "TEAM_PROGRESSION" || event.payload.teamLabel !== teamName) return;
 
-        queryClient.setQueryData<TeamProgression>(["missions", lobbyCode, clientId], (old) => {
+        queryClient.setQueryData<TeamFullProgression>(["missions", lobbyCode, clientId], (old) => {
             if (!old) return old;
             return {
                 ...old,
-                teamFullProgressionDTO: {
-                    ...old.teamProgressionDTO,
-                    teamProgression: event.payload.teamProgression,
+                teamFullProgression: {
+                    ...old.teamProgression,
+                    teamProgression: event.payload,
                 },
             };
         });
     }, [lobbyCode, teamName, clientId, router, queryClient]));
 
     if (isLoading || !data) return <LoadingPage />;
-
-    const completedMissionsCount = data.teamProgressionDTO.classicMissionsCompleted;
+    const completedMissionsCount = data.teamProgression.classicMissionsCompleted;
 
     const completedMissions = data.completedMissions;
-    const isBonus1Completed = data.teamProgressionDTO.firstBonusMissionCompleted;
-    const isBonus2Completed = data.teamProgressionDTO.secondBonusMissionCompleted;
+    const isBonus1Completed = data.teamProgression.firstBonusMissionCompleted;
+    const isBonus2Completed = data.teamProgression.secondBonusMissionCompleted;
 
     return (
         <MissionProvider

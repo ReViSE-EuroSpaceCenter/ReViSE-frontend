@@ -1,5 +1,5 @@
 import { put, get, post } from './apiClient'
-import {TeamProgression} from "@/types/TeamData";
+import {TeamFullProgression} from "@/types/TeamData";
 
 export const changeTeamMissionState = async (
     lobbyCode: string,
@@ -19,13 +19,13 @@ export const changeTeamMissionState = async (
 export const getTeamFullProgression = async (
   lobbyCode: string,
   clientId: string
-): Promise<TeamProgression> => {
+): Promise<TeamFullProgression> => {
     const response = await get(`/api/missions/${lobbyCode}/team?clientId=${clientId}`);
 
     if (!response) {
         return {
             completedMissions: {},
-            teamProgressionDTO: {
+            teamProgression: {
                 teamLabel: "",
                 classicMissionsCompleted: 0,
                 firstBonusMissionCompleted: false,
@@ -36,7 +36,7 @@ export const getTeamFullProgression = async (
 
     }
 
-    return response as TeamProgression;
+    return response as TeamFullProgression;
 };
 
 export const getTeamsFullProgression = async (lobbyCode: string) => {

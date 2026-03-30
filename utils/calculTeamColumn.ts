@@ -7,7 +7,7 @@ export function getTeamsColumns(gameData?: TeamsFullProgression) {
         .map(([team, data], index) => ({
             id: index,
             team,
-            ...data.teamProgressionDTO,
+            ...data.teamProgression,
         }));
 
     const half = Math.ceil(teamsData.length / 2);
