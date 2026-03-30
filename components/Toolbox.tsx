@@ -122,6 +122,11 @@ export default function Toolbox({ centerAction, actions }: Readonly<RadialMenuPr
 						<stop offset="100%" stopColor={c.base} stopOpacity="0.8" />
 					</radialGradient>
 				))}
+				<radialGradient id={`tb-petal-disabled-grad`} cx="50%" cy="100%" r="100%">
+					<stop offset="0%" stopColor="#CCCCCC" stopOpacity="0.35" />
+					<stop offset="60%" stopColor="#999999" stopOpacity="0.3" />
+					<stop offset="100%" stopColor="#666666" stopOpacity="0.25" />
+				</radialGradient>
 				<radialGradient id="tb-center-active-grad" cx="50%" cy="50%" r="50%">
 					<stop offset="0%"   stopColor="#5A4A7A" stopOpacity="0.75"/>
 					<stop offset="65%"  stopColor="#2E2452" stopOpacity="0.70"/>
@@ -167,11 +172,11 @@ export default function Toolbox({ centerAction, actions }: Readonly<RadialMenuPr
 				return (
 					<g
 						key={`petal-${action.label}`}
-						onClick={action.onClick}
-						onMouseEnter={() => setHovered(i)}
+						cursor={action?.disabled ? "not-allowed": "pointer" }
+						onClick={action?.disabled ? undefined : action?.onClick}
+						onMouseEnter={() => action?.disabled ? undefined : setHovered(i)}
 						onMouseLeave={() => setHovered(null)}
 						style={{
-							cursor: "pointer",
 							transform: `translate(${round(Math.cos(mid) * nudge)}px, ${round(
 								Math.sin(mid) * nudge
 							)}px)`,
@@ -184,8 +189,8 @@ export default function Toolbox({ centerAction, actions }: Readonly<RadialMenuPr
 
 						<path
 							d={petalPath(i)}
-							fill={`url(#tb-petal-grad-${i})`}
-							stroke={color.light}
+							fill={action.disabled ? `url(#tb-petal-disabled-grad)` : `url(#tb-petal-grad-${i})`}
+							stroke={action.disabled ? "gray" : color.light}
 							strokeWidth={isHov ? 1.5 : 0.8}
 							strokeOpacity={isHov ? 0.9 : 0.5}
 						/>
