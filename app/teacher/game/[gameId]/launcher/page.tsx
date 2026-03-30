@@ -25,7 +25,9 @@ export default function Launcher() {
 
     const handleStepAnimationComplete = () => {
         step++;
-        router.replace(`${pathname}?step=${step}`);
+        setTimeout(() => {
+            router.replace(`${pathname}/${step}`);
+        }, 800);
     }
 
     return (
@@ -46,7 +48,7 @@ export default function Launcher() {
                     text={text}
                     name="PRESENTATION"
                     color="#fff"
-                    onClose={() => router.replace(pathname) }
+                    onClose={() => router.replace(`${pathname}?step=1}`) }
                 />
             )}
         </div>
