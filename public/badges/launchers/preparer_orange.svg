@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="100%" height="100%" viewBox="0 0 142 142" version="1.1" xmlns="http://www.w3.org/2000/svg" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
+  <path d="M141.732,28.346l0,85.039c0,15.645 -12.702,28.346 -28.346,28.346l-85.039,0c-15.645,0 -28.346,-12.702 -28.346,-28.346l0,-85.039c0,-15.645 12.702,-28.346 28.346,-28.346l85.039,0c15.645,0 28.346,12.702 28.346,28.346Zm-6.25,0c0,-12.195 -9.901,-22.096 -22.096,-22.096l-85.039,0c-12.195,0 -22.096,9.901 -22.096,22.096l0,85.039c0,12.195 9.901,22.096 22.096,22.096l85.039,0c12.195,0 22.096,-9.901 22.096,-22.096l0,-85.039Z" style="fill: rgb(250, 186, 163);"/>
+  <clipPath id="_clip1">
+    <rect x="22.611" y="15.546" width="98.162" height="113.5"/>
+  </clipPath>
+  <g clip-path="url(#_clip1)">
+    <g>
+      <g>
+        <g>
+          <g>
+            <g>
+              <g>
+                <path d="M118.1,41.103l-19.178,79.45c-0.96,3.977 -4.972,6.428 -8.947,5.469l-59.695,-14.409c-3.98,-0.961 -6.427,-4.971 -5.467,-8.948l19.178,-79.45c0.96,-3.977 4.967,-6.43 8.947,-5.469l59.695,14.409c3.975,0.96 6.427,4.971 5.467,8.948Zm-55.089,67.42c-2.809,-0.678 -5.64,1.046 -6.317,3.851c-0.676,2.801 1.056,5.626 3.866,6.305c2.814,0.679 5.645,-1.045 6.321,-3.846c0.677,-2.806 -1.055,-5.631 -3.869,-6.31Z" style="fill:none;stroke:#fabaa3;stroke-width:3.98px;"/>
+                <g>
+                  <path d="M56.683,114.767l-31.103,-7.508l18.995,-78.691l70.564,17.033l-18.995,78.691l-30.347,-7.325c0.51,-0.6 0.888,-1.321 1.085,-2.138c0.676,-2.801 -1.056,-5.627 -3.867,-6.305c-2.815,-0.679 -5.646,1.045 -6.322,3.846c-0.197,0.817 -0.19,1.631 -0.01,2.397Z" style="fill:none;stroke:#fabaa3;stroke-width:3.98px;"/>
+                </g>
+                <g>
+                  <path d="M81.891,28.664c1.329,0.321 2.148,1.66 1.827,2.99c-0.321,1.329 -1.66,2.148 -2.99,1.827c-1.329,-0.321 -2.148,-1.66 -1.827,-2.99c0.321,-1.329 1.66,-2.148 2.99,-1.827Z" style="stroke:#fabaa3;stroke-width:3.98px;stroke-linecap:butt;"/>
+                </g>
+              </g>
+              <g>
+                <g>
+                  <path d="M114.36,66.722l1.862,-7.712" style="fill:none;stroke:#fabaa3;stroke-width:3.98px;"/>
+                </g>
+                <g>
+                  <path d="M117.755,52.651l0.279,-1.157" style="fill:none;stroke:#fabaa3;stroke-width:3.98px;"/>
+                </g>
+              </g>
+              <g>
+                <g>
+                  <g>
+                    <path d="M69.244,48.24l33.045,7.976" style="fill:none;stroke:#fabaa3;stroke-width:3.98px;"/>
+                  </g>
+                  <g>
+                    <path d="M67.303,56.289l26.028,6.283" style="fill:none;stroke:#fabaa3;stroke-width:3.98px;"/>
+                  </g>
+                </g>
+                <g>
+                  <path d="M49.738,48.123l3.41,4.955c0,0 4.943,-7.675 8.509,-8.205" style="fill:none;stroke:#fabaa3;stroke-width:3.98px;"/>
+                </g>
+              </g>
+              <g>
+                <path d="M56.091,65.276l-2.79,11.558l-11.558,-2.79l2.79,-11.558l11.558,2.79Z" style="fill:none;stroke:#fabaa3;stroke-width:3.98px;"/>
+                <g>
+                  <g>
+                    <path d="M64.205,69.093l33.045,7.976" style="fill:none;stroke:#fabaa3;stroke-width:3.98px;"/>
+                  </g>
+                  <g>
+                    <path d="M62.265,77.142l26.028,6.283" style="fill:none;stroke:#fabaa3;stroke-width:3.98px;"/>
+                  </g>
+                </g>
+              </g>
+              <g>
+                <g>
+                  <g>
+                    <path d="M59.167,89.947l33.045,7.976" style="fill:none;stroke:#fabaa3;stroke-width:3.98px;"/>
+                  </g>
+                  <g>
+                    <path d="M57.226,97.996l26.028,6.283" style="fill:none;stroke:#fabaa3;stroke-width:3.98px;"/>
+                  </g>
+                </g>
+                <g>
+                  <path d="M39.668,89.802l3.41,4.955c0,0 4.943,-7.675 8.509,-8.205" style="fill:none;stroke:#fabaa3;stroke-width:3.98px;"/>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
