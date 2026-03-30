@@ -89,7 +89,7 @@ const gameInfo = {
                 CLASSIC_1: true,
                 CLASSIC_2: false,
             },
-            teamProgressionDTO: {
+            teamProgression: {
                 teamLabel: "MECA",
                 classicMissionsCompleted: 4,
                 firstBonusMissionCompleted: true,
@@ -99,7 +99,7 @@ const gameInfo = {
         },
         AERO: {
             completedMissions: {},
-            teamProgressionDTO: {
+            teamProgression: {
                 teamLabel: "AERO",
                 classicMissionsCompleted: 3,
                 firstBonusMissionCompleted: false,
