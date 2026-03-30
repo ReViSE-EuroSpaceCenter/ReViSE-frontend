@@ -3,7 +3,7 @@ import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expect, describe, it, beforeEach, vi } from "vitest";
 import Dashboard from "@/app/teacher/game/[gameId]/page";
-import { getGameInfo, endMission } from "@/api/missionApi";
+import { getTeamsFullProgression, endMission } from "@/api/missionApi";
 import { showError } from "@/errors/getErrorMessage";
 import { renderPage } from "@/test/utils/renderPage";
 
@@ -18,7 +18,7 @@ vi.mock("next/navigation", () => ({
 }));
 
 vi.mock("@/api/missionApi", () => ({
-    getGameInfo: vi.fn(),
+    getTeamsFullProgression: vi.fn(),
     endMission: vi.fn(),
 }));
 
@@ -85,21 +85,26 @@ const gameInfo = {
     allTeamsCompleted: true,
     teamsFullProgression: {
         MECA: {
-            completedMissions: {},
-            teamProgression: {
+            completedMissions: {
+                CLASSIC_1: true,
+                CLASSIC_2: false,
+            },
+            teamProgressionDTO: {
                 teamLabel: "MECA",
                 classicMissionsCompleted: 4,
                 firstBonusMissionCompleted: true,
                 secondBonusMissionCompleted: false,
+                allTeamsMissionsCompleted: false,
             },
         },
         AERO: {
             completedMissions: {},
-            teamProgression: {
+            teamProgressionDTO: {
                 teamLabel: "AERO",
                 classicMissionsCompleted: 3,
                 firstBonusMissionCompleted: false,
                 secondBonusMissionCompleted: true,
+                allTeamsMissionsCompleted: false,
             },
         },
     },
@@ -109,13 +114,13 @@ const gameInfo = {
 describe("Dashboard page", () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        vi.mocked(getGameInfo).mockResolvedValue(gameInfo as any);
+        vi.mocked(getTeamsFullProgression).mockResolvedValue(gameInfo as any);
         sessionStorage.clear();
     });
 
     describe("Rendu et Navigation", () => {
         it("désactive le bouton Décollage si toutes les équipes n'ont pas fini", async () => {
-            vi.mocked(getGameInfo).mockResolvedValue({
+            vi.mocked(getTeamsFullProgression).mockResolvedValue({
                 ...gameInfo,
                 allTeamsCompleted: false
             } as any);

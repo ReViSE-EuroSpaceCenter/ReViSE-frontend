@@ -4,13 +4,13 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { MissionProvider } from "@/contexts/MissionContext";
-import { getGameInfo } from "@/api/missionApi";
+import { getTeamsFullProgression } from "@/api/missionApi";
 import { showError } from "@/errors/getErrorMessage";
 import { ApiError } from "@/api/apiError";
 import LoadingPage from "@/app/loading";
 import { teamColorMap } from "@/utils/teamColor";
 import { ProgressionBar } from "@/components/mission/ProgressionBar";
-import { GameInfoResponse } from "@/types/TeamData";
+import {TeamsFullProgression, TeamProgressionWS} from "@/types/TeamData";
 import { ProjectSection } from "@/components/mission/ProjectSection";
 import { ReturnButton } from "@/components/mission/ReturnButton";
 import { TeamTabs } from "@/components/mission/TeamTabs";
@@ -26,9 +26,9 @@ export default function HostMissionsPage() {
     const lobbyCode = gameId as string;
     const hostId = useSessionId("hostId");
 
-    const { data: gameData, isLoading, isError, error } = useQuery<GameInfoResponse>({
+    const { data: gameData, isLoading, isError, error } = useQuery<TeamsFullProgression>({
         queryKey: ["gameInfo", lobbyCode],
-        queryFn: () => getGameInfo(lobbyCode),
+        queryFn: () => getTeamsFullProgression(lobbyCode),
         enabled: !!lobbyCode,
     });
 
@@ -45,11 +45,19 @@ export default function HostMissionsPage() {
     );
     const selectedTeam = teamKeys[selectedIndex] ?? "";
 
-    useWSSubscription("mission", useCallback(async (event) => {
+    useWSSubscription("mission", useCallback((event) => {
         if (event.type !== "TEAM_PROGRESSION") return;
 
-        queryClient.setQueryData<GameInfoResponse>(["gameInfo", lobbyCode], (prev) =>
-          updateTeamProgression(prev, event.payload)
+        const wsPayload: TeamProgressionWS = {
+            teamProgression: {
+                ...event.payload.teamProgression,
+                allTeamsMissionsCompleted: event.payload.allTeamsMissionsCompleted,
+            },
+            allTeamsMissionsCompleted: event.payload.allTeamsMissionsCompleted,
+        };
+
+        queryClient.setQueryData<TeamsFullProgression>(["gameInfo", lobbyCode], (prev) =>
+            updateTeamProgression(prev, wsPayload)
         );
     }, [lobbyCode, queryClient]));
 
@@ -64,14 +72,11 @@ export default function HostMissionsPage() {
         const data = gameData?.teamsFullProgression?.[selectedTeam];
         return {
             completedMissions: data?.completedMissions ?? {},
-            teamProgression: data?.teamProgression,
+            teamProgression: data?.teamProgressionDTO,
         };
     }, [gameData, selectedTeam]);
 
-    const completedMissionCount = Math.max(
-      Object.values(completedMissions).filter(Boolean).length,
-      teamProgression?.classicMissionsCompleted ?? 0
-    );
+    const completedMissionsCount = gameData?.teamsFullProgression?.[selectedTeam]?.teamProgressionDTO?.classicMissionsCompleted ?? 0;
 
     if (isLoading || !gameData || !teamKeys.length) return <LoadingPage />;
 
@@ -90,7 +95,7 @@ export default function HostMissionsPage() {
                   </div>
                 <div className="mb-2 w-full max-w-xs shrink-0">
                     <ProgressionBar
-                      completed={completedMissionCount}
+                      completed={completedMissionsCount}
                       totalMission={missions.filter((m) => !m.bonus).length}
                       color={teamColorMap[selectedTeam]}
                     />

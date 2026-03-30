@@ -2,26 +2,27 @@ import { screen, waitFor, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import MissionPage from "@/app/student/game/[gameId]/[teamName]/mission/page";
 import { QueryClient } from "@tanstack/react-query";
-import {TeamMissionsState} from "@/types/TeamMissionState";
+import {TeamProgression} from "@/types/TeamData";
 import {renderPage} from "@/test/utils/renderPage";
 
 // ---------- Mocks ----------
-const mockMissionsState: TeamMissionsState = {
-    teamFullProgression: {
+const mockMissionsState: TeamProgression = {
+
         completedMissions: {
             "Mission 1": true,
             "Mission 2": false
         },
-        teamProgression: {
+        teamProgressionDTO: {
+            teamLabel: "MECA",
             classicMissionsCompleted: 1,
             firstBonusMissionCompleted: false,
-            secondBonusMissionCompleted: false
+            secondBonusMissionCompleted: false,
+            allTeamsMissionsCompleted: false
         }
-    }
-};
+    };
 
 vi.mock("@/api/missionApi", () => ({
-    getTeamMissionsState: vi.fn(() => Promise.resolve(mockMissionsState)),
+    getTeamFullProgression: vi.fn(() => Promise.resolve(mockMissionsState)),
 }));
 
 vi.mock("@/types/Teams", () => ({

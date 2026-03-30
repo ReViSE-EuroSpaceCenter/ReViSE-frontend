@@ -6,24 +6,25 @@ export type TeamData = {
     secondBonusMissionCompleted: boolean;
 };
 
-type TeamProgressionResponse = {
+type TeamProgressionDTO = {
     teamLabel: string;
     classicMissionsCompleted: number;
     firstBonusMissionCompleted: boolean;
     secondBonusMissionCompleted: boolean;
+    allTeamsMissionsCompleted: boolean;
 };
 
-type TeamFullProgressionResponse = {
+export type TeamProgression = {
     completedMissions: Record<string, boolean>;
-    teamProgression: TeamProgressionResponse;
+    teamProgressionDTO: TeamProgressionDTO;
 };
 
-export type GameInfoResponse = {
+export type TeamsFullProgression = {
+    teamsFullProgression: Record<string, TeamProgression>;
     allTeamsCompleted: boolean;
-    teamsFullProgression: Record<string, TeamFullProgressionResponse>;
 };
 
 export type TeamProgressionWS = {
-    teamProgression: TeamProgressionResponse;
+    teamProgression: TeamProgressionDTO;
     allTeamsMissionsCompleted: boolean;
 };

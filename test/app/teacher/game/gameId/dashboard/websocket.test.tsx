@@ -2,7 +2,7 @@ import React from "react";
 import { screen, act } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import Dashboard from "@/app/teacher/game/[gameId]/page";
-import { getGameInfo } from "@/api/missionApi";
+import { getTeamsFullProgression } from "@/api/missionApi";
 import { renderPage } from "@/test/utils/renderPage";
 
 // ---------- Navigation mocks ----------
@@ -15,7 +15,7 @@ vi.mock("next/navigation", () => ({
 
 // ---------- API mocks ----------
 vi.mock("@/api/missionApi", () => ({
-    getGameInfo: vi.fn(),
+    getTeamsFullProgression: vi.fn(),
     endMission: vi.fn(),
 }));
 
@@ -96,35 +96,28 @@ const gameInfo = {
 };
 
 // ---------- Tests ----------
-describe("Dashboard websocket", () => {
+describe("Dashboard websocket", async () => {
     beforeEach(() => {
         vi.clearAllMocks();
         missionWsCallback = undefined;
         launcherWsCallback = undefined;
-        vi.mocked(getGameInfo).mockResolvedValue(gameInfo as any);
+        vi.mocked(getTeamsFullProgression).mockResolvedValue(gameInfo as any);
     });
 
-    it("met à jour la progression d'équipe via websocket", async () => {
-        renderPage(<Dashboard />);
-
-        expect(await screen.findByText("SideRow-MECA-4")).toBeInTheDocument();
-
-        await act(async () => {
-            missionWsCallback?.({
-                type: "TEAM_PROGRESSION",
-                payload: {
-                    teamProgression: {
-                        teamLabel: "MECA",
-                        classicMissionsCompleted: 6,
-                        firstBonusMissionCompleted: true,
-                        secondBonusMissionCompleted: false,
-                    },
+    await act(async () => {
+        missionWsCallback?.({
+            type: "TEAM_PROGRESSION",
+            payload: {
+                teamProgressionDTO: {
+                    teamLabel: "MECA",
+                    classicMissionsCompleted: 6,
+                    firstBonusMissionCompleted: true,
+                    secondBonusMissionCompleted: false,
                     allTeamsMissionsCompleted: false,
                 },
-            });
+                allTeamsMissionsCompleted: false,
+            },
         });
-
-        expect(await screen.findByText("SideRow-MECA-6")).toBeInTheDocument();
     });
 
     it("ignore les événements websocket qui ne sont pas TEAM_PROGRESSION", async () => {

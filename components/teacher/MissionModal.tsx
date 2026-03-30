@@ -1,11 +1,11 @@
 import { Dialog, DialogPanel } from "@headlessui/react";
-import { GameInfoResponse } from "@/types/TeamData";
+import { TeamsFullProgression } from "@/types/TeamData";
 import TeamBadgeGrid from "@/components/teacher/TeamBadgeGrid";
 import {TeamBadgeItem, TeamBadgeStatus} from "@/types/TeamBadge";
 
 type Props = {
 	isOpen: boolean;
-	gameData: GameInfoResponse | undefined;
+	gameData: TeamsFullProgression | undefined;
 	submittedTeams: Set<string>;
 	allResourcesSubmitted: boolean;
 	onConfirm: () => void;

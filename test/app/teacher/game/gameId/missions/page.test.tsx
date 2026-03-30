@@ -164,24 +164,25 @@ const baseGameData = {
             completedMissions: {
                 CLASSIC_1: true,
                 CLASSIC_2: false,
-                BONUS_1: false,
             },
-            teamProgression: {
+            teamProgressionDTO: {
                 teamLabel: "MECA",
                 classicMissionsCompleted: 1,
                 firstBonusMissionCompleted: false,
                 secondBonusMissionCompleted: false,
+                allTeamsMissionsCompleted: false,
             },
         },
         EXPE: {
             completedMissions: {
                 CLASSIC_3: false,
             },
-            teamProgression: {
+            teamProgressionDTO: {
                 teamLabel: "EXPE",
                 classicMissionsCompleted: 0,
                 firstBonusMissionCompleted: false,
                 secondBonusMissionCompleted: false,
+                allTeamsMissionsCompleted: false,
             },
         },
     },

@@ -1,13 +1,13 @@
-import {TeamData, GameInfoResponse} from "@/types/TeamData";
+import {TeamData, TeamsFullProgression} from "@/types/TeamData";
 
-export function getTeamsColumns(gameData?: GameInfoResponse) {
+export function getTeamsColumns(gameData?: TeamsFullProgression) {
     if (!gameData) return { leftTeams: [], rightTeams: [] };
 
     const teamsData: TeamData[] = Object.entries(gameData.teamsFullProgression)
         .map(([team, data], index) => ({
             id: index,
             team,
-            ...data.teamProgression,
+            ...data.teamProgressionDTO,
         }));
 
     const half = Math.ceil(teamsData.length / 2);
