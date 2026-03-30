@@ -62,10 +62,7 @@ export default function MissionPage() {
             if (!old) return old;
             return {
                 ...old,
-                teamFullProgression: {
-                    ...old.teamProgression,
-                    teamProgression: event.payload,
-                },
+                teamProgression: event.payload,
             };
         });
     }, [lobbyCode, teamName, clientId, router, queryClient]));
