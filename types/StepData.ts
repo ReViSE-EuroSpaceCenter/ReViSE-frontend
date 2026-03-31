@@ -4,9 +4,12 @@ export type StepData = {
     id: number;
     title: string;
     text: string;
-    bonuses: StepBonus[];
-    resources: {
-        teams4: string[];
-        teams6: string[];
-    };
+    4: {
+        bonuses: StepBonus[];
+        resources: string[];
+    },
+    6: {
+        bonuses: StepBonus[];
+        resources: string[];
+    }
 };
