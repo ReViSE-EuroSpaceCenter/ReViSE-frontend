@@ -40,5 +40,13 @@ To run the tests, use the following command:
 npm test
 ```
 
+Additionally, the tests can be run with coverage reporting:
+
+```bash
+npm test --coverage
+```
+
+The report will be generated in the `coverage` directory, and can be viewed by opening `coverage/index.html` in your browser.
+
 ## Documentation
 Detailed documentation and wiki for the project can be found in the [ReViSE Wiki](https://github.com/ReViSE-EuroSpaceCenter/ReViSE/wiki).
