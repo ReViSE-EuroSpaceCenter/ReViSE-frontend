@@ -1,20 +1,52 @@
-# ReViSE - Recherche de Vie Sur Europe - FrontEnd
+# ReViSE-frontend
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ReViSE-EuroSpaceCenter_ReViSE-frontend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ReViSE-EuroSpaceCenter_ReViSE-frontend)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ReViSE-EuroSpaceCenter_ReViSE-frontend&metric=coverage)](https://sonarcloud.io/summary/new_code?id=ReViSE-EuroSpaceCenter_ReViSE-frontend)
 
-## About the project
+## Welcome aboard!
 
-This project includes the digital component of ReViSE - Recherche de Vie Sur Europe - a board game designed to help secondary students understand how AI functions and its impact on jobs. It is part of an awareness and critical education initiative focused on AI, encouraging collective reflection, experimentation, and practical application. Six teams collaborate to address challenges based on specific AI use cases.
+Set course for **Europa**, Jupiter’s icy moon. More than 600 million kilometers from Earth, the adventure begins: exploration, cooperation, and discovery will be your driving forces.
 
-This repository contains the FrontEnd of ReViSE.
+**ReViSE** is a board game designed by the **Euro Space Center (ESC),** in collaboration with the **University of Namur** and **B12 Consulting**.
+
+An online version will now accompany the physical board game, allowing a more immersive experience.
+This repository contains the frontend of the online version of ReViSE, which is built using **Next.js** and **React**. It provides an interactive interface for players to engage with the game.
 
 ## Getting Started
 
-First, run the development server:
+To run the frontend locally, follow these steps:
+1. **Clone the project repository:**
+   ```bash
+   git clone https://github.com/ReViSE-EuroSpaceCenter/ReViSE-frontend
+    ```
+2. **Navigate to the project directory:**
+   ```bash
+   cd ReViSE-frontend
+   ```
+4. **Install the dependencies:**
+   ```bash
+   npm install
+   ```
+5. **Run the application:**
+   ```bash
+   npm run dev
+   ```
+   
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Running Tests
+To run the tests, use the following command:
 ```bash
-npm run dev
+npm test
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Additionally, the tests can be run with coverage reporting:
+
+```bash
+npm test --coverage
+```
+
+The report will be generated in the `coverage` directory, and can be viewed by opening `coverage/index.html` in your browser.
+
+## Documentation
+Detailed documentation and wiki for the project can be found in the [ReViSE Wiki](https://github.com/ReViSE-EuroSpaceCenter/ReViSE/wiki).
