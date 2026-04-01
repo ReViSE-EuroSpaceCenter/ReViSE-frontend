@@ -79,13 +79,20 @@ describe("Launcher", () => {
     });
 
     describe("Navigation / step", () => {
-        it("incrémente le step et met à jour l'URL quand animation terminée", () => {
+        it("met à jour l'URL quand animation terminée", () => {
+            vi.useFakeTimers();
+
             stepValue = "2";
+
             render(<Launcher />);
 
             fireEvent.click(screen.getByText("next-step"));
 
-            expect(replaceMock).toHaveBeenCalledWith("/launcher?step=3");
+            vi.advanceTimersByTime(800);
+
+            expect(replaceMock).toHaveBeenCalledWith("/launcher/2");
+
+            vi.useRealTimers();
         });
     });
 });

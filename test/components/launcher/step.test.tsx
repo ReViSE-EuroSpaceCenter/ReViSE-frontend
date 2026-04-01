@@ -118,16 +118,20 @@ describe("Step", () => {
     });
 
     describe("AnimationComplete", () => {
-        it("appelle onAnimationComplete si step courant", async () => {
+        it("appelle onAnimationComplete si step courant", () => {
+            vi.useFakeTimers();
+
             const callback = vi.fn();
 
             render(
                 <Step step={1} config={baseConfig as any} onAnimationComplete={callback} />
             );
 
-            await new Promise((r) => setTimeout(r, 10));
+            vi.runAllTimers();
 
             expect(callback).toHaveBeenCalled();
+
+            vi.useRealTimers();
         });
 
         it("n'appelle PAS onAnimationComplete si step déjà passé", async () => {

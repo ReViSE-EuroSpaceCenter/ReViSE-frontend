@@ -143,7 +143,7 @@ export default function Dashboard() {
                     gameData={gameData}
                     submittedTeams={submittedTeams}
                     allResourcesSubmitted={allResourcesSubmitted}
-                    onConfirm={() => router.push(`/teacher/game/${lobbyCode}/launcher?step=1`)}
+                    onConfirm={() => router.push(`/teacher/game/${lobbyCode}/launcher?presentation=true`)}
                 />
                 {text && (
                     <PresentationModal

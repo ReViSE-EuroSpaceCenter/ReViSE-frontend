@@ -18,14 +18,15 @@ export default function Launcher() {
     const pathname = usePathname();
 
     const stepParam = Number.parseInt(searchParams.get("step") || "0", 10);
-    let step = Number.isNaN(stepParam) ? 0 : stepParam
+    const step = Number.isNaN(stepParam) ? 0 : stepParam
     const showPresentation = searchParams.get("presentation") === "true";
     const [isPresentationOpen, setIsPresentationOpen] = useState(showPresentation);
     const text = showPresentation ? launcherTexts.PRESENTATION : null
 
     const handleStepAnimationComplete = () => {
-        step++;
-        router.replace(`${pathname}?step=${step}`);
+        setTimeout(() => {
+            router.replace(`${pathname}/${step}`);
+        }, 800);
     }
 
     return (
@@ -46,7 +47,7 @@ export default function Launcher() {
                     text={text}
                     name="PRESENTATION"
                     color="#fff"
-                    onClose={() => router.replace(pathname) }
+                    onClose={() => router.replace(`${pathname}?step=1}`) }
                 />
             )}
         </div>

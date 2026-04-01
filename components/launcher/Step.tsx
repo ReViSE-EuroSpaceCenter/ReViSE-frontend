@@ -1,15 +1,33 @@
 import { motion } from "framer-motion"
 import { useDrawPath } from "@/hooks/useDrawPath"
 import { StepConfig } from "@/types/StepConfig"
+import {useEffect} from "react";
 
 export default function Step({step, config, onAnimationComplete}: { readonly step: number; readonly config: StepConfig; readonly onAnimationComplete: () => void; }) {
     const { segments, segmentConfigs, isOrbit } = useDrawPath(config.id, config.path)
     const isPast = step > config.id;
-    if (step < config.id) return null
 
     const tokenDelay = isPast
         ? 0
         : segmentConfigs.at(-1)?.delay
+
+    useEffect(() => {
+        if (step < config.id || isPast) return
+
+        const lastSegment = segmentConfigs.at(-1)
+
+        if (!lastSegment) return
+
+        const totalDuration = (lastSegment.delay + lastSegment.duration) * 1000 + 300
+
+        const timeout = setTimeout(() => {
+            onAnimationComplete()
+        }, totalDuration)
+
+        return () => clearTimeout(timeout)
+    }, [step, config.id, isPast, segmentConfigs, onAnimationComplete])
+
+    if (step < config.id) return null
 
     return (
         <svg
@@ -64,11 +82,6 @@ export default function Step({step, config, onAnimationComplete}: { readonly ste
                     ease: "backOut",
                 }}
                 style={{ transformOrigin: `${config.token.x}px ${config.token.y}px` }}
-                onAnimationComplete={() => {
-                    if (!isPast) {
-                        onAnimationComplete();
-                    }
-                }}
             >
                 <circle
                     cx={config.token.x}
