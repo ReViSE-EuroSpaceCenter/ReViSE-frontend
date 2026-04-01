@@ -30,7 +30,7 @@ export default function Launcher() {
     }
 
     return (
-        <div className="relative w-full h-full min-h-screen">
+        <div className="relative w-full h-full">
             <div className="absolute inset-0">
                 <LauncherBackground />
             </div>
@@ -47,7 +47,7 @@ export default function Launcher() {
                     text={text}
                     name="PRESENTATION"
                     color="#fff"
-                    onClose={() => router.replace(`${pathname}?step=1}`) }
+                    onClose={() => router.replace(`${pathname}?step=1`) }
                 />
             )}
         </div>
