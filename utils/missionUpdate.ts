@@ -92,7 +92,7 @@ export function updateTeamProgression(
                 ...teamData,
                 completedMissions: updatedCompletedMissions,
                 teamProgression: {
-                    ...teamData.teamProgressionDTO,
+                    ...teamData.teamProgression,
                     ...teamProgression,
                 },
             },
