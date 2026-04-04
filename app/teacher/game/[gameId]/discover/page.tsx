@@ -1,13 +1,14 @@
-"use client";
+"use client"
 
 import { useQuery } from "@tanstack/react-query";
 import { getScore } from "@/api/discoverApi";
 import { GameData } from "@/types/GameData";
 import { useParams } from "next/navigation";
+import {useCallback, useState} from "react";
 import { useSessionId } from "@/hooks/useSessionId";
 import Gauge from "@/components/discover/Gauge";
-import {useCallback, useState,} from "react";
 import dynamic from "next/dynamic";
+import {getStepsUpTo} from "@/utils/gaugeData";
 const PresentationModal = dynamic(
     () => import("@/components/PresentationModal"),
     { ssr: false, loading: () => null }
@@ -18,6 +19,7 @@ export default function DiscoverPage() {
     const hostId = useSessionId("hostId");
     const lobbyCode = params.gameId as string;
 
+    const [stepIndex, setStepIndex] = useState(0);
     const [isPresentationOpen, setIsPresentationOpen] = useState(false);
 
     const { data } = useQuery<GameData>({
@@ -26,21 +28,29 @@ export default function DiscoverPage() {
         enabled: !!lobbyCode && !!hostId,
     });
 
-    const handleStep = useCallback(() => {
+    const steps = getStepsUpTo(data?.score ?? 0);
+    const currentStepTarget = steps[stepIndex] ?? null;
+
+    const handleStepReached = useCallback(() => {
         setIsPresentationOpen(true);
     }, []);
 
-    const handleGaugeComplete = useCallback(() => {
-       console.log("Gauge Complete");
+    const handleComplete = useCallback(() => {
+
+    }, [])
+
+    const handleModalClose = useCallback(() => {
+        setIsPresentationOpen(false);
+        setStepIndex((i) => i + 1);
     }, []);
 
     return (
         <div className="relative w-full h-screen flex flex-col items-center justify-center">
             <div className="w-1/4 h-[80vh] flex items-center justify-center">
                 <Gauge
-                    score={data?.score ?? 15}
-                    onStep={handleStep}
-                    onComplete={handleGaugeComplete}
+                    stepTarget={currentStepTarget}
+                    onStepReached={handleStepReached}
+                    onComplete={handleComplete}
                 />
             </div>
             <PresentationModal
@@ -50,7 +60,7 @@ export default function DiscoverPage() {
                 text="TEXT"
                 name="TEACHER"
                 color="#fff"
-                onClose={undefined}
+                onClose={handleModalClose}
             />
         </div>
     );
