@@ -1,5 +1,5 @@
 import {useMutation} from "@tanstack/react-query";
-import {updateResources} from "@/api/launcherApi";
+import {updateResources} from "@/api/discoverApi";
 import {showError} from "@/errors/getErrorMessage";
 import {ApiError} from "@/api/apiError";
 import {useParams, useRouter} from "next/navigation";

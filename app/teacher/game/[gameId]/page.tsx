@@ -15,7 +15,7 @@ import {useSessionId} from "@/hooks/useSessionId";
 import {useWSSubscription} from "@/hooks/useWSSubscription";
 import {TeamsFullProgression} from "@/types/TeamData";
 import {presentationTexts} from "@/utils/presentationTexts";
-import {confirmEndMissionMessage} from "@/utils/ConfirmationEndMissionMessage";
+import {confirmEndMissionMessage} from "@/utils/confirmationEndMissionMessage";
 import {getTeamsColumns} from "@/utils/calculTeamColumn";
 import MissionModal from "@/components/teacher/MissionModal";
 const PresentationModal = dynamic(
