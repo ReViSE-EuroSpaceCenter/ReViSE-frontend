@@ -1,6 +1,6 @@
 import { useMotionValue, useSpring } from "framer-motion";
 import { useEffect } from "react";
-import { GAUGE_STEPS } from "@/utils/gaugeData";
+import { STEPS } from "@/utils/gaugeData";
 
 export function useGaugeAnimation({ stepTarget, onStepReached, onComplete }: {readonly stepTarget: number | null; readonly onStepReached: () => void; readonly onComplete: () => void;}) {
     const progress = useMotionValue(0);
@@ -8,7 +8,7 @@ export function useGaugeAnimation({ stepTarget, onStepReached, onComplete }: {re
 
     useEffect(() => {
         if (stepTarget === null) return;
-        const isMarkerStep = GAUGE_STEPS.includes(stepTarget as (typeof GAUGE_STEPS)[number]);
+        const isMarkerStep = STEPS.includes(stepTarget as (typeof STEPS)[number]);
 
         const unsub = smoothProgress.on("change", (v) => {
             if (Math.abs(v - stepTarget) < 0.002) {

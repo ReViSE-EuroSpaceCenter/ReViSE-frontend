@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { GAUGE_STEPS, SPECIES_MAP } from "@/utils/gaugeData";
+import { STEPS, SPECIES } from "@/utils/gaugeData";
 import { useGaugeAnimation } from "@/hooks/useGaugeAnimation";
 import { GaugeBar } from "./GaugeBar";
 import { IconSpecies } from "@/components/discover/IconSpecies";
@@ -47,10 +47,10 @@ export default function Gauge({ stepTarget, onStepReached, onComplete, discovere
                 />
             </svg>
 
-            {GAUGE_STEPS.map((marker) => {
+            {STEPS.map((marker) => {
                 const isDiscovered = discoveredSteps.includes(marker);
                 const isCurrentStep = marker === stepTarget;
-                const src = SPECIES_MAP[marker];
+                const src = SPECIES.find((s) => s.step === marker)?.svg;
 
                 if ((!isDiscovered && !isCurrentStep) || !src) return null;
 

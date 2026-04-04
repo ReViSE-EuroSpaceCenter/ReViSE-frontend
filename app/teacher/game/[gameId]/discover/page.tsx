@@ -28,7 +28,7 @@ export default function DiscoverPage() {
         enabled: !!lobbyCode && !!hostId,
     });
 
-    const steps = getStepsUpTo(data?.score ?? 15);
+    const steps = getStepsUpTo(data?.score ?? 4);
     const discoveredSteps = steps.slice(0, stepIndex);
     const currentStepTarget = steps[stepIndex] ?? null;
 

@@ -1,5 +1,5 @@
 import { motion, useTransform, MotionValue } from "framer-motion";
-import { GAUGE_STEPS } from "@/utils/gaugeData";
+import { STEPS } from "@/utils/gaugeData";
 
 export function GaugeBar({ gaugeWidth, gaugeHeight, bw, smoothProgress }: { readonly gaugeWidth: number; readonly gaugeHeight: number, readonly bw: number, readonly smoothProgress: MotionValue<number> }) {
     const fillWidth = gaugeWidth - bw * 2;
@@ -26,7 +26,7 @@ export function GaugeBar({ gaugeWidth, gaugeHeight, bw, smoothProgress }: { read
             />
 
             <g clipPath="url(#gaugeClip)">
-                {GAUGE_STEPS.map((marker) => {
+                {STEPS.map((marker) => {
                     const y = bw + fillAreaHeight * (1 - marker);
                     return (
                         <line
