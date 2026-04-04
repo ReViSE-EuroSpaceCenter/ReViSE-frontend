@@ -8,7 +8,7 @@ import {useCallback, useState} from "react";
 import { useSessionId } from "@/hooks/useSessionId";
 import Gauge from "@/components/discover/Gauge";
 import dynamic from "next/dynamic";
-import {getStepsUpTo} from "@/utils/gaugeData";
+import {getStepsUpTo, SPECIES} from "@/utils/gaugeData";
 const PresentationModal = dynamic(
     () => import("@/components/PresentationModal"),
     { ssr: false, loading: () => null }
@@ -28,7 +28,7 @@ export default function DiscoverPage() {
         enabled: !!lobbyCode && !!hostId,
     });
 
-    const steps = getStepsUpTo(data?.score ?? 4);
+    const steps = getStepsUpTo(data?.score ?? 18);
     const discoveredSteps = steps.slice(0, stepIndex);
     const currentStepTarget = steps[stepIndex] ?? null;
 
@@ -60,7 +60,7 @@ export default function DiscoverPage() {
             <PresentationModal
                 isOpen={isPresentationOpen}
                 setIsOpen={setIsPresentationOpen}
-                icon="/logo.svg"
+                icon={SPECIES.find((s) => s.step === currentStepTarget)?.svg}
                 text="TEXT"
                 name="TEACHER"
                 color="#fff"

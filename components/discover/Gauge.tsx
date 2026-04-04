@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { STEPS, SPECIES } from "@/utils/gaugeData";
 import { useGaugeAnimation } from "@/hooks/useGaugeAnimation";
-import { GaugeBar } from "./GaugeBar";
+import { GaugeBar } from "@/components/discover/GaugeBar";
 import { IconSpecies } from "@/components/discover/IconSpecies";
 
 const GAUGE_WIDTH = 180;
@@ -26,7 +26,7 @@ export default function Gauge({ stepTarget, onStepReached, onComplete, discovere
 
     const { smoothProgress } = useGaugeAnimation({ stepTarget, onStepReached, onComplete });
 
-    const iconSize = svgBounds ? (40 * svgBounds.width) / TOTAL_WIDTH : 40;
+    const iconSize = svgBounds ? (60 * svgBounds.width) / TOTAL_WIDTH : 60;
 
     const toRendered = (viewBoxX: number, viewBoxY: number) => {
         if (!svgBounds) return { x: 0, y: 0 };
@@ -37,7 +37,7 @@ export default function Gauge({ stepTarget, onStepReached, onComplete, discovere
     };
 
     return (
-        <div className="relative w-4/5 h-4/5">
+        <div className="relative w-full h-full">
             <svg ref={svgRef} viewBox={`0 0 ${TOTAL_WIDTH} ${GAUGE_HEIGHT}`} className="w-full h-full">
                 <GaugeBar
                     gaugeWidth={GAUGE_WIDTH}

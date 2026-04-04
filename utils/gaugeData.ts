@@ -1,11 +1,12 @@
-export const GAUGE_MAX_SCORE = 15;
+export const GAUGE_MAX_SCORE = 18;
 
 export const SPECIES = [
-    { step: 0.2, label: "Checkpoint 1", svg: "/badges/checkpoints/checkpoint_1.svg", text: "" },
-    { step: 0.4, label: "Checkpoint 2", svg: "/badges/checkpoints/checkpoint_2.svg", text: "" },
-    { step: 0.6, label: "Checkpoint 3", svg: "/badges/checkpoints/checkpoint_3.svg", text: "" },
-    { step: 0.8, label: "Checkpoint 4", svg: "/badges/checkpoints/checkpoint_4.svg", text: "" },
-    { step: 1.0, label: "Checkpoint 5", svg: "/badges/checkpoints/checkpoint_5.svg", text: "" },
+    { step: 1/6, label: "Checkpoint 1", svg: "/species/sucre.svg", text: "" },
+    { step: 2/6, label: "Checkpoint 2", svg: "/species/adn.svg", text: "" },
+    { step: 3/6, label: "Checkpoint 3", svg: "/species/bacterie.svg", text: "" },
+    { step: 4/6, label: "Checkpoint 4", svg: "/species/species_3.svg", text: "" },
+    { step: 5/6, label: "Checkpoint 5", svg: "/species/species_4.svg", text: "" },
+    { step: 6/6, label: "Checkpoint 6", svg: "/species/species_5.svg", text: "" },
 ] as const;
 
 export const STEPS = SPECIES.map(c => c.step);
