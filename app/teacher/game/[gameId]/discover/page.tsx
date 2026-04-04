@@ -28,11 +28,14 @@ export default function DiscoverPage() {
         enabled: !!lobbyCode && !!hostId,
     });
 
-    const steps = getStepsUpTo(data?.score ?? 0);
+    const steps = getStepsUpTo(data?.score ?? 15);
+    const discoveredSteps = steps.slice(0, stepIndex);
     const currentStepTarget = steps[stepIndex] ?? null;
 
     const handleStepReached = useCallback(() => {
-        setIsPresentationOpen(true);
+        setTimeout(() => {
+            setIsPresentationOpen(true);
+        }, 800);
     }, []);
 
     const handleComplete = useCallback(() => {
@@ -51,6 +54,7 @@ export default function DiscoverPage() {
                     stepTarget={currentStepTarget}
                     onStepReached={handleStepReached}
                     onComplete={handleComplete}
+                    discoveredSteps={discoveredSteps}
                 />
             </div>
             <PresentationModal
