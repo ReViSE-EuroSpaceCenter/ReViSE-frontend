@@ -9,6 +9,18 @@ export const SPECIES_MAP: Record<number, string> = {
     1.0: "/badges/checkpoints/checkpoint_5.svg"
 };
 
+export const PARTICLES = [...Array(60)].map((_, i) => {
+    const angle = (i / 60) * Math.PI * 2;
+    const distance = 100 + Math.random() * 60;
+    return {
+        angle,
+        distance,
+        size: 3 + Math.random() * 3,
+        x: Math.cos(angle) * distance,
+        y: Math.sin(angle) * distance,
+    };
+});
+
 export function getStepsUpTo(score: number): number[] {
     const ratio = Math.min(score / GAUGE_MAX_SCORE, 1);
     const fullSteps = GAUGE_STEPS.filter((s) => s <= ratio);
