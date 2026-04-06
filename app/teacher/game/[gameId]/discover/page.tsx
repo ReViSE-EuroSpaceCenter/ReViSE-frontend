@@ -61,8 +61,8 @@ export default function DiscoverPage() {
                 isOpen={isPresentationOpen}
                 setIsOpen={setIsPresentationOpen}
                 icon={SPECIES.find((s) => s.step === currentStepTarget)?.svg}
-                text="TEXT"
-                name="TEACHER"
+                text={SPECIES.find((s) => s.step === currentStepTarget)?.text}
+                name={SPECIES.find((s) => s.step === currentStepTarget)?.label}
                 color="#fff"
                 onClose={handleModalClose}
             />

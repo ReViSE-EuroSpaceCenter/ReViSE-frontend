@@ -2,8 +2,11 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { PARTICLES } from "@/utils/gaugeData";
 
-export function PopInSpecies({ src, iconSize }: {src: string; iconSize: number}) {
-    return (
+export function PopInSpecies({ src, iconSize, onAnimationComplete }: {
+    src: string;
+    iconSize: number;
+    onAnimationComplete?: () => void;  // ← nouveau
+}) { return (
         <>
             {PARTICLES.map((p, i) => (
                 <motion.div
@@ -34,6 +37,7 @@ export function PopInSpecies({ src, iconSize }: {src: string; iconSize: number})
                 initial={{ scale: 0 }}
                 animate={{ scale: [0, 1.5, 0.9, 1.1, 1] }}
                 transition={{ duration: 0.6, times: [0, 0.4, 0.6, 0.8, 1], ease: "easeOut" }}
+                onAnimationComplete={onAnimationComplete}
             >
                 <Image src={src} alt="espèce découverte" fill className="object-contain" />
             </motion.div>

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import { STEPS, SPECIES } from "@/utils/gaugeData";
 import { useGaugeAnimation } from "@/hooks/useGaugeAnimation";
 import { GaugeBar } from "@/components/discover/GaugeBar";
@@ -13,6 +13,7 @@ const FILL_AREA_HEIGHT = GAUGE_HEIGHT - BW * 2;
 export default function Gauge({ stepTarget, onStepReached, onComplete, discoveredSteps }: {readonly stepTarget:number; readonly onStepReached: () => void; readonly onComplete: () => void; readonly discoveredSteps: number[]}) {
     const svgRef = useRef<SVGSVGElement>(null);
     const [svgBounds, setSvgBounds] = useState<{ width: number; height: number } | null>(null);
+    const [pendingStep, setPendingStep] = useState<number | null>(null);
 
     useEffect(() => {
         if (!svgRef.current) return;
@@ -24,7 +25,15 @@ export default function Gauge({ stepTarget, onStepReached, onComplete, discovere
         return () => observer.disconnect();
     }, []);
 
-    const { smoothProgress } = useGaugeAnimation({ stepTarget, onStepReached, onComplete });
+    const handleStepReached = useCallback(() => {
+        setPendingStep(stepTarget);
+    }, [stepTarget]);
+
+    const { smoothProgress } = useGaugeAnimation({
+        stepTarget,
+        onStepReached: handleStepReached,
+        onComplete,
+    });
 
     const iconSize = svgBounds ? (60 * svgBounds.width) / TOTAL_WIDTH : 60;
 
@@ -49,7 +58,7 @@ export default function Gauge({ stepTarget, onStepReached, onComplete, discovere
 
             {STEPS.map((marker) => {
                 const isDiscovered = discoveredSteps.includes(marker);
-                const isCurrentStep = marker === stepTarget;
+                const isCurrentStep = marker === pendingStep;
                 const src = SPECIES.find((s) => s.step === marker)?.svg;
 
                 if ((!isDiscovered && !isCurrentStep) || !src) return null;
@@ -65,6 +74,7 @@ export default function Gauge({ stepTarget, onStepReached, onComplete, discovere
                         iconSize={iconSize}
                         position={position}
                         isCurrentStep={isCurrentStep}
+                        onPopInComplete={onStepReached}
                     />
                 );
             })}
