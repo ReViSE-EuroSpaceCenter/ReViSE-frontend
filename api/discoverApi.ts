@@ -7,7 +7,7 @@ type ResourcesPayload = {
 };
 
 export const getScore = async (lobbyCode: string, hostId: string) => {
-	return await get(`/api/launchers/${lobbyCode}/score`, { params: { hostId } });
+	return await get(`/api/discover/${lobbyCode}/score`, { params: { hostId } });
 }
 
 export const updateResources = async (lobbyCode: string, clientId: string, r: ResourcesPayload) => {

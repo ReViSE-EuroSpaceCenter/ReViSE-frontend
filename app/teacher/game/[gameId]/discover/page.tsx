@@ -28,19 +28,24 @@ export default function DiscoverPage() {
         enabled: !!lobbyCode && !!hostId,
     });
 
-    const steps = getStepsUpTo(data?.score ?? 18);
+    const steps = getStepsUpTo(data?.score ?? 0);
     const discoveredSteps = steps.slice(0, stepIndex);
     const currentStepTarget = steps[stepIndex] ?? null;
+    const isLastStep = stepIndex === steps.length - 1;
+
+    const handleComplete = useCallback(() => {
+        console.log("GAME END");
+    }, []);
 
     const handleStepReached = useCallback(() => {
         setTimeout(() => {
             setIsPresentationOpen(true);
         }, 800);
-    }, []);
 
-    const handleComplete = useCallback(() => {
-
-    }, [])
+        if (isLastStep) {
+            handleComplete();
+        }
+    }, [isLastStep, handleComplete]);
 
     const handleModalClose = useCallback(() => {
         setIsPresentationOpen(false);
