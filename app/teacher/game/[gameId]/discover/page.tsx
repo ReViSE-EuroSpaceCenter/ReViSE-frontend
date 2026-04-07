@@ -48,8 +48,8 @@ export default function DiscoverPage() {
     }, []);
 
     return (
-        <div className="relative w-full h-screen flex flex-col items-center justify-center">
-            <div className="w-1/4 h-[80vh] flex items-center justify-center">
+        <div className="relative w-full h-[calc(100dvh-80px)] overflow-hidden flex flex-col items-center justify-center">
+            <div className="w-full max-w-105 h-full px-4 flex items-center justify-center">
                 <Gauge
                     stepTarget={currentStepTarget}
                     onStepReached={handleStepReached}

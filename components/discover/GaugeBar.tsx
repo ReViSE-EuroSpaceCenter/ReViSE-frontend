@@ -4,12 +4,14 @@ import { STEPS } from "@/utils/gaugeData";
 const GRADIENT_ID = "degrade";
 const CLIP_ID = "gaugeFillClip";
 
-export function GaugeBar({ gaugeWidth, gaugeHeight, bw, smoothProgress }: {
-    readonly gaugeWidth: number;
-    readonly gaugeHeight: number;
-    readonly bw: number;
-    readonly smoothProgress: MotionValue<number>;
-}) {
+type Props = {
+    gaugeWidth: number;
+    gaugeHeight: number;
+    bw: number;
+    smoothProgress: MotionValue<number>;
+}
+
+export function GaugeBar({ gaugeWidth, gaugeHeight, bw, smoothProgress }: Readonly<Props>) {
     const fillWidth = gaugeWidth - bw * 2;
     const fillAreaHeight = gaugeHeight - bw * 2;
 

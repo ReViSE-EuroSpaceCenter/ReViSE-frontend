@@ -2,7 +2,16 @@ import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { PopInSpecies } from "@/components/discover/PopInSpecies";
 
-export function IconSpecies({ src, marker, iconSize, position, isCurrentStep, onPopInComplete }:  {readonly src: string; readonly marker: number; readonly iconSize: number; readonly position: { x: number; y: number }; readonly isCurrentStep: boolean; readonly onPopInComplete: () => void;}) {
+type Props = {
+    src: string;
+    marker: number;
+    iconSize: number;
+    position: { x: number; y: number };
+    isCurrentStep: boolean;
+    onPopInComplete: () => void;
+}
+
+export function IconSpecies({ src, marker, iconSize, position, isCurrentStep, onPopInComplete }: Readonly<Props>) {
     return (
         <div
             className="absolute overflow-visible"

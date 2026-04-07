@@ -2,11 +2,14 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { PARTICLES } from "@/utils/gaugeData";
 
-export function PopInSpecies({ src, iconSize, onAnimationComplete }: {
+type Props = {
     src: string;
     iconSize: number;
-    onAnimationComplete?: () => void;  // ← nouveau
-}) { return (
+    onAnimationComplete?: () => void;
+}
+
+export function PopInSpecies({ src, iconSize, onAnimationComplete }: Readonly<Props>) {
+    return (
         <>
             {PARTICLES.map((p, i) => (
                 <motion.div

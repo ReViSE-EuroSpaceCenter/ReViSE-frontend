@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useRef, useState} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { STEPS, SPECIES } from "@/utils/gaugeData";
 import { useGaugeAnimation } from "@/hooks/useGaugeAnimation";
 import { GaugeBar } from "@/components/discover/GaugeBar";
@@ -10,18 +10,28 @@ const BW = 2;
 const TOTAL_WIDTH = GAUGE_WIDTH + 80;
 const FILL_AREA_HEIGHT = GAUGE_HEIGHT - BW * 2;
 
-export default function Gauge({ stepTarget, onStepReached, onComplete, discoveredSteps }: {readonly stepTarget:number; readonly onStepReached: () => void; readonly onComplete: () => void; readonly discoveredSteps: number[]}) {
-    const svgRef = useRef<SVGSVGElement>(null);
+type Props = {
+    stepTarget: number;
+    onStepReached: () => void;
+    onComplete: () => void;
+    discoveredSteps: number[];
+}
+
+export default function Gauge({ stepTarget, onStepReached, onComplete, discoveredSteps }: Readonly<Props>) {
+    const containerRef = useRef<HTMLDivElement>(null);
     const [svgBounds, setSvgBounds] = useState<{ width: number; height: number } | null>(null);
     const [pendingStep, setPendingStep] = useState<number | null>(null);
 
     useEffect(() => {
-        if (!svgRef.current) return;
+        if (!containerRef.current) return;
+        const { width, height } = containerRef.current.getBoundingClientRect();
+        setSvgBounds({ width, height });
+
         const observer = new ResizeObserver(([entry]) => {
             const { width, height } = entry.contentRect;
             setSvgBounds({ width, height });
         });
-        observer.observe(svgRef.current);
+        observer.observe(containerRef.current);
         return () => observer.disconnect();
     }, []);
 
@@ -35,19 +45,52 @@ export default function Gauge({ stepTarget, onStepReached, onComplete, discovere
         onComplete,
     });
 
-    const iconSize = svgBounds ? (60 * svgBounds.width) / TOTAL_WIDTH : 60;
+    const layout = useMemo(() => {
+        if (!svgBounds) {
+            return {
+                scale: 1,
+                renderedWidth: TOTAL_WIDTH,
+                renderedHeight: GAUGE_HEIGHT,
+                offsetX: 0,
+                offsetY: 0,
+            };
+        }
+
+        const scale = Math.min(svgBounds.width / TOTAL_WIDTH, svgBounds.height / GAUGE_HEIGHT);
+        const renderedWidth = TOTAL_WIDTH * scale;
+        const renderedHeight = GAUGE_HEIGHT * scale;
+
+        return {
+            scale,
+            renderedWidth,
+            renderedHeight,
+            offsetX: (svgBounds.width - renderedWidth) / 2,
+            offsetY: (svgBounds.height - renderedHeight) / 2,
+        };
+    }, [svgBounds]);
+
+    const iconSize = Math.max(28, 60 * layout.scale);
 
     const toRendered = (viewBoxX: number, viewBoxY: number) => {
-        if (!svgBounds) return { x: 0, y: 0 };
         return {
-            x: viewBoxX * (svgBounds.width / TOTAL_WIDTH),
-            y: viewBoxY * (svgBounds.height / GAUGE_HEIGHT),
+            x: layout.offsetX + viewBoxX * layout.scale,
+            y: layout.offsetY + viewBoxY * layout.scale,
         };
     };
 
     return (
-        <div className="relative w-full h-full">
-            <svg ref={svgRef} viewBox={`0 0 ${TOTAL_WIDTH} ${GAUGE_HEIGHT}`} className="w-full h-full">
+        <div ref={containerRef} className="relative w-full h-full overflow-visible">
+            <svg
+                viewBox={`0 0 ${TOTAL_WIDTH} ${GAUGE_HEIGHT}`}
+                preserveAspectRatio="xMidYMid meet"
+                className="absolute"
+                style={{
+                    left: layout.offsetX,
+                    top: layout.offsetY,
+                    width: layout.renderedWidth,
+                    height: layout.renderedHeight,
+                }}
+            >
                 <GaugeBar
                     gaugeWidth={GAUGE_WIDTH}
                     gaugeHeight={GAUGE_HEIGHT}
