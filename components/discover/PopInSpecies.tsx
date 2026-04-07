@@ -14,15 +14,13 @@ export function PopInSpecies({ src, iconSize, onAnimationComplete }: Readonly<Pr
             {PARTICLES.map((p, i) => (
                 <motion.div
                     key={i}
-                    className="absolute rounded-full pointer-events-none"
+                    className="absolute rounded-full pointer-events-none -translate-x-1/2 -translate-y-1/2"
                     style={{
                         left: iconSize / 2,
                         top: iconSize / 2,
                         width: p.size,
                         height: p.size,
                         backgroundColor: "#ffffff",
-                        translateX: "-50%",
-                        translateY: "-50%",
                     }}
                     initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
                     animate={{

@@ -6,30 +6,34 @@ import { IconSpecies } from "@/components/discover/IconSpecies";
 
 const GAUGE_WIDTH = 180;
 const GAUGE_HEIGHT = 460;
-const BW = 2;
+const BORDER_WIDTH = 2;
 const TOTAL_WIDTH = GAUGE_WIDTH + 80;
-const FILL_AREA_HEIGHT = GAUGE_HEIGHT - BW * 2;
+const FILL_AREA_HEIGHT = GAUGE_HEIGHT - BORDER_WIDTH * 2;
 
 type Props = {
     stepTarget: number;
     onStepReached: () => void;
     onComplete: () => void;
     discoveredSteps: number[];
-}
+};
 
-export default function Gauge({ stepTarget, onStepReached, onComplete, discoveredSteps }: Readonly<Props>) {
+export default function Gauge({stepTarget, onStepReached, onComplete, discoveredSteps,}: Readonly<Props>) {
     const containerRef = useRef<HTMLDivElement>(null);
-    const [svgBounds, setSvgBounds] = useState<{ width: number; height: number } | null>(null);
+
+    const [bounds, setBounds] = useState<{ width: number; height: number } | null>(null);
     const [pendingStep, setPendingStep] = useState<number | null>(null);
 
     useEffect(() => {
         if (!containerRef.current) return;
-        const { width, height } = containerRef.current.getBoundingClientRect();
-        setSvgBounds({ width, height });
+
+        const update = (width: number, height: number) =>
+            setBounds({ width, height });
+
+        const rect = containerRef.current.getBoundingClientRect();
+        update(rect.width, rect.height);
 
         const observer = new ResizeObserver(([entry]) => {
-            const { width, height } = entry.contentRect;
-            setSvgBounds({ width, height });
+            update(entry.contentRect.width, entry.contentRect.height);
         });
         observer.observe(containerRef.current);
         return () => observer.disconnect();
@@ -46,37 +50,48 @@ export default function Gauge({ stepTarget, onStepReached, onComplete, discovere
     });
 
     const layout = useMemo(() => {
-        if (!svgBounds) {
+        if (!bounds) {
             return {
                 scale: 1,
-                renderedWidth: TOTAL_WIDTH,
-                renderedHeight: GAUGE_HEIGHT,
+                width: TOTAL_WIDTH,
+                height: GAUGE_HEIGHT,
                 offsetX: 0,
                 offsetY: 0,
             };
         }
 
-        const scale = Math.min(svgBounds.width / TOTAL_WIDTH, svgBounds.height / GAUGE_HEIGHT);
-        const renderedWidth = TOTAL_WIDTH * scale;
-        const renderedHeight = GAUGE_HEIGHT * scale;
+        const scale = Math.min(
+            bounds.width / TOTAL_WIDTH,
+            bounds.height / GAUGE_HEIGHT
+        );
+
+        const width = TOTAL_WIDTH * scale;
+        const height = GAUGE_HEIGHT * scale;
 
         return {
             scale,
-            renderedWidth,
-            renderedHeight,
-            offsetX: (svgBounds.width - renderedWidth) / 2,
-            offsetY: (svgBounds.height - renderedHeight) / 2,
+            width,
+            height,
+            offsetX: (bounds.width - width) / 2,
+            offsetY: (bounds.height - height) / 2,
         };
-    }, [svgBounds]);
+    }, [bounds]);
 
     const iconSize = Math.max(28, 60 * layout.scale);
 
-    const toRendered = (viewBoxX: number, viewBoxY: number) => {
-        return {
-            x: layout.offsetX + viewBoxX * layout.scale,
-            y: layout.offsetY + viewBoxY * layout.scale,
-        };
-    };
+    const speciesMap = useMemo(() => {
+        return new Map(SPECIES.map((s) => [s.step, s.svg]));
+    }, []);
+
+    const discoveredSet = useMemo(() => new Set(discoveredSteps), [discoveredSteps]);
+
+    const toRendered = useCallback(
+        (x: number, y: number) => ({
+            x: layout.offsetX + x * layout.scale,
+            y: layout.offsetY + y * layout.scale,
+        }),
+        [layout]
+    );
 
     return (
         <div ref={containerRef} className="relative w-full h-full overflow-visible">
@@ -87,27 +102,29 @@ export default function Gauge({ stepTarget, onStepReached, onComplete, discovere
                 style={{
                     left: layout.offsetX,
                     top: layout.offsetY,
-                    width: layout.renderedWidth,
-                    height: layout.renderedHeight,
+                    width: layout.width,
+                    height: layout.height,
                 }}
             >
                 <GaugeBar
                     gaugeWidth={GAUGE_WIDTH}
                     gaugeHeight={GAUGE_HEIGHT}
-                    bw={BW}
+                    bw={BORDER_WIDTH}
                     smoothProgress={smoothProgress}
                 />
             </svg>
 
             {STEPS.map((marker) => {
-                const isDiscovered = discoveredSteps.includes(marker);
+                const isDiscovered = discoveredSet.has(marker);
                 const isCurrentStep = marker === pendingStep;
-                const src = SPECIES.find((s) => s.step === marker)?.svg;
 
-                if ((!isDiscovered && !isCurrentStep) || !src) return null;
+                if (!isDiscovered && !isCurrentStep) return null;
 
-                const yViewBox = BW + FILL_AREA_HEIGHT * (1 - marker);
-                const position = toRendered(GAUGE_WIDTH + 8, yViewBox - 20);
+                const src = speciesMap.get(marker);
+                if (!src) return null;
+
+                const y = BORDER_WIDTH + FILL_AREA_HEIGHT * (1 - marker);
+                const position = toRendered(GAUGE_WIDTH + 8, y - 20);
 
                 return (
                     <IconSpecies

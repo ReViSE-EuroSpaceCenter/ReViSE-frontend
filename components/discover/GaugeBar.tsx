@@ -1,9 +1,6 @@
 import { motion, useTransform, MotionValue } from "framer-motion";
 import { STEPS } from "@/utils/gaugeData";
 
-const GRADIENT_ID = "degrade";
-const CLIP_ID = "gaugeFillClip";
-
 type Props = {
     gaugeWidth: number;
     gaugeHeight: number;
@@ -21,13 +18,13 @@ export function GaugeBar({ gaugeWidth, gaugeHeight, bw, smoothProgress }: Readon
     return (
         <>
             <defs>
-                <linearGradient id={GRADIENT_ID} x1="0" x2="0" y1={gaugeHeight} y2="0" gradientUnits="userSpaceOnUse">
+                <linearGradient id={"degrade"} x1="0" x2="0" y1={gaugeHeight} y2="0" gradientUnits="userSpaceOnUse">
                     <stop offset="0%" stopColor="#824292" />
                     <stop offset="50%" stopColor="#DA7EB4" />
                     <stop offset="100%" stopColor="#FABAA3" />
                 </linearGradient>
 
-                <clipPath id={CLIP_ID}>
+                <clipPath id={"gaugeFillClip"}>
                     <motion.rect
                         x={bw}
                         width={fillWidth}
@@ -57,8 +54,8 @@ export function GaugeBar({ gaugeWidth, gaugeHeight, bw, smoothProgress }: Readon
             <rect
                 x={bw} y={bw}
                 width={fillWidth} height={fillAreaHeight}
-                fill={`url(#${GRADIENT_ID})`}
-                clipPath={`url(#${CLIP_ID})`}
+                fill={`url(#degrade)`}
+                clipPath={`url(#gaugeFillClip)`}
                 rx={7}
             />
         </>
