@@ -8,7 +8,7 @@ export function useGaugeAnimation({ stepTarget, onStepReached, onComplete }: {re
 
     useEffect(() => {
         if (stepTarget === null) return;
-        const isMarkerStep = STEPS.includes(stepTarget as (typeof STEPS)[number]);
+        const isMarkerStep = STEPS.includes(stepTarget);
 
         const unsub = smoothProgress.on("change", (v) => {
             if (Math.abs(v - stepTarget) < 0.002) {

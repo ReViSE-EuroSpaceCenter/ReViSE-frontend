@@ -11,9 +11,9 @@ type Props = {
 export function PopInSpecies({ src, iconSize, onAnimationComplete }: Readonly<Props>) {
     return (
         <>
-            {PARTICLES.map((p, i) => (
+            {PARTICLES.map((p) => (
                 <motion.div
-                    key={i}
+                    key={p.id}
                     className="absolute rounded-full pointer-events-none -translate-x-1/2 -translate-y-1/2"
                     style={{
                         left: iconSize / 2,

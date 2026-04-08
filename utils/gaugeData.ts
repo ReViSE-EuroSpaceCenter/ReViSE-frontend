@@ -6,19 +6,20 @@ export const SPECIES = [
     { step: 3/6, label: "Bactéries", svg: "/species/bacterie.svg", text: "Découverte : Vous avez observé la présence de bactéries !\nCe sont des organismes vivant très simples, constitués d’une seule cellule sans noyau. Les bactéries sont les formes de vie les plus anciennes et les plus rependues.\nRepère temporel : Elles sont apparues sur terre il y a environ 3,2 milliards d’années."},
     { step: 4/6, label: "Cellules complexes", svg: "/species/eucaryote.svg", text: "Découverte : Vous avez identifié des cellules eucaryotes !\nContrairement aux bactéries, ces cellules possèdent un noyau et des structures internes organisées, indiquant une forme de vie plus évoluée, capable de se structurer et de se complexifier.\nRepère temporel : On estime que ces cellules sont apparues sur Terre il y a environ trois milliards d’années."},
     { step: 5/6, label: "Organismes simples", svg: "/species/invertebre.svg", text: "Découverte : Vous avez découvert des organismes multicellulaires simples.\nCe sont des êtres vivants complexes organisés en fonctions différenciées, mais sans squelette interne. Sur Europe, la vie a franchi un cap : elle s’organise en organismes complexes.\nRepère temporel : Sur Terre, ces formes de vie sont apparues seulement il y a environ six cents millions d’années."},
-    { step: 6/6, label: "Organismes complexes", svg: "/species/vertebre.svg", text: "Découverte : Vous avez identifié des organismes très évolués avec une structure interne, comparable aux vertébrés.\nCes êtres vivants possèdent un squelette interne et des systèmes biologiques développés. C’est le niveau le plus avancé de complexité biologique.\nRepère temporel : Sur terre, ces formes de vie sont apparues il y a environ cinq cents millions d’année." },
+    { step: 1, label: "Organismes complexes", svg: "/species/vertebre.svg", text: "Découverte : Vous avez identifié des organismes très évolués avec une structure interne, comparable aux vertébrés.\nCes êtres vivants possèdent un squelette interne et des systèmes biologiques développés. C’est le niveau le plus avancé de complexité biologique.\nRepère temporel : Sur terre, ces formes de vie sont apparues il y a environ cinq cents millions d’année." },
 ] as const;
 
 export const STEPS = SPECIES.map(c => c.step);
 
 export const PARTICLES = Array.from({ length: 60 }, (_, i) => {
+    const id = `particle-${i}`;
     const angle = (i / 60) * Math.PI * 2;
     const distance = 100 + Math.random() * 60;
     const x = Math.cos(angle) * distance;
     const y = Math.sin(angle) * distance;
     const size = 3 + Math.random() * 3;
 
-    return { angle, distance, size, x, y };
+    return { id, angle, distance, size, x, y };
 });
 
 export function getStepsUpTo(score: number): number[] {
