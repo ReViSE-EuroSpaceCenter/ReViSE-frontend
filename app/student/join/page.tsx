@@ -63,9 +63,6 @@ export default function JoinPage() {
 
 							if (error) setError(null);
 						}}
-						pattern="[A-Z]{6}"
-						minLength={6}
-						maxLength={6}
 						className="w-full px-6 py-4 sm:py-5
                 bg-white/5 border border-white/10
                 rounded-xl sm:rounded-2xl
