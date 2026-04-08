@@ -94,7 +94,7 @@ export default function Gauge({stepTarget, onStepReached, onComplete, discovered
     );
 
     return (
-        <div ref={containerRef} className="relative w-full h-full overflow-visible">
+        <div ref={containerRef} className="relative w-full h-full overflow-visible" style={{ visibility: bounds ? "visible" : "hidden" }}>
             <svg
                 viewBox={`0 0 ${TOTAL_WIDTH} ${GAUGE_HEIGHT}`}
                 preserveAspectRatio="xMidYMid meet"
