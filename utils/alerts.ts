@@ -26,9 +26,9 @@ export const showMissionAlert = (team: string, nbMission: number) => {
 	});
 }
 
-export const showHint = (hint: string) => {
+export const showHint = (hint: string, isHTML : boolean = false) => {
 	Swal.fire({
-		text: hint,
+		...(isHTML ? { html: hint } : { text: hint }),
 		icon: "info",
 		confirmButtonText: "OK",
 		background: BACKGROUND,
