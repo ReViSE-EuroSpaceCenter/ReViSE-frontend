@@ -79,7 +79,7 @@ export default function PresentationModal({ isOpen, setIsOpen, icon, text, name,
             break;
 
         default:
-            title = `Nouvelle espèce découverte: ${name}`;
+            title = `Nouvelle espèce découverte : ${name}`;
 
     }
 
