@@ -6,6 +6,7 @@ import { MissionHeader } from "@/components/mission/MissionHeader";
 import { teamColorMap } from "@/utils/teamColor";
 import { showHint } from "@/utils/alerts";
 import { TeamResources } from "@/types/TeamsResources";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 type Props = {
     teamsResources: Record<string, TeamResources> | undefined;
@@ -15,18 +16,31 @@ export default function ResourcesBoard({ teamsResources }: Readonly<Props>) {
     const [index, setIndex] = useState(0);
 
     if (!teamsResources) return null;
-    const teamKeys = ["ÉQUIPAGE COMPLET" , ...Object.keys(teamsResources)];
+    const teamKeys = ["ÉQUIPAGE COMPLET", ...Object.keys(teamsResources)];
+    const isGlobal = teamKeys[index] === "ÉQUIPAGE COMPLET";
+
+    const getTotalResources = (teams: Record<string, TeamResources>) =>
+        Object.values(teams).reduce(
+            (acc, team) => ({
+                ENERGY: acc.ENERGY + (team.resources.ENERGY ?? 0),
+                HUMAN: acc.HUMAN + (team.resources.HUMAN ?? 0),
+                TIME: acc.TIME + (team.resources.TIME ?? 0),
+            }),
+            { ENERGY: 0, HUMAN: 0, TIME: 0 }
+        );
+
+    const currentTeamResources = isGlobal
+        ? getTotalResources(teamsResources)
+        : teamsResources[teamKeys[index]]?.resources;
+
+    const resourceItems = [
+        { icon: "/badges/resources/energies.svg", value: Math.floor(currentTeamResources?.ENERGY / 3) },
+        { icon: "/badges/resources/human.svg", value: currentTeamResources?.HUMAN ?? 0 },
+        { icon: "/badges/resources/clock.svg", value: currentTeamResources?.TIME ?? 0 },
+    ];
 
     const prev = () => setIndex((i) => (i - 1 + teamKeys.length) % teamKeys.length);
     const next = () => setIndex((i) => (i + 1) % teamKeys.length);
-
-    const currentTeamResources = teamsResources[teamKeys[index]];
-
-    const resourceItems = [
-        { icon: "/badges/resources/energies.svg", value: currentTeamResources?.resources.ENERGY ?? 0 },
-        { icon: "/badges/resources/human.svg", value: currentTeamResources?.resources.HUMAN ?? 0 },
-        { icon: "/badges/resources/clock.svg", value: currentTeamResources?.resources.TIME ?? 0 },
-    ];
 
     return (
         <div className="relative inline-block">
@@ -42,10 +56,13 @@ export default function ResourcesBoard({ teamsResources }: Readonly<Props>) {
                 <div className="flex items-center w-full">
                     <button
                         onClick={prev}
-                        className="text-white hover:opacity-70 transition-opacity shrink-0 leading-none"
-                        style={{ fontSize: "clamp(0.75rem, 2vw, 1.5rem)" }}
+                        className="flex items-center justify-center rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 transition-all"
+                        style={{
+                            width: "clamp(2.5rem, 4vw, 3rem)",
+                            height: "clamp(2.5rem, 4vw, 3rem)",
+                        }}
                     >
-                        ‹
+                        <ChevronLeft size={20} />
                     </button>
 
                     <div
@@ -93,10 +110,13 @@ export default function ResourcesBoard({ teamsResources }: Readonly<Props>) {
 
                     <button
                         onClick={next}
-                        className="text-white hover:opacity-70 transition-opacity shrink-0 leading-none"
-                        style={{ fontSize: "clamp(0.75rem, 2vw, 1.5rem)" }}
+                        className="flex items-center justify-center rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 transition-all"
+                        style={{
+                            width: "clamp(2.5rem, 4vw, 3rem)",
+                            height: "clamp(2.5rem, 4vw, 3rem)",
+                        }}
                     >
-                        ›
+                        <ChevronRight size={20} />
                     </button>
                 </div>
 
