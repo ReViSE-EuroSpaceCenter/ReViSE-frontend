@@ -16,7 +16,7 @@
     "@tanstack/react-query": "^5.95.2",
     "@testing-library/user-event": "^14.6.1",
     "framer-motion": "^12.38.0",
-    "next": "16.2.1",
+    "next": "16.2.2",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "sockjs-client": "^1.6.1",
@@ -24,7 +24,7 @@
     "sweetalert2": "^11.26.24"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.28.5",
+    "@babel/preset-env": "^7.29.2",
     "@babel/preset-react": "^7.28.5",
     "@babel/preset-typescript": "^7.28.5",
     "@tailwindcss/postcss": "^4",
@@ -37,7 +37,7 @@
     "@vitest/coverage-v8": "^4.1.2",
     "babel-jest": "^30.3.0",
     "eslint": "^9",
-    "eslint-config-next": "16.1.6",
+    "eslint-config-next": "16.2.2",
     "jsdom": "^29.0.1",
     "react-test-renderer": "^19.2.4",
     "tailwindcss": "^4.1.18",

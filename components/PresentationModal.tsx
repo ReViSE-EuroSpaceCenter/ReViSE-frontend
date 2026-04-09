@@ -61,12 +61,26 @@ export default function PresentationModal({ isOpen, setIsOpen, icon, text, name,
 
     let title: string;
 
-    if (name === "PRESENTATION") {
-        title = "Présentation du voyage vers Europe";
-    } else if (name === "TEACHER") {
-        title = "Présentation du jeu - ReViSE";
-    } else {
-        title = `Présentation de l'équipe - ${name}`;
+    switch (name) {
+        case "PRESENTATION":
+            title = "Présentation du voyage vers Europe";
+            break;
+        case "TEACHER":
+            title = "Présentation du jeu - ReViSE";
+            break;
+
+        case "MECA":
+        case "GECO":
+        case "EXPE":
+        case "MEDI":
+        case "AERO":
+        case "COOP":
+            title = `Présentation de l'équipe - ${name}`;
+            break;
+
+        default:
+            title = `Nouvelle espèce découverte : ${name}`;
+
     }
 
     return (
