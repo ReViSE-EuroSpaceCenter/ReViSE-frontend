@@ -39,7 +39,7 @@ const pageState = vi.hoisted(() => {
 		modalMock,
 		hostId: "host-123" as string | null,
 		gameId: "GAME-456",
-		queryData: { score: 3 } as any,
+		queryData: { totalScore: 3 } as any,
 	};
 });
 
@@ -71,7 +71,7 @@ describe("DiscoverPage", () => {
 		vi.useRealTimers();
 		pageState.hostId = "host-123";
 		pageState.gameId = "GAME-456";
-		pageState.queryData = { score: 3 };
+		pageState.queryData = { totalScore: 3 };
 		pageState.useQueryMock.mockImplementation((options: any) => ({
 			data: pageState.queryData,
 			options,
@@ -101,7 +101,7 @@ describe("DiscoverPage", () => {
 	});
 
 	it("ouvre la modale après la découverte d'un step et appelle la fin de partie sur le dernier step", () => {
-		pageState.queryData = { score: 3 };
+		pageState.queryData = { totalScore: 3 };
 		const logSpy = vi.spyOn(console, "log").mockImplementation(() => undefined);
 		vi.useFakeTimers();
 
@@ -119,7 +119,7 @@ describe("DiscoverPage", () => {
 	});
 
 	it("ferme la modale et passe à l'étape suivante quand on la clôture", () => {
-		pageState.queryData = { score: 6 };
+		pageState.queryData = { totalScore: 6 };
 		vi.useFakeTimers();
 
 		renderPage(<DiscoverPage />);

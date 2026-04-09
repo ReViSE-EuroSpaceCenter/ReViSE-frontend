@@ -45,14 +45,15 @@ describe("ResourcesBoard", () => {
         render(
             <ResourcesBoard
                 teamsResources={{
-                    AERO: { resources: { ENERGY: 9, HUMAN: 4, TIME: 7 } },
-                    COOP: { resources: { ENERGY: 6, HUMAN: 8, TIME: 5 } },
+                    AERO: { resources: { ENERGY: 9, HUMAN: 4, CLOCK: 7 } },
+                    COOP: { resources: { ENERGY: 6, HUMAN: 8, CLOCK: 5 } },
                 }}
             />
         );
 
         expect(screen.getByText("ÉQUIPAGE COMPLET")).toBeInTheDocument();
-        expect(screen.getAllByText("0")).toHaveLength(3);
+        expect(screen.getByText("5")).toBeInTheDocument();
+        expect(screen.getAllByText("12")).toHaveLength(2);
 
         fireEvent.click(screen.getByLabelText("Détail de calcul du score"));
 
@@ -66,13 +67,13 @@ describe("ResourcesBoard", () => {
         render(
             <ResourcesBoard
                 teamsResources={{
-                    AERO: { resources: { ENERGY: 9, HUMAN: 4, TIME: 7 } },
-                    COOP: { resources: { ENERGY: 6, HUMAN: 8, TIME: 5 } },
+                    AERO: { resources: { ENERGY: 9, HUMAN: 4, CLOCK: 7 } },
+                    COOP: { resources: { ENERGY: 6, HUMAN: 8, CLOCK: 5 } },
                 }}
             />
         );
 
-        fireEvent.click(screen.getByRole("button", { name: "›" }));
+        fireEvent.click(screen.getAllByRole("button")[2]);
 
         expect(testState.missionHeaderMock).toHaveBeenLastCalledWith(
             expect.objectContaining({
@@ -82,7 +83,7 @@ describe("ResourcesBoard", () => {
             })
         );
 
-        expect(screen.getByText("9")).toBeInTheDocument();
+        expect(screen.getByText("3")).toBeInTheDocument();
         expect(screen.getByText("4")).toBeInTheDocument();
         expect(screen.getByText("7")).toBeInTheDocument();
     });
@@ -91,13 +92,13 @@ describe("ResourcesBoard", () => {
         render(
             <ResourcesBoard
                 teamsResources={{
-                    AERO: { resources: { ENERGY: 9, HUMAN: 4, TIME: 7 } },
-                    COOP: { resources: { ENERGY: 6, HUMAN: 8, TIME: 5 } },
+                    AERO: { resources: { ENERGY: 9, HUMAN: 4, CLOCK: 7 } },
+                    COOP: { resources: { ENERGY: 6, HUMAN: 8, CLOCK: 5 } },
                 }}
             />
         );
 
-        fireEvent.click(screen.getByRole("button", { name: "‹" }));
+        fireEvent.click(screen.getAllByRole("button")[0]);
 
         expect(testState.missionHeaderMock).toHaveBeenLastCalledWith(
             expect.objectContaining({
@@ -107,7 +108,7 @@ describe("ResourcesBoard", () => {
             })
         );
 
-        expect(screen.getByText("6")).toBeInTheDocument();
+        expect(screen.getByText("2")).toBeInTheDocument();
         expect(screen.getByText("8")).toBeInTheDocument();
         expect(screen.getByText("5")).toBeInTheDocument();
     });
