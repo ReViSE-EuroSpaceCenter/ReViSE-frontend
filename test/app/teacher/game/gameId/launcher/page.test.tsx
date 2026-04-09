@@ -5,11 +5,14 @@ import Launcher from "@/app/teacher/game/[gameId]/launcher/page";
 
 // ----------------- Mocks -----------------
 const replaceMock = vi.fn();
+const mockSetQueryData = vi.fn();
+const mockUseQueryState = vi.fn();
 
 let stepValue: string | null = null;
 let presentationValue: string | null = null;
 
 vi.mock("next/navigation", () => ({
+    useParams: () => ({ gameId: "ABC123" }),
     useRouter: () => ({ replace: replaceMock }),
     usePathname: () => "/launcher",
     useSearchParams: () => ({
@@ -18,6 +21,29 @@ vi.mock("next/navigation", () => ({
             if (key === "presentation") return presentationValue;
             return null;
         },
+    }),
+}));
+
+vi.mock("@tanstack/react-query", async () => {
+    const actual = await vi.importActual<typeof import("@tanstack/react-query")>(
+      "@tanstack/react-query"
+    );
+
+    return {
+        ...actual,
+        useQuery: vi.fn(() => mockUseQueryState),
+        useQueryClient: () => ({
+            setQueryData: mockSetQueryData,
+        }),
+    };
+});
+
+vi.mock("@/contexts/WebSocketProvider", () => ({
+    useWebSocket: () => ({
+        connected: true,
+        subscribe: vi.fn(() => ({
+            unsubscribe: vi.fn(),
+        })),
     }),
 }));
 
