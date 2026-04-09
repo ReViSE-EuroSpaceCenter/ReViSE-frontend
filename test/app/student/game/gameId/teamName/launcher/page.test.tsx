@@ -1,6 +1,29 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 import LauncherPage from "@/app/student/game/[gameId]/[teamName]/launcher/page";
+import { vi } from "vitest";
+
+vi.mock("next/navigation", () => ({
+	useRouter: () => ({
+		push: vi.fn(),
+	}),
+	useParams: () => ({
+		gameId: "LOBBY123",
+		teamName: "MECA",
+	}),
+}));
+
+let storedCallback: (message: { body: string }) => void;
+
+vi.mock("@/contexts/WebSocketProvider", () => ({
+	useWebSocket: () => ({
+		connected: true,
+		subscribe: vi.fn((topic, callback) => {
+			storedCallback = callback;
+			return { unsubscribe: vi.fn() };
+		}),
+	}),
+}));
 
 describe("LauncherPage", () => {
 

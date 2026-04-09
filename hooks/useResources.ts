@@ -1,5 +1,5 @@
 import {useMutation} from "@tanstack/react-query";
-import {updateResources} from "@/api/discoverApi";
+import {updateResources} from "@/api/resourcesApi";
 import {showError} from "@/errors/getErrorMessage";
 import {ApiError} from "@/api/apiError";
 import {useParams, useRouter} from "next/navigation";
@@ -29,7 +29,7 @@ export const useResources = () => {
 			await updateResources(lobbyCode, clientId as string, resourcesPayload);
 		},
 		onSuccess: () => {
-			router.push(`/student/game/${lobbyCode}/${teamName}/launcher`);
+			router.push(`/student/game/${lobbyCode}/${teamName}/discover`);
 		},
 		onError: (error) => {
 			showError(error instanceof ApiError ? error.key : "");

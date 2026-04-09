@@ -1,4 +1,22 @@
+"use client"
+
+import {useWSSubscription} from "@/hooks/useWSSubscription";
+import {useCallback} from "react";
+import {useParams, useRouter} from "next/navigation";
+
 export default function LauncherPage() {
+    const router = useRouter();
+    const params = useParams();
+
+    const teamName = params.teamName as string;
+    const lobbyCode = params.gameId as string;
+
+    useWSSubscription("launcher", useCallback((event) => {
+        if (event.type === "LAUNCHER_ENDED") {
+            router.push(`/student/game/${lobbyCode}/${teamName}/resources`);
+        }
+    }, [lobbyCode, teamName, router]));
+
     return (
       <div className="min-h-[calc(100vh-80px)] flex flex-col items-center px-6 pt-16 sm:pt-20">
 
@@ -22,6 +40,13 @@ export default function LauncherPage() {
                       <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
                           Suivez les instructions de votre animateur et regardez l&apos;écran
                           central pour la prochaine étape de la mission.
+                      </p>
+                  </div>
+
+                  <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 flex items-center gap-3">
+                      <span className="text-red-400 text-lg shrink-0">⚠️</span>
+                      <p className="text-red-300 text-sm font-medium text-center leading-snug">
+                          Ne fermez pas cette page, sinon vous ne pourrez pas continuer la partie.
                       </p>
                   </div>
 

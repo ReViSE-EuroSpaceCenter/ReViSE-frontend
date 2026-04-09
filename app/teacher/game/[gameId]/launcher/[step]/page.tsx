@@ -7,13 +7,13 @@ import { stepsData } from "@/utils/stepsData";
 import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 import { TeamsFullProgression } from "@/types/TeamData";
-import { getTeamsFullProgression } from "@/api/missionApi";
 import { showError } from "@/errors/getErrorMessage";
 import { ApiError } from "@/api/apiError";
 import LoadingPage from "@/app/loading";
 import { ResourceCard } from "@/components/launcher/ResourceCard";
 import {showEnergyBonusAlert} from "@/utils/alerts";
 import {getBonusKey, parseBonusId} from "@/utils/launcherUtils";
+import {getTeamsInfo} from "@/api/launcherApi";
 
 export default function StepPage() {
   const router = useRouter();
@@ -29,7 +29,7 @@ export default function StepPage() {
 
   const { data: gameData, isLoading, isError, error } = useQuery<TeamsFullProgression>({
     queryKey: ["gameInfo", lobbyCode],
-    queryFn: () => getTeamsFullProgression(lobbyCode),
+    queryFn: () => getTeamsInfo(lobbyCode),
     enabled: !!lobbyCode,
   });
 
