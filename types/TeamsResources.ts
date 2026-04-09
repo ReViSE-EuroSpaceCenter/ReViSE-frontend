@@ -1,6 +1,6 @@
 enum ResourceType {
     HUMAN = "HUMAN",
-    TIME = "TIME",
+    CLOCK = "CLOCK",
     ENERGY = "ENERGY",
 }
 
