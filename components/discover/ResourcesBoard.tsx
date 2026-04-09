@@ -18,7 +18,7 @@ export default function ResourcesBoard({ teamsResources }: Readonly<Props>) {
 
     if (!teamsResources) return null;
 
-    const currentTeam = teamKeys[index]!;
+    const currentTeam = teamKeys[index];
 
     const handleShowHint = () => {
         const tableHtml = renderToStaticMarkup(<ScoreTable teams={teamsResources} />);
@@ -73,7 +73,7 @@ export default function ResourcesBoard({ teamsResources }: Readonly<Props>) {
 
                 <div className="flex-1 grid grid-cols-3 gap-4 pb-[2%]">
                     {resourceItems.map((item, i) => (
-                        <ResourceItem key={i} icon={item.icon} value={item.value} />
+                        <ResourceItem key={`${item.icon+i}`} icon={item.icon} value={item.value} />
                     ))}
                 </div>
             </div>
@@ -81,7 +81,7 @@ export default function ResourcesBoard({ teamsResources }: Readonly<Props>) {
     );
 }
 
-function NavButton({ onClick, icon }: { onClick: () => void; icon: React.ReactNode }) {
+function NavButton({ onClick, icon }: { readonly onClick: () => void; readonly icon: React.ReactNode }) {
     return (
         <button
             onClick={onClick}

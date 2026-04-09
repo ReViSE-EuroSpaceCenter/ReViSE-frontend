@@ -2,7 +2,7 @@ import Image from "next/image";
 
 type Props = { icon: string; value: number | undefined };
 
-export function ResourceItem({ icon, value }: Props) {
+export function ResourceItem({ icon, value }: Readonly<Props>) {
     return (
         <div className="flex flex-col items-center justify-center gap-1">
             <div

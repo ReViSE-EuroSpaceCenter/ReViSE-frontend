@@ -3,7 +3,7 @@ import { getScoreTable } from "@/hooks/useResourcesBoard";
 
 type Props = { teams: Record<string, TeamResources> };
 
-export function ScoreTable({ teams }: Props) {
+export function ScoreTable({ teams }: Readonly<Props>) {
     const { rows, average } = getScoreTable(teams);
 
     return (
