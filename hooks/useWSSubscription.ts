@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { WSEventType } from "@/types/WSEventType";
 import { useWebSocket } from "@/contexts/WebSocketProvider";
 
-type WSChannel = "lobby" | "mission" | "launcher";
+type WSChannel = "lobby" | "mission" | "resource" | "launcher";
 type WSHandler = (event: WSEventType) => void;
 
 export function useWSSubscription(channel: WSChannel, handler: WSHandler) {

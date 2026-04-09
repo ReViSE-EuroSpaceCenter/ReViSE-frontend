@@ -15,7 +15,7 @@ export default defineConfig({
             reporter: ["text", "html", "lcov"],
             all: true,
             include: ["**/**/*.{ts,tsx}"],
-            exclude: ["node_modules/**", "test/**", "types/**"],
+            exclude: ["node_modules/**", "test/**", "types/**", "next-env.d.ts", "next.config.ts"],
             dir: "coverage",
         },
     },

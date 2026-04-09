@@ -36,7 +36,7 @@ export default function Dashboard() {
 
 	useWSSubscription("mission", useCallback((event) => {
 		if (event.type === "MISSION_ENDED") {
-			router.push(`/student/game/${lobbyCode}/${teamName}/resources`);
+			router.push(`/student/game/${lobbyCode}/${teamName}/launcher`);
 		}
 	}, [router, lobbyCode, teamName]));
 

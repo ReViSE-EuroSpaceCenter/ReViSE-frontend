@@ -1,11 +1,11 @@
-import {put} from "@/api/apiClient";
+import {get, post} from "@/api/apiClient";
 
-type ResourceType = "ENERGY" | "HUMAN" | "CLOCK";
-
-type ResourcesPayload = {
-	resources: Record<ResourceType, number>;
+export const getTeamsInfo = async (lobbyCode: string) => {
+	return await get(`/api/launcher/${lobbyCode}`);
 };
 
-export const updateResources = async (lobbyCode: string, clientId: string, r: ResourcesPayload) => {
-	await put(`/api/launchers/${lobbyCode}`, { body: { clientId, resources: r.resources } });
-}
+export const endLauncher = async (lobbyCode: string, hostId: string) => {
+	await post(`/api/launcher/${lobbyCode}/end`, {
+		body: { hostId }
+	});
+};

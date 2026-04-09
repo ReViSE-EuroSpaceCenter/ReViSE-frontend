@@ -9,10 +9,11 @@ import { renderPage } from "@/test/utils/renderPage";
 
 // ---------- Mocks ----------
 const replaceMock = vi.fn();
+const pushMock = vi.fn();
 
 vi.mock("next/navigation", () => ({
     useParams: () => ({ gameId: "ABC123" }),
-    useRouter: () => ({ replace: replaceMock }),
+    useRouter: () => ({ replace: replaceMock, push: pushMock }),
     usePathname: () => "/teacher/game/ABC123",
     useSearchParams: () => ({ get: vi.fn(() => null) }),
 }));
