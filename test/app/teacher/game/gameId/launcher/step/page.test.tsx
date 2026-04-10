@@ -4,8 +4,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderPage } from "@/test/utils/renderPage";
 import { confirmEndGameMessage } from "@/utils/endGameMessage";
 import StepPage from "@/app/teacher/game/[gameId]/launcher/[step]/page";
-import {getTeamsFullProgression} from "@/api/missionApi";
-import {gameOver} from "@/api/launcherApi";
+import {gameOver, getTeamsInfo} from "@/api/launcherApi";
 import {showError} from "@/errors/getErrorMessage";
 
 const pushMock = vi.fn();
@@ -21,10 +20,7 @@ vi.mock("@/utils/endGameMessage", () => ({
 
 vi.mock("@/api/launcherApi", () => ({
     gameOver: vi.fn(),
-}));
-
-vi.mock("@/api/missionApi", () => ({
-    getTeamsFullProgression: vi.fn(),
+    getTeamsInfo: vi.fn(),
 }));
 
 vi.mock("@/errors/getErrorMessage", () => ({
@@ -35,7 +31,7 @@ describe("StepPage - Fin du jeu", () => {
     beforeEach(() => {
         vi.clearAllMocks();
         sessionStorage.setItem("hostId", "host-123");
-        vi.mocked(getTeamsFullProgression).mockResolvedValue({
+        vi.mocked(getTeamsInfo).mockResolvedValue({
             teamsFullProgression: {
                 MECA: { teamProgression: {} },
                 AERO: { teamProgression: {} },
