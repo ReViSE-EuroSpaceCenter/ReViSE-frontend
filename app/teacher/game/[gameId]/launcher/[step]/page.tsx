@@ -13,10 +13,9 @@ import LoadingPage from "@/app/loading";
 import { ResourceCard } from "@/components/launcher/ResourceCard";
 import {showEnergyBonusAlert} from "@/utils/alerts";
 import {getBonusKey, parseBonusId} from "@/utils/launcherUtils";
-import {getTeamsInfo} from "@/api/launcherApi";
+import {getTeamsInfo, gameOver} from "@/api/launcherApi";
 import {confirmEndGameMessage} from "@/utils/endGameMessage";
 import {useSessionId} from "@/hooks/useSessionId";
-import {gameOver} from "@/api/launcherApi";
 
 export default function StepPage() {
     const router = useRouter();
