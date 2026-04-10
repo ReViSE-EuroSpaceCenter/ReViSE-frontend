@@ -4,6 +4,7 @@ import {showError} from "@/errors/getErrorMessage";
 import {ApiError} from "@/api/apiError";
 import {useParams, useRouter} from "next/navigation";
 import {useSessionId} from "@/hooks/useSessionId";
+import {TeamResources} from "@/types/TeamsResources";
 
 export const useResources = () => {
 	const router = useRouter();
@@ -19,7 +20,7 @@ export const useResources = () => {
 			humans: number;
 			time: number;
 		}) => {
-			const resourcesPayload = {
+			const resourcesPayload: TeamResources = {
 				resources: {
 					ENERGY: resources || 0,
 					HUMAN: humans || 0,

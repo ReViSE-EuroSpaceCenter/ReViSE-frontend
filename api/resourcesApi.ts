@@ -1,12 +1,7 @@
 import { post, put } from "@/api/apiClient";
+import {TeamResources} from "@/types/TeamsResources";
 
-type ResourceType = "ENERGY" | "HUMAN" | "CLOCK";
-
-type ResourcesPayload = {
-	resources: Record<ResourceType, number>;
-};
-
-export const updateResources = async (lobbyCode: string, clientId: string, r: ResourcesPayload) => {
+export const updateResources = async (lobbyCode: string, clientId: string, r: TeamResources) => {
 	await post(`/api/resources/${lobbyCode}`, { body: { clientId, resources: r.resources } });
 }
 
