@@ -25,9 +25,9 @@ const PresentationModal = dynamic(
 
 export default function Dashboard() {
     const params = useParams();
-	  const router = useRouter();
-	  const pathname = usePathname();
-	  const searchParams = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
     const lobbyCode = params.gameId as string;
     const queryClient = useQueryClient();
     const hostId = useSessionId("hostId");

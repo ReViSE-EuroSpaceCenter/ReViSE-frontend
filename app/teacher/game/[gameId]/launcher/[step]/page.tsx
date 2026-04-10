@@ -16,7 +16,7 @@ import {showEnergyBonusAlert} from "@/utils/alerts";
 import {getBonusKey, parseBonusId} from "@/utils/launcherUtils";
 import {confirmEndGameMessage} from "@/utils/endGameMessage";
 import {useSessionId} from "@/hooks/useSessionId";
-import {endGame} from "@/api/discoverApi";
+import {gameOver} from "@/api/launcherApi";
 
 export default function StepPage() {
     const router = useRouter();
@@ -112,8 +112,8 @@ export default function StepPage() {
             showError("", "Identifiant de connexion manquant, impossible de terminer la partie");
             return;
         }
-        await endGame(lobbyCode, hostId);
-        router.push(`/endGame`);
+        await gameOver(lobbyCode, hostId);
+        router.push(`/endGame?win=false`);
     };
 
     return (

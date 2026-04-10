@@ -11,5 +11,5 @@ export const updateResources = async (lobbyCode: string, clientId: string, r: Re
 }
 
 export const endGame = async (lobbyCode: string, hostId: string) => {
-    return await post(`/api/discover/${lobbyCode}/end`, {body: { hostId }});
+    return await post(`/api/discover/${lobbyCode}/endGame`, {body: { hostId }});
 };
