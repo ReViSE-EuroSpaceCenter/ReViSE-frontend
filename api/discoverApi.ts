@@ -1,13 +1,7 @@
-import {post, put} from "@/api/apiClient";
+import {get, post} from "@/api/apiClient";
 
-type ResourceType = "ENERGY" | "HUMAN" | "CLOCK";
-
-type ResourcesPayload = {
-	resources: Record<ResourceType, number>;
-};
-
-export const updateResources = async (lobbyCode: string, clientId: string, r: ResourcesPayload) => {
-	await put(`/api/discover/${lobbyCode}`, { body: { clientId, resources: r.resources } });
+export const getScore = async (lobbyCode: string, hostId: string) => {
+	return await get(`/api/discover/${lobbyCode}/score`, { params: { hostId } });
 }
 
 export const endGame = async (lobbyCode: string, hostId: string) => {

@@ -7,13 +7,13 @@ import { stepsData } from "@/utils/stepsData";
 import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 import { TeamsFullProgression } from "@/types/TeamData";
-import { getTeamsFullProgression } from "@/api/missionApi";
 import { showError } from "@/errors/getErrorMessage";
 import { ApiError } from "@/api/apiError";
 import LoadingPage from "@/app/loading";
 import { ResourceCard } from "@/components/launcher/ResourceCard";
 import {showEnergyBonusAlert} from "@/utils/alerts";
 import {getBonusKey, parseBonusId} from "@/utils/launcherUtils";
+import {getTeamsInfo} from "@/api/launcherApi";
 import {confirmEndGameMessage} from "@/utils/endGameMessage";
 import {useSessionId} from "@/hooks/useSessionId";
 import {gameOver} from "@/api/launcherApi";
@@ -31,11 +31,11 @@ export default function StepPage() {
     const stepParam = Number.parseInt(params.step?.toString() || "0", 10);
     const step = Number.isNaN(stepParam) ? 0 : stepParam;
 
-    const { data: gameData, isLoading, isError, error } = useQuery<TeamsFullProgression>({
-        queryKey: ["gameInfo", lobbyCode],
-        queryFn: () => getTeamsFullProgression(lobbyCode),
-        enabled: !!lobbyCode,
-    });
+  const { data: gameData, isLoading, isError, error } = useQuery<TeamsFullProgression>({
+    queryKey: ["gameInfo", lobbyCode],
+    queryFn: () => getTeamsInfo(lobbyCode),
+    enabled: !!lobbyCode,
+  });
 
     useEffect(() => {
         if (isError) {

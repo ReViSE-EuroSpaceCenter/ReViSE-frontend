@@ -75,7 +75,7 @@ vi.mock("@/components/IATech", () => ({
     default: () => <div>IATech</div>,
 }));
 
-vi.mock("@/components/teacher/MissionModal", () => ({
+vi.mock("@/components/teacher/ResourceModal", () => ({
     default: () => <div>MissionModal</div>,
 }));
 
