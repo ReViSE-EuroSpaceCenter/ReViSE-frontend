@@ -15,7 +15,7 @@ import {useSessionId} from "@/hooks/useSessionId";
 import {useWSSubscription} from "@/hooks/useWSSubscription";
 import {TeamsFullProgression} from "@/types/TeamData";
 import {presentationTexts} from "@/utils/presentationTexts";
-import {confirmEndMissionMessage} from "@/utils/ConfirmationEndMissionMessage";
+import {confirmEndMissionMessage} from "@/utils/confirmationEndMissionMessage";
 import {getTeamsColumns} from "@/utils/calculTeamColumn";
 const PresentationModal = dynamic(
     () => import("@/components/PresentationModal"),
@@ -24,9 +24,9 @@ const PresentationModal = dynamic(
 
 export default function Dashboard() {
     const params = useParams();
-	  const router = useRouter();
-	  const pathname = usePathname();
-	  const searchParams = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
     const lobbyCode = params.gameId as string;
     const queryClient = useQueryClient();
     const hostId = useSessionId("hostId");

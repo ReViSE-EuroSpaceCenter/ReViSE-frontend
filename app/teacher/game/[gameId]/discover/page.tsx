@@ -1,15 +1,17 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query";
-import { getScore } from "@/api/discoverApi";
+import {endGame, getScore} from "@/api/discoverApi";
 import {TeamsResources} from "@/types/TeamsResources";
-import { useParams } from "next/navigation";
+import {useParams, useRouter} from "next/navigation";
 import {useCallback, useState} from "react";
 import { useSessionId } from "@/hooks/useSessionId";
 import Gauge from "@/components/discover/Gauge";
 import dynamic from "next/dynamic";
 import {getStepsUpTo, SPECIES} from "@/utils/gaugeData";
 import ResourcesBoard from "@/components/discover/ResourcesBoard";
+import {confirmEndGameMessage} from "@/utils/endGameMessage";
+import {showError} from "@/errors/getErrorMessage";
 const PresentationModal = dynamic(
     () => import("@/components/PresentationModal"),
     { ssr: false, loading: () => null }
@@ -33,9 +35,23 @@ export default function DiscoverPage() {
     const discoveredSteps = steps.slice(0, stepIndex);
     const currentStepTarget = steps[stepIndex] ?? null;
     const isLastStep = stepIndex === steps.length - 1;
+    const [isGameFinished, setIsGameFinished] = useState(false);
+    const router = useRouter();
 
+    const handleEndGame = async () => {
+        const confirmed = await confirmEndGameMessage();
+
+        if (!confirmed) return;
+        if (!hostId) {
+            showError("", "Identifiant de connexion manquant, impossible de terminer la partie");
+            return;
+        }
+        await endGame(lobbyCode, hostId);
+        router.push(`/endGame?win=true`);
+    };
     const handleComplete = useCallback(() => {
         console.log("GAME END");
+        setIsGameFinished(true);
     }, []);
 
     const handleStepReached = useCallback(() => {
@@ -76,6 +92,16 @@ export default function DiscoverPage() {
                 color="#fff"
                 onClose={handleModalClose}
             />
+            {isGameFinished && (
+                <div className="absolute bottom-6 right-6">
+                    <button
+                        onClick={handleEndGame}
+                        className="cursor-pointer rounded-lg bg-purpleReViSE px-6 py-3 text-lg text-white transition hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg"
+                    >
+                        Terminer la partie
+                    </button>
+                </div>
+            )}
         </div>
     );
 }
