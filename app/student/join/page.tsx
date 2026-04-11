@@ -1,12 +1,13 @@
 "use client";
 
-import React, {SyntheticEvent, useState} from "react";
+import React, {SyntheticEvent} from "react";
 import { useJoinLobby } from "@/hooks/useJoinLobby";
 import {JoinSubmitButton} from "@/components/student/JoinSubmitButton";
+import {showError} from "@/errors/getErrorMessage";
 
 export default function JoinPage() {
 	const joinLobbyMutation = useJoinLobby();
-	const [error, setError] = useState<string | null>(null);
+
 
 	const handleSubmit = (e: SyntheticEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -16,7 +17,7 @@ export default function JoinPage() {
 		const lobbyCode = rawCode?.trim().toUpperCase() ?? "";
 
 		if (lobbyCode.length !== 6) {
-			setError("Le code doit contenir exactement 6 lettres.");
+			showError("","Le code doit contenir exactement 6 lettres.");
 			return;
 		}
 		joinLobbyMutation.mutate(lobbyCode);
@@ -38,14 +39,6 @@ export default function JoinPage() {
 					</h1>
 				</header>
 
-				{error && (
-					<div className="w-full bg-red-500/10 border border-red-500/20 rounded-2xl p-4 flex items-center gap-3">
-						<span className="text-red-400 text-lg">⚠️</span>
-						<p className="text-red-400 text-xs sm:text-sm font-bold italic uppercase tracking-wider">
-							{error}
-						</p>
-					</div>
-				)}
 
 				<div className="w-full space-y-4">
 					<input
@@ -53,15 +46,13 @@ export default function JoinPage() {
 						type="text"
 						name="lobbyCode"
 						placeholder="EX: XKABDE"
-						required
+						maxLength={6}
 						autoComplete="off"
 						onInput={(e) => {
 							const target = e.target as HTMLInputElement;
 							target.value = target.value
 								.toUpperCase()
 								.replaceAll(/[^A-Z]/g, "");
-
-							if (error) setError(null);
 						}}
 						className="w-full px-6 py-4 sm:py-5
                 bg-white/5 border border-white/10
