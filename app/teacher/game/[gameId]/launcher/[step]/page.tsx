@@ -118,7 +118,7 @@ export default function StepPage() {
           </h1>
         </div>
 
-        <div className="bg-white/5 border border-white/10 rounded-2xl shadow-xl backdrop-blur-sm">
+        <div className="w-85 h-42.5 shrink-0 bg-white/5 border border-white/10 rounded-2xl shadow-xl backdrop-blur-sm overflow-hidden flex items-center justify-center">
           <Image
             src={`/steps/step${step}.svg`}
             alt={`Carte étape ${step}`}
