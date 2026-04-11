@@ -108,7 +108,7 @@ export default function Header() {
 					</div>
 
 					{isHomePage && isMenuOpen && (
-						<nav className="md:hidden mt-4 pt-4 border-t border-slate-700/30 flex flex-col gap-2">
+						<nav data-testid="mobile-menu" className="md:hidden mt-4 pt-4 border-t border-slate-700/30 flex flex-col gap-2">
 							<button
 								className="w-full px-4 py-2 border border-purpleReViSE hover:bg-purpleReViSE/20 rounded-lg font-medium transition-colors text-left"
 								onClick={() => {
