@@ -9,3 +9,7 @@ export const endLauncher = async (lobbyCode: string, hostId: string) => {
 export const getTeamsInfo = async (lobbyCode: string) => {
 	return await get(`/api/launcher/${lobbyCode}`);
 };
+
+export const gameOver = async (lobbyCode: string, hostId: string) => {
+    return await post(`/api/launcher/${lobbyCode}/gameOver`, {body: { hostId }});
+};
