@@ -1,4 +1,5 @@
 import {ApiError} from "@/api/apiError";
+import {fetchWithInterceptor} from "@/api/apiInterceptor";
 
 type EndPoint = `/${string}`
 
@@ -33,7 +34,7 @@ function buildQueryString(params?: Record<string, string | number | boolean>) {
 export const get = async (endpoint: EndPoint, options?: RequestOptions) => {
 	const url = `${process.env.NEXT_PUBLIC_API_URL}${endpoint}${buildQueryString(options?.params)}`
 
-	const response = await fetch(url, {
+	const response = await fetchWithInterceptor(url, {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
@@ -47,7 +48,7 @@ export const get = async (endpoint: EndPoint, options?: RequestOptions) => {
 export const post = async (endpoint: EndPoint, options: PostOptions) => {
 	const url = `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`
 
-	const response = await fetch(url, {
+	const response = await fetchWithInterceptor(url, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -67,7 +68,7 @@ export const post = async (endpoint: EndPoint, options: PostOptions) => {
 export const put = async (endpoint: EndPoint, options?: PutOptions) => {
     const url = `${process.env.NEXT_PUBLIC_API_URL}${endpoint}${buildQueryString(options?.params)}`
 
-    const response = await fetch(url, {
+    const response = await fetchWithInterceptor(url, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
