@@ -1,6 +1,5 @@
 import Swal from "sweetalert2";
 
-
 const BACKGROUND = "#1a1f3a";
 const TEXT_COLOR = "#ffffff";
 const CONFIRM_BUTTON_COLOR = "#834291";

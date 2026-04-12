@@ -12,7 +12,8 @@ export type WSEventType =
 				secondBonusMissionCompleted: boolean;
 			};
 		}
-	| { type: "MISSION_ENDED"}
+	| { type: "MISSION_ENDED" }
+	| { type: "LAUNCHER_ENDED" }
 	| {
 			type: "RESOURCE_UPDATED";
 			payload: {

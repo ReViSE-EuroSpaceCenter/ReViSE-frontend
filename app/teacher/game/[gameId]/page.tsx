@@ -15,9 +15,8 @@ import {useSessionId} from "@/hooks/useSessionId";
 import {useWSSubscription} from "@/hooks/useWSSubscription";
 import {TeamsFullProgression} from "@/types/TeamData";
 import {presentationTexts} from "@/utils/presentationTexts";
-import {confirmEndMissionMessage} from "@/utils/ConfirmationEndMissionMessage";
+import {confirmEndMissionMessage} from "@/utils/confirmationEndMissionMessage";
 import {getTeamsColumns} from "@/utils/calculTeamColumn";
-import MissionModal from "@/components/teacher/MissionModal";
 const PresentationModal = dynamic(
     () => import("@/components/PresentationModal"),
     { ssr: false, loading: () => null }
@@ -25,9 +24,9 @@ const PresentationModal = dynamic(
 
 export default function Dashboard() {
     const params = useParams();
-	  const router = useRouter();
-	  const pathname = usePathname();
-	  const searchParams = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
     const lobbyCode = params.gameId as string;
     const queryClient = useQueryClient();
     const hostId = useSessionId("hostId");
@@ -35,12 +34,10 @@ export default function Dashboard() {
     const [isChecklistOpen, setIsChecklistOpen] = useState(false);
     const [isIAOpen, setIsIAOpen] = useState(false);
     const [toolboxDisabled, setToolboxDisabled] = useState(false);
-    const [isMissionModalOpen, setIsMissionModalOpen] = useState(false);
-    const [submittedTeams, setSubmittedTeams] = useState<Set<string>>(new Set());
 
     const showPresentation = searchParams.get("presentation") === "true";
-	const [isPresentationOpen, setIsPresentationOpen] = useState(showPresentation);
-	const text = showPresentation ? presentationTexts.TEACHER : null
+	  const [isPresentationOpen, setIsPresentationOpen] = useState(showPresentation);
+	  const text = showPresentation ? presentationTexts.TEACHER : null
 
     const { data: gameData, isError, error } = useQuery<TeamsFullProgression>({
         queryKey: ["gameInfo", lobbyCode],
@@ -81,23 +78,10 @@ export default function Dashboard() {
         });
     }, [lobbyCode, queryClient]));
 
-    useWSSubscription("launcher", useCallback((event) => {
-      if (event.type !== "RESOURCE_UPDATED") return;
-      const { teamLabel } = event.payload;
-      setSubmittedTeams((prev) => new Set(prev).add(teamLabel));
-    }, []))
-
     const { leftTeams, rightTeams } = useMemo(
         () => getTeamsColumns(gameData),
         [gameData]
     );
-    const allTeamsCompleted = gameData?.allTeamsCompleted ?? false;
-    const allTeamLabels = useMemo(
-      () => Object.keys(gameData?.teamsFullProgression ?? {}),
-      [gameData]
-    );
-    const allResourcesSubmitted = allTeamLabels.length > 0 && allTeamLabels.every((label) => submittedTeams.has(label));
-
 
     const handleEndMission = async () => {
         if (!hostId) {
@@ -106,7 +90,7 @@ export default function Dashboard() {
         }
         try {
             await endMission(lobbyCode, hostId);
-            setIsMissionModalOpen(true);
+            router.push(`/teacher/game/${lobbyCode}/launcher?presentation=true`);
         } catch (err) {
             showError(err instanceof ApiError ? err.key : "", "Impossible de clôturer la mission");
         }
@@ -128,7 +112,7 @@ export default function Dashboard() {
 
             <div className="w-full max-w-[min(800px,100vh)] flex justify-center order-1 xl:order-2 md:col-span-2 xl:col-span-1 p-4 md:p-8 xl:p-16">
                 <Toolbox
-                    centerAction={{ label: "Décollage\n🚀", onClick: confirmAndEndMission, disabled: !allTeamsCompleted}}
+                    centerAction={{ label: "Décollage\n🚀", onClick: confirmAndEndMission, disabled: !gameData?.allTeamsCompleted }}
                     actions={[
                         { label: "Fin du tour", onClick: () => setIsChecklistOpen(true), disabled: toolboxDisabled },
                         { label: "Missions terminées", onClick: () => router.push(`/teacher/game/${lobbyCode}/mission`), disabled: toolboxDisabled },
@@ -138,13 +122,6 @@ export default function Dashboard() {
                 />
                 <Checklist isOpen={isChecklistOpen} setIsOpen={setIsChecklistOpen} />
                 <IATech isOpen={isIAOpen} setIsOpen={setIsIAOpen} />
-                <MissionModal
-                    isOpen={isMissionModalOpen}
-                    gameData={gameData}
-                    submittedTeams={submittedTeams}
-                    allResourcesSubmitted={allResourcesSubmitted}
-                    onConfirm={() => router.push(`/teacher/game/${lobbyCode}/launcher?presentation=true`)}
-                />
                 {text && (
                     <PresentationModal
                         isOpen={isPresentationOpen}
