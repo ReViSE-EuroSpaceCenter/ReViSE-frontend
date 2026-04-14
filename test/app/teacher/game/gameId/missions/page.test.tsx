@@ -227,10 +227,7 @@ describe("HostMissionsPage", () => {
 
         fireEvent.click(screen.getByText("EXPE"));
 
-        expect(screen.getAllByTestId("progression-bar")).toHaveLength(2);
-        screen.getAllByTestId("progression-bar").forEach((bar) => {
-            expect(bar).toHaveTextContent("0/1 - #00ff00");
-        });
+        expect(screen.getByTestId("progression-bar")).toHaveTextContent("0/1 - #00ff00");
     });
 
     it("affiche la progression correcte", () => {
@@ -238,10 +235,8 @@ describe("HostMissionsPage", () => {
 
         fireEvent.click(screen.getByText("MECA"));
 
-        expect(screen.getAllByTestId("progression-bar")).toHaveLength(2);
-        screen.getAllByTestId("progression-bar").forEach((bar) => {
-            expect(bar).toHaveTextContent("1/2 - #ff0000");
-        });
+        expect(screen.getByTestId("progression-bar"))
+            .toHaveTextContent("1/2 - #ff0000");
     });
 
     it("appelle showError en cas d'erreur API", async () => {

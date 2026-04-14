@@ -89,40 +89,28 @@ export default function HostMissionsPage() {
         >
             <div className="min-h-[calc(100vh-80px)]">
                 <div className="px-6 lg:px-12 py-6 lg:py-12 space-y-12">
-                    <div className="mb-6 flex flex-col px-2" >
-
-
-                        <div className="order-1 mt-4 min-[900px]:mt-0 min-[900px]:flex min-[900px]:items-end min-[900px]:gap-4">
-                            <div className=" min-[900px]:mb-0">
-                                <ReturnButton url={`/teacher/game/${lobbyCode}`} />
-                            </div>
-
-                            <div className="w-full min-[900px]:flex-1 min-[900px]:min-w-0">
-                                <TeamTabs
-                                    teamKeys={teamKeys}
-                                    selectedTeam={selectedTeam}
-                                    setSelectedIndex={setSelectedIndex}
-                                />
-                            </div>
-
-                            <div className="hidden min-[900px]:block w-80 shrink-0 ml-auto mb-2">
-                                <ProgressionBar
-                                    completed={completedMissionsCount}
-                                    totalMission={missions.filter((m) => !m.bonus).length}
-                                    color={teamColorMap[selectedTeam]}
-                                />
-                            </div>
+                    <div className="mb-6 px-2 flex flex-col min-[900px]:flex-row min-[900px]:flex-wrap min-[900px]:items-end min-[900px]:gap-x-4 min-[900px]:gap-y-0">
+                        <div className="order-1 min-[900px]:order-0">
+                            <ReturnButton url={`/teacher/game/${lobbyCode}`} />
                         </div>
 
-                        <div className="order-2 w-full border-b border-slate-700" />
+                        <div className="order-2 mt-4 min-[900px]:order-0 min-[900px]:mt-0 min-[900px]:flex-1 min-[900px]:min-w-0">
+                            <TeamTabs
+                                teamKeys={teamKeys}
+                                selectedTeam={selectedTeam}
+                                setSelectedIndex={setSelectedIndex}
+                            />
+                        </div>
 
-                        <div className="order-3 mt-4 w-full max-w-full sm:max-w-164 px-5 sm:px-0 mx-auto min-[900px]:hidden">
+                        <div className="order-4 mt-4 w-full max-w-full sm:max-w-164 px-5 sm:px-0 mx-auto min-[900px]:order-0 min-[900px]:mt-0 min-[900px]:mx-0 min-[900px]:ml-auto min-[900px]:mb-2 min-[900px]:w-80 min-[900px]:shrink-0">
                             <ProgressionBar
                                 completed={completedMissionsCount}
                                 totalMission={missions.filter((m) => !m.bonus).length}
                                 color={teamColorMap[selectedTeam]}
                             />
                         </div>
+
+                        <div className="order-3 w-full border-b border-slate-700 min-[900px]:order-0 min-[900px]:basis-full" />
                     </div>
                     {projectIds.map((projectId) => (
                         <ProjectSection
