@@ -144,9 +144,9 @@ export default function StepPage() {
         </div>
       </div>
 
-            <hr className="border-white/10 mb-8" />
+            <hr className="border-white/10 mb-6" />
 
-            <p className="text-white/80 text-base leading-relaxed max-w-3xl mx-auto text-center mb-8">
+            <p className="text-white/80 text-base leading-relaxed max-w-3xl mx-auto text-center mb-6">
                 {stepData.text}
             </p>
 
@@ -154,7 +154,7 @@ export default function StepPage() {
                 Ressources nécessaires pour continuer le voyage
             </h3>
 
-            <div className="flex flex-wrap justify-center gap-6 mb-10">
+            <div className="flex flex-wrap justify-center gap-6 mb-8">
                 {resources.bonuses.map((b) => {
                     if (!b.replacement) return;
                     const { team, nb } = parseBonusId(b.id);
