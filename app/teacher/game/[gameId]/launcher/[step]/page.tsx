@@ -116,8 +116,8 @@ export default function StepPage() {
     };
 
     return (
-        <div className="text-white font-sans px-6 py-8 max-w-6xl mx-auto space-y-8">
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-6 mb-8">
+        <div className="text-white font-sans px-6 py-6 max-w-6xl mx-auto space-y-8">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-6 mb-6">
                 <div className="flex items-center gap-4 text-center lg:text-left">
                     <div className="relative w-14 h-14 shrink-0">
                         <Image
@@ -144,9 +144,9 @@ export default function StepPage() {
         </div>
       </div>
 
-            <hr className="border-white/10 mb-8" />
+            <hr className="border-white/10 mb-6" />
 
-            <p className="text-white/80 text-base leading-relaxed max-w-3xl mx-auto text-center mb-8">
+            <p className="text-white/80 text-base leading-relaxed max-w-3xl mx-auto text-center mb-6">
                 {stepData.text}
             </p>
 
@@ -154,8 +154,8 @@ export default function StepPage() {
                 Ressources nécessaires pour continuer le voyage
             </h3>
 
-            <div className="flex flex-wrap justify-center gap-6 mb-10">
-                {resources.bonuses.map((b) => {
+          <div className="flex flex-wrap justify-center gap-4">
+            {resources.bonuses.map((b) => {
                     if (!b.replacement) return;
                     const { team, nb } = parseBonusId(b.id);
                     const autoValidated = isBonusAutoValidated(b.id);

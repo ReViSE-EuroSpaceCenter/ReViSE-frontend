@@ -40,7 +40,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
 			disabled={!isClickable}
 			title={bonus?.title ?? id}
 			className={[
-				"relative max-w-1/4 rounded-2xl border p-5 transition-all duration-300 shadow-md text-left",
+				"relative w-fit min-w-35 max-w-55 rounded-2xl border p-4 transition-all duration-300 shadow-md text-left",
 				isActive
 					? "bg-green-500/20 border-green-500"
 					: "bg-white/5 border-white/10 hover:bg-white/10",
