@@ -236,7 +236,7 @@ describe("HostMissionsPage", () => {
         fireEvent.click(screen.getByText("MECA"));
 
         expect(screen.getByTestId("progression-bar"))
-          .toHaveTextContent("1/2 - #ff0000");
+            .toHaveTextContent("1/2 - #ff0000");
     });
 
     it("appelle showError en cas d'erreur API", async () => {

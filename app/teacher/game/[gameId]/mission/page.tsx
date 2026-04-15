@@ -40,8 +40,8 @@ export default function HostMissionsPage() {
 
     const [selectedIndex, setSelectedIndex] = useState(0);
     const teamKeys = useMemo(
-      () => Object.keys(gameData?.teamsFullProgression ?? {}).sort((a, b) => a.localeCompare(b)),
-      [gameData?.teamsFullProgression]
+        () => Object.keys(gameData?.teamsFullProgression ?? {}).sort((a, b) => a.localeCompare(b)),
+        [gameData?.teamsFullProgression]
     );
     const selectedTeam = teamKeys[selectedIndex] ?? "";
 
@@ -81,39 +81,51 @@ export default function HostMissionsPage() {
     if (isLoading || !gameData || !teamKeys.length) return <LoadingPage />;
 
     return (
-      <MissionProvider
-        teamColor={teamColorMap[selectedTeam]}
-        teamName={selectedTeam}
-        lobbyCode={lobbyCode}
-        clientId={hostId as string}
-      >
-          <div className="h-[calc(100vh-80px)] overflow-hidden px-3 sm:px-4 lg:px-8 py-3 sm:py-4 lg:py-5 flex flex-col gap-4">
-              <div className="flex items-end justify-between gap-4 border-b border-slate-700 shrink-0 overflow-hidden">
-                  <div className="flex items-end gap-4 overflow-x-auto min-w-0">
-                      <ReturnButton url={`/teacher/game/${lobbyCode}`} />
-                      <TeamTabs teamKeys={teamKeys} selectedTeam={selectedTeam} setSelectedIndex={setSelectedIndex} />
-                  </div>
-                <div className="mb-2 w-full max-w-xs shrink-0">
-                    <ProgressionBar
-                      completed={completedMissionsCount}
-                      totalMission={missions.filter((m) => !m.bonus).length}
-                      color={teamColorMap[selectedTeam]}
-                    />
+        <MissionProvider
+            teamColor={teamColorMap[selectedTeam]}
+            teamName={selectedTeam}
+            lobbyCode={lobbyCode}
+            clientId={hostId as string}
+        >
+            <div className="min-h-[calc(100vh-80px)]">
+                <div className="px-6 lg:px-12 py-6 lg:py-12 space-y-12">
+                    <div className="mb-6 px-2 flex flex-col min-[900px]:flex-row min-[900px]:flex-wrap min-[900px]:items-end min-[900px]:gap-x-4 min-[900px]:gap-y-0">
+                        <div className="order-1 min-[900px]:order-0">
+                            <ReturnButton url={`/teacher/game/${lobbyCode}`} />
+                        </div>
+
+                        <div className="order-2 mt-4 min-[900px]:order-0 min-[900px]:mt-0 min-[900px]:flex-1 min-[900px]:min-w-0">
+                            <TeamTabs
+                                teamKeys={teamKeys}
+                                selectedTeam={selectedTeam}
+                                setSelectedIndex={setSelectedIndex}
+                            />
+                        </div>
+
+                        <div className="order-4 mt-4 w-full max-w-full sm:max-w-164 px-5 sm:px-0 mx-auto min-[900px]:order-0 min-[900px]:mt-0 min-[900px]:mx-0 min-[900px]:ml-auto min-[900px]:mb-2 min-[900px]:w-80 min-[900px]:shrink-0">
+                            <ProgressionBar
+                                completed={completedMissionsCount}
+                                totalMission={missions.filter((m) => !m.bonus).length}
+                                color={teamColorMap[selectedTeam]}
+                            />
+                        </div>
+
+                        <div className="order-3 w-full border-b border-slate-700 min-[900px]:order-0 min-[900px]:basis-full" />
+                    </div>
+                    {projectIds.map((projectId) => (
+                        <ProjectSection
+                            key={projectId}
+                            projectId={projectId}
+                            missions={missions}
+                            missionMap={missionMap}
+                            isBonus1Completed={teamProgression?.firstBonusMissionCompleted ?? false}
+                            isBonus2Completed={teamProgression?.secondBonusMissionCompleted ?? false}
+                            completedMissions={completedMissions}
+                            onMissionUpdated={invalidateGame}
+                        />
+                    ))}
                 </div>
-              </div>
-              {projectIds.map((projectId) => (
-                <ProjectSection
-                  key={projectId}
-                  projectId={projectId}
-                  missions={missions}
-                  missionMap={missionMap}
-                  isBonus1Completed={teamProgression?.firstBonusMissionCompleted ?? false}
-                  isBonus2Completed={teamProgression?.secondBonusMissionCompleted ?? false}
-                  completedMissions={completedMissions}
-                  onMissionUpdated={invalidateGame}
-                />
-              ))}
-          </div>
-      </MissionProvider>
+            </div>
+        </MissionProvider>
     );
 }

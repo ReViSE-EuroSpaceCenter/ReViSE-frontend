@@ -1,4 +1,4 @@
-import {teamColorMap} from "@/utils/teamColor";
+import { teamColorMap } from "@/utils/teamColor";
 
 type Props = {
 	teamKeys: string[];
@@ -8,7 +8,7 @@ type Props = {
 
 export const TeamTabs = (props: Props) => {
 	return (
-		<div className="flex items-end gap-2 min-w-max">
+		<div className="grid grid-cols-2 gap-2 w-full min-[1100px]:flex min-[1100px]:flex-nowrap min-[1100px]:items-end">
 			{props.teamKeys.map((key, i) => (
 				<button
 					key={key}
