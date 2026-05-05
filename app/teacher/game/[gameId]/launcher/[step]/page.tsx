@@ -72,7 +72,15 @@ export default function StepPage() {
             ...resources.resources,
             ...resources.bonuses
                 .filter((b) => b.replacements)
-                .flatMap((b) => b.replacements!.map((rep) => `${b.id}-${rep}`)),
+                .flatMap((b) => {
+                    const autoValidated = isBonusAutoValidated(b.id);
+
+                    if (autoValidated) {
+                        return [`${b.id}`];
+                    }
+
+                    return b.replacements!.map((rep) => `${b.id}-${rep}`);
+                }),
         ];
 
         return allIds.every(
@@ -158,23 +166,34 @@ export default function StepPage() {
 
           <div className="flex flex-wrap justify-center gap-4">
               {resources.bonuses.map((b) => {
-                    if (!b.replacements) return;
-                    const { team, nb } = parseBonusId(b.id);
-                    const autoValidated = isBonusAutoValidated(b.id);
+                  if (!b.replacements) return;
+                  const { team, nb } = parseBonusId(b.id);
+                  const autoValidated = isBonusAutoValidated(b.id);
 
-                    return b.replacements?.map((rep => {
-                        return (
-                            <ResourceCard
-                                key={`${b.id}-${rep}`}
-                                id={b.id}
-                                imgSrc={`/badges/launchers/${rep}_orange.svg`}
-                                autoValidated={autoValidated}
-                                validated={validatedResources.includes(`${b.id}-${rep}`)}
-                                bonus={{ team, nb, title: b.title ?? "", text: b.text ?? "" }}
-                                onClick={() => toggleResource(`${b.id}-${rep}`)}
-                            />
-                        )
-                    }));
+                  if (autoValidated) {
+                      return (
+                          <ResourceCard
+                              key={b.id}
+                              id={b.id}
+                              autoValidated={true}
+                              validated={true}
+                              bonus={{ team, nb, title: b.title ?? "", text: b.text ?? "" }}
+                              onClick={() => toggleResource(b.id)}
+                          />
+                      );
+                  }
+
+                  return b.replacements.map((rep) => (
+                      <ResourceCard
+                          key={`${b.id}-${rep}`}
+                          id={b.id}
+                          imgSrc={`/badges/launchers/${rep}_orange.svg`}
+                          autoValidated={false}
+                          validated={validatedResources.includes(`${b.id}-${rep}`)}
+                          bonus={{ team, nb, title: b.title ?? "", text: b.text ?? "" }}
+                          onClick={() => toggleResource(`${b.id}-${rep}`)}
+                      />
+                  ));
               })}
 
               {resources.resources.map((r) => (
