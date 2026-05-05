@@ -6,15 +6,15 @@ import Image from "next/image";
 type Props = {
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
+    isJustify?: boolean;
     icon?: string;
     text?: string;
-    isJustify?: boolean;
     name?: string;
     color?: string;
     onClose?: () => void;
 }
 
-export default function PresentationModal({ isOpen, setIsOpen, icon, text, isJustify, name, color, onClose  }: Readonly<Props>) {
+export default function PresentationModal({ isOpen, setIsOpen, isJustify = false, icon, text, name, color, onClose }: Readonly<Props>) {
 
     const handleClose = () => {
         setIsOpen(false);
@@ -43,11 +43,9 @@ export default function PresentationModal({ isOpen, setIsOpen, icon, text, isJus
             const trimmed = line.trimStart();
             const match = trimmed.match(/^(\u2022|\p{Emoji})\s*/u);
             const isList = !!match;
-            const bullet = match?.[0]?.trim() ?? "";
-            const content = isList ? trimmed.slice(match![0].length) : line;
 
             return (
-                <div
+                <p
                     key={`${hashString(line)}-${lineIndex}`}
                     className={
                         isList
@@ -57,53 +55,41 @@ export default function PresentationModal({ isOpen, setIsOpen, icon, text, isJus
                                 : "text-center mb-4"
                     }
                 >
-                    {isList ? (
-                        <>
-                            <span className="w-5 text-center shrink-0">{bullet}</span>
-                            <p className="flex-1">
-                                {content.split("\t").map((chunk, chunkIndex) => (
-                                    <span
-                                        key={`${hashString(chunk)}-${chunkIndex}`}
-                                        style={{ marginLeft: chunkIndex === 0 ? 0 : "1em" }}
-                                    >
-                  {renderBold(chunk)}
-                </span>
-                                ))}
-                            </p>
-                        </>
-                    ) : (
-                        <p>
-                            {line.split("\t").map((chunk, chunkIndex) => (
-                                <span
-                                    key={`${hashString(chunk)}-${chunkIndex}`}
-                                    style={{ marginLeft: chunkIndex === 0 ? 0 : "1em" }}
-                                >
-                {renderBold(chunk)}
-              </span>
-                            ))}
-                        </p>
-                    )}
-                </div>
+                    {line.split("\t").map((chunk, chunkIndex) => (
+                        <span
+                            key={`${hashString(chunk)}-${chunkIndex}`}
+                            style={{ marginLeft: line.startsWith(chunk) ? 0 : "1em" }}
+                        >
+                        {renderBold(chunk)}
+                    </span>
+                    ))}
+                </p>
             );
         });
 
     let title: string;
 
     switch (name) {
-        case "PRESENTATION":
-            title = "Présentation du voyage vers Europe";
-            break;
         case "TEACHER":
             title = "Présentation du jeu - ReViSE";
             break;
-
         case "MECA":
+            title = "Équipe Ingénierie Mécatronique – MECA";
+            break;
         case "GECO":
+            title = "Équipe Gestion Écosystémique – GECO";
+            break;
         case "EXPE":
+            title = "Équipe Exploration d’Europe – EXPE";
+            break;
         case "MEDI":
+            title = "Équipe Accompagnement Psycho Médical – MEDI";
+            break;
         case "AERO":
+            title = "Équipe Ingénierie Aérospatiale – AERO";
+            break;
         case "COOP":
-            title = `Présentation de l'équipe - ${name}`;
+            title = "Équipe Coordination opérationnelle – COOP";
             break;
 
         case "IA":
@@ -115,7 +101,7 @@ export default function PresentationModal({ isOpen, setIsOpen, icon, text, isJus
             break;
 
         default:
-            title = `Nouvelle espèce découverte : ${name}`;
+            title = `${name}`;
 
     }
 
@@ -145,7 +131,7 @@ export default function PresentationModal({ isOpen, setIsOpen, icon, text, isJus
                         {title}
                     </DialogTitle>
 
-                    <div className={isJustify ? "text-justify text-lg" : "text-center text-lg"}>{renderText(text)}</div>
+                    <div className={`text-lg ${isJustify ? "text-justify" : "text-center"}`}>{renderText(text)}</div>
 
                     <button
                         className="px-8 py-4 bg-purpleReViSE hover:bg-purpleReViSE/80 cursor-pointer rounded-lg font-semibold text-lg transition-colors"

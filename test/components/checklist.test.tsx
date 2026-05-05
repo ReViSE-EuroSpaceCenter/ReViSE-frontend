@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import {render, screen, waitFor} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import Checklist from "@/components/Checklist";
@@ -25,7 +25,7 @@ describe("Checklist", () => {
         setup(true);
 
         expect(
-            screen.getByText(/check-list — fin du tour/i)
+            screen.getByText(/Quand vous n’avez plus de points d’action PA disponibles, vous devez effectuer les actions suivantes :/i)
         ).toBeInTheDocument();
     });
 
@@ -33,7 +33,7 @@ describe("Checklist", () => {
         setup(false);
 
         expect(
-            screen.queryByText(/check-list — fin du tour/i)
+            screen.queryByText(/Quand vous n’avez plus de points d’action PA disponibles, vous devez effectuer les actions suivantes :/i)
         ).not.toBeInTheDocument();
     });
 
@@ -71,5 +71,23 @@ describe("Checklist", () => {
         await userEvent.click(closeButton);
 
         expect(setIsOpen).toHaveBeenCalledWith(false);
+    });
+
+    it("ferme automatiquement la modal quand toutes les étapes sont cochées", async () => {
+        const { setIsOpen } = setup();
+
+        for (let i = 0; i < 4; i++) {
+            const checkboxes = screen.getAllByRole("button", {
+                name: /cocher/i,
+            });
+
+            const lastCheckbox = checkboxes[checkboxes.length - 1];
+
+            await userEvent.click(lastCheckbox);
+        }
+
+        await waitFor(() => {
+            expect(setIsOpen).toHaveBeenCalledWith(false);
+        });
     });
 });

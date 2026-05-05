@@ -1,5 +1,4 @@
 export const launcherTexts:  Record<string, string> = {
     IA: "Avant le départ, assurez-vous de la fiabilité des systèmes d’intelligence artificielle mis en place afin d’évaluer la fiabilité de leurs résultats. Testez-les en comparant les jetons d’hallucination noirs et blancs.\n•\tPlus de jetons blancs : la différence correspond à l’énergie gagnée (à partager). \n•\tPlus de jetons noirs : la différence correspond à l’énergie perdue à recalibrer les systèmes (à partager).\nDes IA peu fiables nécessitent des corrections coûteuses. À l’inverse, des systèmes bien conçus facilitent la mission et permettent d’économiser de l’énergie.\n",
     LAUNCHER: "Votre vaisseau est prêt. Il ne vous reste plus qu’à affronter les défis du voyage vers Europe. Durant ces six années de voyage, plusieurs épreuves vous attendent.\n📍\t Déposez votre pion équipe sur une case beige libre.\n🧭\t Pour résoudre les épreuves obligatoires, déplacez votre pion sur les symboles correspondants.\n⚡\t Chaque déplacement coûte 2 énergies."
-
 } as const;
