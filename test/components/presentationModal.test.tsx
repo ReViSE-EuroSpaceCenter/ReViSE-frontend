@@ -54,7 +54,55 @@ describe("PresentationModal", () => {
         ).toBeInTheDocument();
     });
 
-    it("affiche le titre pour une équipe", () => {
+    it("affiche le titre correct pour TEACHER", () => {
+        renderModal({name: "TEACHER"});
+
+        expect(
+          screen.getByText(/Présentation du jeu - ReViSE/i)
+        ).toBeInTheDocument();
+    });
+
+    it("affiche le titre pour AERO", () => {
+        renderModal({ name: "AERO" });
+
+        expect(
+          screen.getByText(/Équipe Ingénierie Aérospatiale – AERO/i)
+        ).toBeInTheDocument();
+    });
+
+    it("affiche le titre pour EXPE", () => {
+        renderModal({ name: "EXPE" });
+
+        expect(
+          screen.getByText(/Équipe Exploration d’Europe – EXPE/i)
+        ).toBeInTheDocument();
+    });
+
+    it("affiche le titre pour COOP", () => {
+        renderModal({ name: "COOP" });
+
+        expect(
+          screen.getByText(/Équipe Coordination opérationnelle – COOP/i)
+        ).toBeInTheDocument();
+    });
+
+    it("affiche le titre pour GECO", () => {
+        renderModal({ name: "GECO" });
+
+        expect(
+          screen.getByText(/Équipe Gestion Écosystémique – GECO/i)
+        ).toBeInTheDocument();
+    });
+
+    it("affiche le titre pour MEDI", () => {
+        renderModal({ name: "MEDI" });
+
+        expect(
+          screen.getByText(/Équipe Accompagnement Psycho Médical – MEDI/i)
+        ).toBeInTheDocument();
+    });
+
+    it("affiche le titre pour MECA", () => {
         renderModal({ name: "MECA" });
 
         expect(
