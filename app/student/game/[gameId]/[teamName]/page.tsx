@@ -58,6 +58,7 @@ export default function Dashboard() {
 				<PresentationModal
 					isOpen={isPresentationOpen}
 					setIsOpen={setIsPresentationOpen}
+					isJustify={true}
 					icon={`/badges/teams/${name}.svg`}
 					text={text}
 					name={name}

@@ -1,3 +1,3 @@
 export const launcherTexts:  Record<string, string> = {
-    PRESENTATION: "TEXTE MANQUANT",
+    PRESENTATION: "Avant le départ, assurez-vous de la fiabilité des systèmes d’intelligence artificielle mis en place afin d’évaluer la fiabilité de leurs résultats. Testez-les en comparant les jetons d’hallucination noirs et blancs. \n•\tPlus de jetons blancs : la différence correspond à l’énergie gagnée (à partager). \n•\tPlus de jetons noirs : la différence correspond à l’énergie perdue à recalibrer les systèmes (à partager). \nDes IA peu fiables nécessitent des corrections coûteuses. À l’inverse, des systèmes bien conçus facilitent la mission et permettent d’économiser de l’énergie.\n",
 } as const;

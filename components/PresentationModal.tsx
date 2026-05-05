@@ -6,6 +6,7 @@ import Image from "next/image";
 type Props = {
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
+    isJustify?: boolean;
     icon?: string;
     text?: string;
     name?: string;
@@ -13,7 +14,7 @@ type Props = {
     onClose?: () => void;
 }
 
-export default function PresentationModal({ isOpen, setIsOpen, icon, text, name, color, onClose }: Readonly<Props>) {
+export default function PresentationModal({ isOpen, setIsOpen, isJustify = false, icon, text, name, color, onClose }: Readonly<Props>) {
 
     const handleClose = () => {
         setIsOpen(false);
@@ -45,7 +46,7 @@ export default function PresentationModal({ isOpen, setIsOpen, icon, text, name,
             return (
                 <p
                     key={`${hashString(line)}-${lineIndex}`}
-                    className={isList ? "text-left mb-2" : "text-center mb-4"}
+                    className={isList ? "mb-2 pl-6 -indent-6 text-left" : "mb-4"}
                 >
                     {line.split("\t").map((chunk, chunkIndex) => (
                         <span
@@ -63,23 +64,32 @@ export default function PresentationModal({ isOpen, setIsOpen, icon, text, name,
 
     switch (name) {
         case "PRESENTATION":
-            title = "Présentation du voyage vers Europe";
+            title = "Fiabilité des systèmes d’IA";
             break;
         case "TEACHER":
             title = "Présentation du jeu - ReViSE";
             break;
-
         case "MECA":
+            title = "Équipe Ingénierie Mécatronique – MECA";
+            break;
         case "GECO":
+            title = "Équipe Gestion Écosystémique – GECO";
+            break;
         case "EXPE":
+            title = "Équipe Exploration d’Europe – EXPE";
+            break;
         case "MEDI":
+            title = "Équipe Accompagnement Psycho Médical – MEDI";
+            break;
         case "AERO":
+            title = "Équipe Ingénierie Aérospatiale – AERO";
+            break;
         case "COOP":
-            title = `Présentation de l'équipe - ${name}`;
+            title = "Équipe Coordination opérationnelle – COOP";
             break;
 
         default:
-            title = `Nouvelle espèce découverte : ${name}`;
+            title = `${name}`;
 
     }
 
@@ -109,7 +119,7 @@ export default function PresentationModal({ isOpen, setIsOpen, icon, text, name,
                         {title}
                     </DialogTitle>
 
-                    <div className="text-center text-lg">{renderText(text)}</div>
+                    <div className={`text-lg ${isJustify ? "text-justify" : "text-center"}`}>{renderText(text)}</div>
 
                     <button
                         className="px-8 py-4 bg-purpleReViSE hover:bg-purpleReViSE/80 cursor-pointer rounded-lg font-semibold text-lg transition-colors"

@@ -41,12 +41,12 @@ export default function ResourceModal({ isOpen, gameData, onConfirm, submittedTe
 
 					<div className="w-full bg-purpleReViSE/10 border border-purpleReViSE/20 rounded-2xl px-5 py-4 text-center space-y-1">
 						<p className="text-xs font-semibold tracking-widest text-purpleReViSE uppercase">
-							Arrivée sur Europe
+							Mise en orbite autour d’Europe réussie !
 						</p>
 						<p className="text-slate-300 text-sm leading-relaxed">
-							Décollage réussi ! Demandez aux équipes de reprendre leur appareil
-							et d&apos;encoder leurs ressources restantes pour découvrir les espèces de cette lune.
+							Avant d’entamer l’exploration d’Europe, faites le bilan de vos ressources restantes (temps, énergie, humains).
 						</p>
+						<p className="text-slate-300 text-sm leading-relaxed"><strong>Encodez-les sur dès maintenant : </strong>Plus vous aurez été économes, plus vous pourrez intensifier vos recherches de vie.</p>
 					</div>
 
 					<div className="text-center">
