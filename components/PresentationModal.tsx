@@ -8,12 +8,13 @@ type Props = {
     setIsOpen: (isOpen: boolean) => void;
     icon?: string;
     text?: string;
+    isJustify?: boolean;
     name?: string;
     color?: string;
     onClose?: () => void;
 }
 
-export default function PresentationModal({ isOpen, setIsOpen, icon, text, name, color, onClose }: Readonly<Props>) {
+export default function PresentationModal({ isOpen, setIsOpen, icon, text, isJustify, name, color, onClose  }: Readonly<Props>) {
 
     const handleClose = () => {
         setIsOpen(false);
@@ -40,22 +41,49 @@ export default function PresentationModal({ isOpen, setIsOpen, icon, text, name,
     const renderText = (text: string) =>
         text.split("\n").map((line, lineIndex) => {
             const trimmed = line.trimStart();
-            const isList = trimmed.startsWith("•");
+            const match = trimmed.match(/^(\u2022|\p{Emoji})\s*/u);
+            const isList = !!match;
+            const bullet = match?.[0]?.trim() ?? "";
+            const content = isList ? trimmed.slice(match![0].length) : line;
 
             return (
-                <p
+                <div
                     key={`${hashString(line)}-${lineIndex}`}
-                    className={isList ? "text-left mb-2" : "text-center mb-4"}
+                    className={
+                        isList
+                            ? "flex items-start gap-2 mb-2"
+                            : isJustify
+                                ? "text-justify mb-4"
+                                : "text-center mb-4"
+                    }
                 >
-                    {line.split("\t").map((chunk, chunkIndex) => (
-                        <span
-                            key={`${hashString(chunk)}-${chunkIndex}`}
-                            style={{ marginLeft: line.startsWith(chunk) ? 0 : "1em" }}
-                        >
-                        {renderBold(chunk)}
-                    </span>
-                    ))}
-                </p>
+                    {isList ? (
+                        <>
+                            <span className="w-5 text-center shrink-0">{bullet}</span>
+                            <p className="flex-1">
+                                {content.split("\t").map((chunk, chunkIndex) => (
+                                    <span
+                                        key={`${hashString(chunk)}-${chunkIndex}`}
+                                        style={{ marginLeft: chunkIndex === 0 ? 0 : "1em" }}
+                                    >
+                  {renderBold(chunk)}
+                </span>
+                                ))}
+                            </p>
+                        </>
+                    ) : (
+                        <p>
+                            {line.split("\t").map((chunk, chunkIndex) => (
+                                <span
+                                    key={`${hashString(chunk)}-${chunkIndex}`}
+                                    style={{ marginLeft: chunkIndex === 0 ? 0 : "1em" }}
+                                >
+                {renderBold(chunk)}
+              </span>
+                            ))}
+                        </p>
+                    )}
+                </div>
             );
         });
 
@@ -76,6 +104,14 @@ export default function PresentationModal({ isOpen, setIsOpen, icon, text, name,
         case "AERO":
         case "COOP":
             title = `Présentation de l'équipe - ${name}`;
+            break;
+
+        case "IA":
+            title = "Fiabilité des systèmes d’IA"
+            break;
+
+        case "LAUNCHER":
+            title = "Voyage interplanétaire";
             break;
 
         default:
@@ -109,7 +145,7 @@ export default function PresentationModal({ isOpen, setIsOpen, icon, text, name,
                         {title}
                     </DialogTitle>
 
-                    <div className="text-center text-lg">{renderText(text)}</div>
+                    <div className={isJustify ? "text-justify text-lg" : "text-center text-lg"}>{renderText(text)}</div>
 
                     <button
                         className="px-8 py-4 bg-purpleReViSE hover:bg-purpleReViSE/80 cursor-pointer rounded-lg font-semibold text-lg transition-colors"

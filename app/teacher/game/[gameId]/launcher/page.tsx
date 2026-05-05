@@ -31,7 +31,13 @@ export default function Launcher() {
     const step = Number.isNaN(stepParam) ? 0 : stepParam;
     const showPresentation = searchParams.get("presentation") === "true";
     const [isPresentationOpen, setIsPresentationOpen] = useState(showPresentation);
-    const text = showPresentation ? launcherTexts.PRESENTATION : null
+    const [presentationStep, setPresentationStep] = useState(0);
+
+    const texts = [
+        launcherTexts.IA,
+        launcherTexts.LAUNCHER,
+    ];
+    const text = showPresentation ? texts[presentationStep] : null;
     const [submittedTeams, setSubmittedTeams] = useState<Set<string>>(new Set());
 
     const isModalOpen = step === 9;
@@ -109,9 +115,17 @@ export default function Launcher() {
                     setIsOpen={setIsPresentationOpen}
                     icon="/logo.svg"
                     text={text}
-                    name="PRESENTATION"
+                    isJustify={true}
+                    name={presentationStep === 0 ? "IA" : "LAUNCHER"}
                     color="#fff"
-                    onClose={() => router.replace(`${pathname}?step=1`) }
+                    onClose={() => {
+                        if (presentationStep < texts.length - 1) {
+                            setPresentationStep((prev) => prev + 1);
+                            setIsPresentationOpen(true);
+                        } else {
+                            router.replace(`${pathname}?step=1`);
+                        }
+                    }}
                 />
             )}
         </div>
