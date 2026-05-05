@@ -1,7 +1,7 @@
 "use client";
 
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
-import {useCallback, useEffect, useState} from "react";
+import {useCallback, useEffect, useMemo, useState} from "react";
 import {showHint} from "@/utils/alerts";
 
 type Props = {
@@ -11,7 +11,7 @@ type Props = {
 
 export default function Checklist({ isOpen, setIsOpen }: Readonly<Props>) {
 
-    const steps = [
+    const steps = useMemo<Array<{ id: number; title: string; hint?: string }>>(() => [
         {
             id: 1,
             title: "Mettre les hallucinations à droite du marqueur temporel dans le pot.",
@@ -20,19 +20,17 @@ export default function Checklist({ isOpen, setIsOpen }: Readonly<Props>) {
         {
             id: 2,
             title: "Déplacez le marqueur de temps sur la ligne verticale située juste après le dernier domino.",
-            hint: "",
         },
         {
             id: 3,
-            title: "Payez les technologies transférées (somme de TOUTES les énergies sur ce plateau",
+            title: "Payez les technologies transférées (somme de TOUTES les énergies sur ce plateau).",
             hint: "Faire la somme des piles sur le plateau",
         },
         {
             id: 4,
             title: "Placez le pion sur la case départ.",
-            hint: "",
         },
-    ];
+    ], []);
 
     const [checked, setChecked] = useState<number[]>([]);
 
@@ -125,7 +123,7 @@ export default function Checklist({ isOpen, setIsOpen }: Readonly<Props>) {
                                   <button
                                     className="shrink-0 w-6 h-6 rounded-full border border-orangeReViSE text-orangeReViSE text-xs font-bold hover:bg-orangeReViSE hover:text-white transition-colors"
                                     aria-label={`Indice : ${step.title}`}
-                                    onClick={() => showHint(step.hint)}
+                                    onClick={() => showHint(step.hint ?? "")}
                                   >
                                       ?
                                   </button>
