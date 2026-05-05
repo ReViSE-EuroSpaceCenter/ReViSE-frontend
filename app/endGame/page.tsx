@@ -13,7 +13,7 @@ export default function EndGamePage() {
 
     return (
         <div className="min-h-[calc(100vh-80px)] flex items-center justify-center px-6 lg:px-12 py-12">
-            <div className="max-w-3xl w-full space-y-8 text-center">
+            <div className="max-w-4xl w-full space-y-8 text-center">
                 <div className="space-y-4">
                     <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-purpleReViSE">
                         {title}
