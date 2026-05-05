@@ -25,7 +25,7 @@ describe("Checklist", () => {
         setup(true);
 
         expect(
-            screen.getByText(/check-list — fin du tour/i)
+            screen.getByText(/Quand vous n’avez plus de points d’action PA disponibles, vous devez effectuer les actions suivantes :/i)
         ).toBeInTheDocument();
     });
 
@@ -33,7 +33,7 @@ describe("Checklist", () => {
         setup(false);
 
         expect(
-            screen.queryByText(/check-list — fin du tour/i)
+            screen.queryByText(/Quand vous n’avez plus de points d’action PA disponibles, vous devez effectuer les actions suivantes :/i)
         ).not.toBeInTheDocument();
     });
 

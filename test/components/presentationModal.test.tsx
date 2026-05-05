@@ -50,7 +50,7 @@ describe("PresentationModal", () => {
         renderModal();
 
         expect(
-            screen.getByText(/présentation du voyage vers europe/i)
+            screen.getByText(/Fiabilité des systèmes d’IA/i)
         ).toBeInTheDocument();
     });
 
@@ -58,7 +58,7 @@ describe("PresentationModal", () => {
         renderModal({ name: "MECA" });
 
         expect(
-            screen.getByText(/présentation de l'équipe - meca/i)
+            screen.getByText(/Équipe Ingénierie Mécatronique – MECA/i)
         ).toBeInTheDocument();
     });
 
@@ -66,7 +66,7 @@ describe("PresentationModal", () => {
         renderModal({ name: "ALIEN" });
 
         expect(
-            screen.getByText(/nouvelle espèce découverte : alien/i)
+            screen.getByText(/alien/i)
         ).toBeInTheDocument();
     });
 

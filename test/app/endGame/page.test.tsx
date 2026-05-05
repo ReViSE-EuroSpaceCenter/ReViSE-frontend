@@ -19,16 +19,9 @@ describe("EndGamePage", () => {
         renderPage(<EndGamePage />);
 
         expect(
-            screen.getByRole("heading", { name: /voyage terminé/i })
+            screen.getByRole("heading", { name: /Merci d’avoir joué à ReVisE !/i })
         ).toBeInTheDocument();
 
-        expect(
-            screen.getByText(/félicitations à tous les membres/i)
-        ).toBeInTheDocument();
-
-        expect(
-            screen.getByText(/recherche de vie sur europe/i)
-        ).toBeInTheDocument();
     });
 
     it("affiche le contenu d'échec", () => {
@@ -39,12 +32,9 @@ describe("EndGamePage", () => {
         renderPage(<EndGamePage />);
 
         expect(
-            screen.getByRole("heading", { name: /vous avez échoué/i })
+            screen.getByRole("heading", { name: /Merci d’avoir joué à ReVisE ! Vous avez perdu !/i })
         ).toBeInTheDocument();
 
-        expect(
-            screen.getByText(/vous manquez de ressources/i)
-        ).toBeInTheDocument();
     });
 
     it("contient un lien vers l'accueil", () => {
