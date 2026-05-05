@@ -105,6 +105,18 @@ export default function Header() {
 								</button>
 							</>
 						)}
+						{!isHomePage && !teamName && (
+							<div className="flex justify-end">
+								<Image
+									src="/wallonie-relance.svg"
+									alt="Wallonie-Relance"
+									width={160}
+									height={60}
+									className="h-auto w-32 lg:w-40"
+									priority
+								/>
+							</div>
+						)}
 					</div>
 
 					{isHomePage && isMenuOpen && (
