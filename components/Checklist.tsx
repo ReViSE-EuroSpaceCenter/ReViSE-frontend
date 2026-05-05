@@ -1,7 +1,7 @@
 "use client";
 
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
-import { useState } from "react";
+import {useCallback, useEffect, useState} from "react";
 import {showHint} from "@/utils/alerts";
 
 type Props = {
@@ -14,7 +14,7 @@ export default function Checklist({ isOpen, setIsOpen }: Readonly<Props>) {
     const steps = [
         {
             id: 1,
-            title: "Si les dominos placés à droite du marqueur de temps contiennent des hallucinations, placez-les dans le pot d'accumulation d'hallucination.",
+            title: "Mettre les hallucinations à droite du marqueur temporel dans le pot.",
             hint: "Les point noirs et blancs sont les hallucinations.",
         },
         {
@@ -24,12 +24,12 @@ export default function Checklist({ isOpen, setIsOpen }: Readonly<Props>) {
         },
         {
             id: 3,
-            title: "Retirez de votre réserve d'énergie le coût TOTAL d'énergies des dominos présents sur votre plateau.",
+            title: "Payez les technologies transférées (somme de TOUTES les énergies sur ce plateau",
             hint: "Faire la somme des piles sur le plateau",
         },
         {
             id: 4,
-            title: "Placez le pion sur la case départ de l'espace HUMAIN.",
+            title: "Placez le pion sur la case départ.",
             hint: "",
         },
     ];
@@ -51,10 +51,22 @@ export default function Checklist({ isOpen, setIsOpen }: Readonly<Props>) {
         });
     };
 
-    const handleClose = () => {
+    const handleClose = useCallback(() => {
         setIsOpen(false);
         setChecked([]);
-    };
+    }, [setIsOpen]);
+
+    useEffect(() => {
+        const allChecked = steps.every(step => checked.includes(step.id));
+
+        if (allChecked) {
+            const timer = setTimeout(() => {
+                handleClose();
+            }, 0);
+
+            return () => clearTimeout(timer);
+        }
+    }, [checked, handleClose, steps]);
 
     const isVisible = (index: number) => {
         if (index === 0) return true;
@@ -74,8 +86,8 @@ export default function Checklist({ isOpen, setIsOpen }: Readonly<Props>) {
                 className="relative bg-darkBlueReViSE text-foreground rounded-xl shadow-2xl w-full max-w-lg md:max-w-2xl p-6 md:p-10 max-h-[90vh] overflow-y-auto"
                 style={{ fontFamily: "var(--font-geist-sans)" }}
               >
-                  <DialogTitle className="text-lg md:text-xl font-bold mb-4 md:mb-6 text-purpleReViSE pr-8">
-                      Check-List — Fin du tour
+                  <DialogTitle className="text-md md:text-lg font-bold mb-4 md:mb-6 text-purpleReViSE pr-8">
+                      Quand vous n’avez plus de points d’action PA disponibles, vous devez effectuer les actions suivantes :
                   </DialogTitle>
 
                   <ul className="space-y-2 md:space-y-3 text-white">
