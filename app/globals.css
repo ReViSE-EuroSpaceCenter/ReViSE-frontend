@@ -3,7 +3,7 @@
 :root {
   --background: #1C1830;
   --foreground: #fff;
-  --font-geist-sans: ui-sans-serif, system-ui, sans-serif;
+  --font-geist-sans: Calibri, Segoe UI, system-ui, sans-serif;
   --font-geist-mono: ui-monospace, SFMono-Regular, monospace;
 }
 
