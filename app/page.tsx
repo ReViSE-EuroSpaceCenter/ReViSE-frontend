@@ -4,7 +4,7 @@ import Image from "next/image";
 export default function Home() {
     return (
       <div className="min-h-[calc(100vh-95px)] flex items-center">
-          <div className="grid lg:grid-cols-2 gap-16 px-16 lg:px-32 pt-10 pb-4 md:pb-0 w-full">
+          <div className="grid lg:grid-cols-2 gap-16 px-16 lg:px-32 pt-10 pb-4 md:pb-2 w-full">
               <div className="flex flex-col justify-center space-y-6">
                   <div className="space-y-3">
                       <p className="text-purpleReViSE font-semibold uppercase tracking-widest text-sm">
