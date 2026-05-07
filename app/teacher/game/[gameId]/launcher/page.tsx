@@ -116,7 +116,6 @@ export default function Launcher() {
                     isJustify={true}
                     icon="/logo.svg"
                     text={text}
-                    isJustify={true}
                     name={presentationStep === 0 ? "IA" : "LAUNCHER"}
                     color="#fff"
                     onClose={() => {

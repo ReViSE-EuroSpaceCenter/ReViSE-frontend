@@ -41,19 +41,19 @@ export default function PresentationModal({ isOpen, setIsOpen, isJustify = false
     const renderText = (text: string) =>
         text.split("\n").map((line, lineIndex) => {
             const trimmed = line.trimStart();
-            const match = trimmed.match(/^(\u2022|\p{Emoji})\s*/u);
-            const isList = !!match;
+            const match = /^(\u2022|\p{Emoji})\s*/u.exec(trimmed);
+            const isList = match !== null;
+
+            const paragraphClassName = isList
+                ? "flex items-start gap-2 mb-2"
+                : isJustify
+                    ? "text-justify mb-4"
+                    : "text-center mb-4";
 
             return (
                 <p
                     key={`${hashString(line)}-${lineIndex}`}
-                    className={
-                        isList
-                            ? "flex items-start gap-2 mb-2"
-                            : isJustify
-                                ? "text-justify mb-4"
-                                : "text-center mb-4"
-                    }
+                    className={paragraphClassName}
                 >
                     {line.split("\t").map((chunk, chunkIndex) => (
                         <span
