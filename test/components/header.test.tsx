@@ -11,8 +11,8 @@ vi.mock("next/navigation", () => ({
 
 vi.mock("next/image", () => ({
 	__esModule: true,
-	default: (props: any) => (
-		<img {...props} data-testid="mock-image" />
+	default: ({ alt, onClick, ...props }: any) => (
+		<img {...props} alt={alt} onClick={onClick} data-testid={alt === "ReViSE" ? "logo-image" : `badge-${alt}`} />
 	),
 }));
 
@@ -47,9 +47,32 @@ describe("Header", () => {
 	it("affiche le logo et les boutons sur la page d'accueil", () => {
 		render(<Header />);
 
-		expect(screen.getByTestId("mock-image")).toBeInTheDocument();
+		expect(screen.getByTestId("logo-image")).toBeInTheDocument();
 		expect(screen.getByText("Créer une partie")).toBeInTheDocument();
 		expect(screen.getByText("Rejoindre une partie")).toBeInTheDocument();
+	});
+
+	it("affiche les badges des équipes sur la page d'accueil", () => {
+		render(<Header />);
+
+		["AERO", "COOP", "EXPE", "GECO", "MECA", "MEDI"].forEach((team) => {
+			expect(screen.getByTestId(`badge-${team}`)).toBeInTheDocument();
+		});
+	});
+
+	it("affiche les badges des équipes sur une page teacher", () => {
+		mockPathname = "/teacher/game/ABC123/setup";
+		render(<Header />);
+
+		expect(screen.getByTestId("badge-AERO")).toBeInTheDocument();
+	});
+
+	it("redirige vers / quand on clique sur le logo", () => {
+		render(<Header />);
+
+		fireEvent.click(screen.getByTestId("logo-image"));
+
+		expect(pushMock).toHaveBeenCalledWith("/");
 	});
 
 
@@ -71,14 +94,6 @@ describe("Header", () => {
 		expect(missionHeader).toBeInTheDocument();
 		expect(missionHeader.getAttribute("data-team")).toBe("EXPE");
 		expect(missionHeader.getAttribute("data-color")).toBe("red");
-	});
-
-	it("redirige vers / quand on clique sur le logo", () => {
-		render(<Header />);
-
-		fireEvent.click(screen.getByTestId("mock-image"));
-
-		expect(pushMock).toHaveBeenCalledWith("/");
 	});
 
 	it("ouvre le menu mobile", () => {

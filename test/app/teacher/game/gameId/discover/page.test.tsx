@@ -117,13 +117,11 @@ describe("DiscoverPage", () => {
 
 	it("ouvre la modale après la découverte d'un step et appelle la fin de partie sur le dernier step", () => {
 		pageState.queryData = { totalScore: 3 };
-		const logSpy = vi.spyOn(console, "log").mockImplementation(() => undefined);
 		vi.useFakeTimers();
 
 		renderPage(<DiscoverPage />);
 
 		fireEvent.click(screen.getByText("reach-step"));
-		expect(logSpy).toHaveBeenCalledWith("GAME END");
 		expect(screen.getByTestId("modal-open")).toHaveTextContent("false");
 
 		act(() => {

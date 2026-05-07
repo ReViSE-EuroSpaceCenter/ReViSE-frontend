@@ -208,22 +208,25 @@ export default function StepPage() {
               ))}
           </div>
 
-            <div className="flex justify-end">
-                {allValidated ? (
-                    <button
-                        onClick={() => setShowModal(true)}
-                        className="cursor-pointer rounded-lg bg-purpleReViSE px-6 py-3 text-lg text-white transition hover:brightness-110 hover:scale-[1.02] active:scale-[0.98] shadow-lg"
-                    >
-                        Valider l{"'"}étape
-                    </button>
-                ) : (
-                    <button
+            <div className="flex justify-end gap-4">
+                <button
                     onClick={handleEndGame}
-                className="cursor-pointer rounded-lg bg-orangeReViSE px-6 py-3 text-lg text-white transition hover:brightness-110 hover:scale-[1.02] active:scale-[0.98] shadow-lg"
-            >
-                Fin du jeu
-            </button>
-                )}
+                    className="cursor-pointer rounded-lg bg-orangeReViSE px-6 py-3 text-lg text-white transition hover:brightness-110 hover:scale-[1.02] active:scale-[0.98] shadow-lg"
+                >
+                    Fin du jeu
+                </button>
+
+                <button
+                    onClick={() => setShowModal(true)}
+                    disabled={!allValidated}
+                    className={`cursor-pointer rounded-lg px-6 py-3 text-lg text-white transition shadow-lg
+            ${allValidated
+                        ? "bg-purpleReViSE hover:brightness-110 hover:scale-[1.02] active:scale-[0.98]"
+                        : "bg-purpleReViSE/40 cursor-not-allowed"
+                    }`}
+                >
+                    Valider l{"'"}étape
+                </button>
             </div>
 
             <ValidationMissionModal

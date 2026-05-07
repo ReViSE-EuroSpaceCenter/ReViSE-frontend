@@ -112,7 +112,7 @@ export default function Dashboard() {
 
             <div className="w-full max-w-[min(800px,100vh)] flex justify-center order-1 xl:order-2 md:col-span-2 xl:col-span-1 p-4 md:p-8 xl:p-16">
                 <Toolbox
-                    centerAction={{ label: "Décollage\n🚀", onClick: confirmAndEndMission, disabled: !gameData?.allTeamsCompleted }}
+                    centerAction={{ label: "Décollage", onClick: confirmAndEndMission, disabled: !gameData?.allTeamsCompleted }}
                     actions={[
                         { label: "Fin du tour", onClick: () => setIsChecklistOpen(true), disabled: toolboxDisabled },
                         { label: "Missions terminées", onClick: () => router.push(`/teacher/game/${lobbyCode}/mission`), disabled: toolboxDisabled },

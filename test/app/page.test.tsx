@@ -36,7 +36,9 @@ describe("Home page", () => {
     it("affiche le contenu de la page d'accueil", () => {
         renderPage(<Home />);
 
-        expect(screen.getByText("Cap sur Europe")).toBeInTheDocument();
+        expect(
+          screen.getByText("Repoussez les frontières de la science avec les technologies d'intelligence artificielle.")
+        ).toBeInTheDocument();
         expect(screen.getByText("Créer une partie")).toBeInTheDocument();
         expect(screen.getByText("Rejoindre une partie")).toBeInTheDocument();
     });
