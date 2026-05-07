@@ -228,22 +228,29 @@ export default function Toolbox({ centerAction, actions }: Readonly<RadialMenuPr
 				<circle cx={cx} cy={cy} r={innerR * 0.8} fill={!centerAction?.disabled && centerHover ? "url(#tb-center-active-grad)" : "none"} stroke={centerAction && !centerAction.disabled ? "#834291" : "gray"} strokeWidth={1.5} strokeOpacity={0.8}/>
 				<circle cx={cx} cy={cy} r={innerR * 0.8 - 10} fill="none"  stroke={centerAction?.disabled ? "gray" : "#834291"} strokeWidth={0.5} strokeOpacity={0.35}/>
 
-				<text
-					x={cx}
-					y={cy}
+				<g
+					transform={`translate(${cx}, ${cy})`}
 					textAnchor="middle"
-					dominantBaseline="middle"
-					fontSize="17"
-					fontWeight="700"
-					fill={"white"}
-					letterSpacing="0.04em"
 				>
-					{centerAction?.label.split("\n").map((line, index) => (
-						<tspan key={`${line}-${index}`} x={cx} dy={index === 0 ? -5 : 30}>
-							{line}
-						</tspan>
-					))}
-				</text>
+					<text
+						y={-15}
+						fontSize="17"
+						fontWeight="700"
+						fill="white"
+						dominantBaseline="middle"
+					>
+						{centerAction?.label}
+					</text>
+
+					<image
+						href="/vaisseau.svg"
+						x={-35}
+						y={-15}
+						width={70}
+						height={70}
+					/>
+
+				</g>
 
 				<circle
 					visibility={centerAction?.disabled ? "visible" : "hidden"}

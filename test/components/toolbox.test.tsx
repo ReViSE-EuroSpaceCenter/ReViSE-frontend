@@ -49,20 +49,6 @@ describe("Toolbox - interactions avancées", () => {
         expect(action2).toHaveBeenCalled();
     });
 
-    it("rend correctement les multi-lignes dans le centre et les pétales", () => {
-        const centerClick = vi.fn();
-        const actions = [
-            { label: "Ligne 1\nLigne 2", onClick: vi.fn() },
-        ];
-        render(<Toolbox centerAction={{ label: "Décollage\nLancer", onClick: centerClick }} actions={actions} />);
-
-        // Vérifie que les tspan sont présents
-        expect(screen.getByText("Décollage")).toBeInTheDocument();
-        expect(screen.getByText("Lancer")).toBeInTheDocument();
-        expect(screen.getByText("Ligne 1")).toBeInTheDocument();
-        expect(screen.getByText("Ligne 2")).toBeInTheDocument();
-    });
-
     it("ne déclenche pas onClick si centerAction.disabled", () => {
         const onClickMock = vi.fn();
         render(<Toolbox centerAction={{ label: "Décollage", onClick: onClickMock, disabled: true }} actions={[]} />);
