@@ -184,7 +184,7 @@ describe("StepPage - Validation d'étape", () => {
     });
 
     it("redirige vers l'étape suivante après confirmation de la validation", async () => {
-        vi.mocked(showEnergyBonusAlert).mockResolvedValue(undeftned);
+        vi.mocked(showEnergyBonusAlert).mockResolvedValue(undefined);
         vi.mocked(getTeamsInfo).mockResolvedValue({
             teamsFullProgression: {
                 MECA: { teamProgression: { bonus1: true, bonus2: true, bonus3: true } },
