@@ -3,26 +3,19 @@ import {StepData} from "@/types/StepData";
 export const stepsData: StepData[] = [
     {
         id: 1,
-        title: "Décoller de la Terre",
-        text: "Votre vaisseau mesure 142 mètres de haut pour une masse de 5200 tonnes. Faire décoller votre vaisseau depuis la Terre est un défi colossal.",
+        title: "Décollage de la Terre",
+        text: "Mobilisez les ressources nécessaires pour assurer un décollage stable et sécurisé pour votre vaisseau de 142 mètres de haut et de plus de 5200 tonnes. Un véritable défi technique.",
         4: {
-            bonuses: [
-                {
-                    id: "COOP_bonus1",
-                    title: "Intelligence artificielle de supervision d’IA",
-                    text: "La coordination des IA du vaisseau facilite la gestion de l’énergie et la priorisation des tâches.",
-                    replacement: "forcer"
-                }
-            ],
-            resources: ["preparer"],
+            bonuses: [],
+            resources: ["preparer", "forcer"],
         },
         6: {
             bonuses: [
                 {
                     id: "COOP_bonus1",
                     title: "Intelligence artificielle de supervision d’IA",
-                    text: "La coordination des IA du vaisseau facilite la gestion de l’énergie et la priorisation des tâches.",
-                    replacement: "forcer"
+                    text: "Un système de coordination des IA optimise la répartition de l’énergie et la priorisation des tâches.",
+                    replacements: ["forcer", "anticiper"]
                 }
             ],
             resources: ["preparer", "forcer"],
@@ -31,208 +24,202 @@ export const stepsData: StepData[] = [
     {
         id: 2,
         title: "Assistance gravitationnelle",
-        text: "Pour atteindre Europe en 6 ans, vous devez atteindre la vitesse de 20 km/s (72 000 km/h). Utilisez la manœuvre la moins couteuse : l’assistance gravitationnelle. Profitez de la force d’attraction de Vénus pour accélérer votre vaisseau. Pendant cette manœuvre près de Vénus vous perdez la communication avec le centre de commande de la Terre.",
+        text: "Pour atteindre Europe en six ans, vous devez atteindre la vitesse de 72 000 km/h. Utilisez la manœuvre la moins couteuse en exploitant l’attraction de Vénus : une assistance gravitationnelle. Ajustez votre trajectoire malgré la perte de communication avec la Terre.",
         4: {
-            bonuses: [
-                {
-                    id: "COOP_bonus2",
-                    title: "Centre de commandement virtuel embarqué",
-                    text: "Un centre de commandement virtuel vous accompagnera dans la prise de décision, coupés de toutes communication avec la Terre.",
-                }
-            ],
-            resources: ["adapter", "anticiper"],
+            bonuses: [],
+            resources: ["anticiper", "preparer"],
         },
         6: {
             bonuses: [
                 {
                     id: "COOP_bonus2",
                     title: "Centre de commandement virtuel embarqué",
-                    text: "Un centre de commandement virtuel vous accompagnera dans la prise de décision, coupés de toutes communication avec la Terre.",
+                    text: "Un centre de commandement embarqué vous aide à prendre des décisions en autonomie, quand les communications avec la Terre sont impossibles ou trop longues.",
                 }
             ],
-            resources: ["adapter", "preparer"],
+            resources: ["anticiper", "preparer"],
         },
     },
     {
         id: 3,
         title: "Cargo de ressources vitales",
-        text: "Dans votre trajectoire elliptique, vous repassez près de la Terre pour récupérer eau, air et nourriture. Amarrez à votre vaisseau à pleine vitesse un cargo de ravitaillement.",
+        text: "Sur votre trajectoire elliptique, vous repassez près de la Terre pour récupérer eau, de l’air et de la nourriture. Amarrez le cargo de ravitaillement à pleine vitesse.",
         4: {
             bonuses: [
                 {
                     id: "MECA_bonus1",
                     title: "Pilotage en réalité virtuelle",
-                    text: "Une interface de pilotage en réalité virtuelle facilite la prise en charge de l’amarrage.",
+                    text: "Une interface de pilotage en réalité virtuelle améliore la précision des manœuvres.",
                 }
             ],
-            resources: ["adapter", "preparer"],
+            resources: ["anticiper", "forcer"],
         },
         6: {
             bonuses: [
                 {
                     id: "MECA_bonus1",
                     title: "Pilotage en réalité virtuelle",
-                    text: "Une interface de pilotage en réalité virtuelle facilite la prise en charge de l’amarrage.",
+                    text: "Une interface de pilotage en réalité virtuelle améliore la précision des manœuvres.",
                 }
             ],
-            resources: ["adapter", "forcer"],
+            resources: ["anticiper", "forcer"],
         },
     },
     {
         id: 4,
         title: "Tempête solaire",
-        text: "Une tempête solaire menace votre vaisseau. Les puissantes radiations peuvent endommager les systèmes électroniques et la santé des astronautes : Préparez-vous y pour limiter les dégâts !",
+        text: "Une tempête solaire menace votre vaisseau. Ses puissantes radiations peuvent endommager les systèmes électroniques et mettre l’équipage en danger. Limitez les dégâts.",
         4: {
             bonuses: [
                 {
                     id: "AERO_bonus1",
                     title: "Automatisation du bouclier magnétique",
-                    text: "Le bouclier magnétique permet de dévier une partie des radiations.",
-                    replacement: "reparer"
+                    text: "Un bouclier magnétique automatisé permet de dévier une partie des radiations.",
+                    replacements: ["reparer", "anticiper"]
                 },
                 {
                     id: "EXPE_bonus1",
                     title: "Combinaison adaptative de sortie extravéhiculaire",
-                    text: "Des combinaisons adaptées réduisent l’impact des radiations sur le corps des astronautes.",
-                    replacement: "adapter"
+                    text: "Des combinaisons adaptées réduisent l’impact des radiations sur les astronautes.",
+                    replacements: ["adapter"]
                 },
             ],
-            resources: ["adapter", "reparer"],
+            resources: ["reparer"],
         },
         6: {
             bonuses: [
                 {
                     id: "AERO_bonus1",
                     title: "Automatisation du bouclier magnétique",
-                    text: "Le bouclier magnétique permet de dévier une partie des radiations.",
-                    replacement: "reparer"
+                    text: "Un bouclier magnétique automatisé permet de dévier une partie des radiations.",
+                    replacements: ["reparer", "anticiper"]
                 },
                 {
                     id: "EXPE_bonus1",
                     title: "Combinaison adaptative de sortie extravéhiculaire",
-                    text: "Des combinaisons adaptées réduisent l’impact des radiations sur le corps des astronautes.",
-                    replacement: "adapter"
+                    text: "Des combinaisons adaptées réduisent l’impact des radiations sur les astronautes.",
+                    replacements: ["adapter", "preparer"]
                 },
             ],
-            resources: ["preparer","adapter", "reparer"],
+            resources: ["adapter", "reparer"],
         },
     },
     {
         id: 5,
         title: "Ceinture d’astéroïdes",
-        text: "Après deux ans de voyage, vous arrivez aux abords de la ceinture d’astéroïdes. Les gros astéroïdes seront facilement évitables, mais les plus petits sont imprévisibles. Limitez les dégâts causés par leur impact à 72 000 km/h.",
+        text: "Vous arrivez aux abords de la ceinture d’astéroïdes. Pour la traverser, vous éviterez facilement les gros astéroïdes, mais les plus petits sont imprévisibles. Limitez les impacts et réparez rapidement les dégâts.",
         4: {
             bonuses: [
                 {
                     id: "EXPE_bonus2",
-                    title: "Bras robotisé autonome de réparation",
-                    text: "Un bras robotique permet de réparer les dégâts externes et de repousser les petits astéroïdes lors de la traversée.",
-                    replacement: "adapter"
+                    title: "Cobot d’exploration",
+                    text: "Les cobots assistent les astronautes dans les réparations internes.",
+                    replacements: ["adapter", "forcer"]
                 },
                 {
                     id: "AERO_bonus2",
-                    title: "Cobot d’exploration",
-                    text: "Les cobots facilitent les réparations des dégâts interne au vaisseau subis lors de la traversée en accompagnant les astronautes.",
-                    replacement: "anticiper"
+                    title: "Bras robotisé autonome de réparation",
+                    text: "Un bras robotisé autonome permet de réparer les dégâts externes.",
+                    replacements: ["preparer"]
                 },
             ],
-            resources: ["forcer", "reparer"],
+            resources: ["forcer", "anticiper"],
         },
         6: {
             bonuses: [
                 {
                     id: "EXPE_bonus2",
-                    title: "Bras robotisé autonome de réparation",
-                    text: "Un bras robotique permet de réparer les dégâts externes et de repousser les petits astéroïdes lors de la traversée.",
-                    replacement: "adapter"
+                    title: "Cobot d’exploration",
+                    text: "Les cobots assistent les astronautes dans les réparations internes.",
+                    replacements: ["adapter", "forcer"]
                 },
                 {
                     id: "AERO_bonus2",
-                    title: "Cobot d’exploration",
-                    text: "Les cobots facilitent les réparations des dégâts interne au vaisseau subis lors de la traversée en accompagnant les astronautes.",
-                    replacement: "anticiper"
+                    title: "Bras robotisé autonome de réparation",
+                    text: "Un bras robotisé autonome permet de réparer les dégâts externes.",
+                    replacements: ["anticiper", "reparer"]
                 },
             ],
-            resources: ["adapter","forcer", "reparer"],
+            resources: ["forcer", "anticiper"],
         },
     },
     {
         id: 6,
         title: "Tensions sociales",
-        text: "Après plus de trois ans de voyage, l’équipage, confiné les uns sur les autres les uns sur les autres dans un environnement confiné et stressant. Le problème que vous rencontrez est cette fois-ci interne au vaisseau. Des tensions apparaissent au sein de l’équipage, mettant la mission en danger.",
+        text: "Après plusieurs années de voyage en milieu confiné, des tensions apparaissent au sein de l’équipage. La coordination devient difficile. Restaurez la cohésion et maintenez une collaboration efficace.",
         4: {
             bonuses: [
                 {
                     id: "GECO_bonus1",
                     title: "Plantes utiles au bien-être de l’équipage",
-                    text: "Un environnement végétalisé ainsi qu’une assiette variée permet de remonter le moral de l’équipage et d’apaiser les tensions.",
-                    replacement: "preparer"
+                    text: "Un environnement végétalisé ainsi qu’une alimentation de qualité améliore le moral de l’équipage et apaise les tensions.",
+                    replacements: ["preparer"]
                 },
             ],
-            resources: ["preparer", "reparer"],
+            resources: ["preparer", "adapter"],
         },
         6: {
             bonuses: [
                 {
                     id: "MEDI_bonus1",
                     title: "Activités collectives pour la cohésion de groupe",
-                    text: "Des systèmes favorisant les interactions sociales, compte tenu des préférences de chacun aident à apaiser les tensions sociales et à recréer du lien.",
-                    replacement: "anticiper"
+                    text: "Des dispositifs favorisant les interactions sociales, compte tenu des préférences de chacun, aident à apaiser les tensions sociales et à recréer du lien.",
+                    replacements: ["adapter", "anticiper"]
                 },
                 {
                     id: "GECO_bonus1",
                     title: "Plantes utiles au bien-être de l’équipage",
-                    text: "Un environnement végétalisé ainsi qu’une assiette variée permet de remonter le moral de l’équipage et d’apaiser les tensions.",
-                    replacement: "preparer"
+                    text: "Un environnement végétalisé ainsi qu’une alimentation de qualité améliore le moral de l’équipage et apaise les tensions.",
+                    replacements: ["reparer", "preparer"]
                 },
             ],
-            resources: ["preparer", "adapter", "reparer"],
+            resources: ["preparer", "adapter"],
         },
     },
     {
         id: 7,
         title: "Déséquilibre écologique",
-        text: "Après plus de quatre ans de recyclage biologique continu, des déséquilibres apparaissent dans l’air, l’eau et les micro-organismes (maladies). Assainissez votre environnement.",
+        text: "Après des années de recyclage biologique continu, l’environnement du vaisseau se déséquilibre : air, eau et micro-organismes (maladies) deviennent instables. Rétablissez des conditions viables pour la survie.",
         4: {
             bonuses: [
                 {
                     id: "GECO_bonus2",
                     title: "Système mécanique de recyclage de secours",
-                    text: "Un système mécanique de recyclage aide à compenser les manquements des systèmes biologiques pour stabiliser les paramètres de l’environnement.",
-                    replacement: "reparer"
+                    text: "Un système de recyclage mécanique complète les systèmes biologiques existants.",
+                    replacements: ["anticiper", "reparer"]
                 }
             ],
-            resources: ["adapter", "forcer"],
+            resources: ["reparer", "adapter"],
         },
         6: {
             bonuses: [
                 {
                     id: "GECO_bonus2",
                     title: "Système mécanique de recyclage de secours",
-                    text: "Un système mécanique de recyclage aide à compenser les manquements des systèmes biologiques pour stabiliser les paramètres de l’environnement.",
-                    replacement: "reparer"
+                    text: "Un système de recyclage mécanique complète les systèmes biologiques existants.",
+                    replacements: ["anticiper", "reparer"]
                 },
                 {
                     id: "MEDI_bonus2",
                     title: "Suivi des souches bactériennes",
-                    text: "Un système de veille sanitaire permet d’éviter le développement de maladies bactériologiques ou virales.",
-                    replacement: "preparer"
+                    text: "Un système de surveillance sanitaire permet d’anticiper les risques biologiques.",
+                    replacements: ["adapter","preparer"]
                 },
             ],
-            resources: ["adapter", "forcer", "reparer"],
+            resources: ["reparer", "forcer"],
         },
     },
     {
         id: 8,
         title: "Repérage sur Europe",
-        text: "Après 6 ans de voyage, vous vous installez enfin en orbite d’Europe. Depuis la Terre, nous n’avons pu qu’estimer les conditions à la surface et dans les profondeurs d’Europe. Afin d’adapter vos plans à la réalité de terrain, envoyez une flotte robotique d’exploration.",
+        text: "Après six ans de voyage, vous atteignez l’orbite d’Europe. Vérifiez-y les conditions réelles avant toute exploration et adaptez votre mission.",
         4: {
             bonuses: [
                 {
                     id: "MECA_bonus2",
                     title: "Robots mous adaptés à l’exploration",
-                    text: "Des robots mous spécialisés dans la collecte de données topographiques et climatiques vous facilitera la collecte de données.",
-                    replacement: "forcer"
+                    text: "Des robots spécialisés facilitent l’exploration et la collecte de données topographiques et climatiques.",
+                    replacements: ["forcer"]
                 },
             ],
             resources: ["adapter"],
@@ -242,8 +229,8 @@ export const stepsData: StepData[] = [
                 {
                     id: "MECA_bonus2",
                     title: "Robots mous adaptés à l’exploration",
-                    text: "Des robots mous spécialisés dans la collecte de données topographiques et climatiques vous facilitera la collecte de données.",
-                    replacement: "forcer"
+                    text: "Des robots spécialisés facilitent l’exploration et la collecte de données topographiques et climatiques.",
+                    replacements: ["reparer","forcer"]
                 },
             ],
             resources: ["adapter", "forcer"],

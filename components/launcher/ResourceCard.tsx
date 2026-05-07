@@ -10,7 +10,7 @@ type BonusInfo = {
 
 type ResourceCardProps = {
 	id: string;
-	imgSrc: string;
+	imgSrc?: string;
 	autoValidated: boolean;
 	validated: boolean;
 	onClick?: () => void;
@@ -58,7 +58,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
 
 			<div className="flex flex-col items-center gap-2">
 				<Image
-					src={mainImageSrc}
+					src={mainImageSrc!}
 					alt={bonus?.title ?? id}
 					width={80}
 					height={80}

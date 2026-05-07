@@ -70,7 +70,17 @@ export default function StepPage() {
         const resources = stepData[nbTeams.toString() as "4" | "6"];
         const allIds = [
             ...resources.resources,
-            ...resources.bonuses.filter((b) => b.replacement).map((b) => b.id),
+            ...resources.bonuses
+                .filter((b) => b.replacements)
+                .flatMap((b) => {
+                    const autoValidated = isBonusAutoValidated(b.id);
+
+                    if (autoValidated) {
+                        return [`${b.id}`];
+                    }
+
+                    return b.replacements!.map((rep) => `${b.id}-${rep}`);
+                }),
         ];
 
         return allIds.every(
@@ -85,10 +95,10 @@ export default function StepPage() {
     const nbTeams = Object.keys(gameData.teamsFullProgression ?? {}).length as 4 | 6;
     const resources = stepData[nbTeams.toString() as "4" | "6"];
 
-    const energyBonus = nbTeams === 4 ? 3 : 5;
+    const energyBonus = nbTeams === 4 ? 3 : 4;
 
     const energies = resources.bonuses.find(
-        (b) => !b.replacement && isBonusAutoValidated(b.id)
+        (b) => !b.replacements && isBonusAutoValidated(b.id)
     );
 
     const handleConfirm = async () => {
@@ -155,25 +165,38 @@ export default function StepPage() {
             </h3>
 
           <div className="flex flex-wrap justify-center gap-4">
-            {resources.bonuses.map((b) => {
-                    if (!b.replacement) return;
-                    const { team, nb } = parseBonusId(b.id);
-                    const autoValidated = isBonusAutoValidated(b.id);
+              {resources.bonuses.map((b) => {
+                  if (!b.replacements) return;
+                  const { team, nb } = parseBonusId(b.id);
+                  const autoValidated = isBonusAutoValidated(b.id);
 
-                    return (
-                        <ResourceCard
-                            key={b.id}
-                            id={b.id}
-                            imgSrc={`/badges/launchers/${b.replacement}_orange.svg`}
-                            autoValidated={autoValidated}
-                            validated={validatedResources.includes(b.id)}
-                            bonus={{ team, nb, title: b.title ?? "", text: b.text ?? "" }}
-                            onClick={() => toggleResource(b.id)}
-                        />
-                    );
-                })}
+                  if (autoValidated) {
+                      return (
+                          <ResourceCard
+                              key={b.id}
+                              id={b.id}
+                              autoValidated={true}
+                              validated={true}
+                              bonus={{ team, nb, title: b.title ?? "", text: b.text ?? "" }}
+                              onClick={() => toggleResource(b.id)}
+                          />
+                      );
+                  }
 
-                {resources.resources.map((r) => (
+                  return b.replacements.map((rep) => (
+                      <ResourceCard
+                          key={`${b.id}-${rep}`}
+                          id={b.id}
+                          imgSrc={`/badges/launchers/${rep}_orange.svg`}
+                          autoValidated={false}
+                          validated={validatedResources.includes(`${b.id}-${rep}`)}
+                          bonus={{ team, nb, title: b.title ?? "", text: b.text ?? "" }}
+                          onClick={() => toggleResource(`${b.id}-${rep}`)}
+                      />
+                  ));
+              })}
+
+              {resources.resources.map((r) => (
                     <ResourceCard
                         key={r}
                         id={r}
@@ -182,8 +205,8 @@ export default function StepPage() {
                         validated={validatedResources.includes(r)}
                         onClick={() => toggleResource(r)}
                     />
-                ))}
-            </div>
+              ))}
+          </div>
 
             <div className="flex justify-end gap-4">
                 <button
