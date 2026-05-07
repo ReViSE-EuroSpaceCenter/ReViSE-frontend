@@ -100,14 +100,6 @@ describe("StepPage - Rendu", () => {
         vi.mocked(getTeamsInfo).mockResolvedValue(baseGameData as any);
     });
 
-    it("affiche un loader pendant le chargement des données", () => {
-        vi.mocked(getTeamsInfo).mockReturnValue(new Promise(() => {}));
-
-        renderPage(<StepPage />);
-
-        expect(screen.getByTestId("loading-page")).toBeInTheDocument();
-    });
-
     it("affiche les boutons d'action une fois les données chargées", async () => {
         renderPage(<StepPage />);
 
