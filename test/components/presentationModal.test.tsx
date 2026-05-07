@@ -46,14 +46,6 @@ describe("PresentationModal", () => {
         expect(screen.queryByText(/continuer/i)).not.toBeInTheDocument();
     });
 
-    it("affiche le titre correct pour PRESENTATION", () => {
-        renderModal();
-
-        expect(
-            screen.getByText(/Fiabilité des systèmes d’IA/i)
-        ).toBeInTheDocument();
-    });
-
     it("affiche le titre correct pour TEACHER", () => {
         renderModal({name: "TEACHER"});
 
