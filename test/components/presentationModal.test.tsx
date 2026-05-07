@@ -1,188 +1,200 @@
-import { render, screen } from "@testing-library/react";
+import { screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render } from "@testing-library/react";
 import PresentationModal from "@/components/PresentationModal";
 
-vi.mock("next/image", () => ({
-    default: (props: any) => <img {...props} />,
-}));
+const defaultProps = {
+    isOpen: true,
+    setIsOpen: vi.fn(),
+    icon: "/icons/meca.svg",
+    text: "Texte de présentation.",
+    name: "MECA",
+    color: "#FF0000",
+};
 
-describe("PresentationModal", () => {
-    const baseProps = {
-        isOpen: true,
-        setIsOpen: vi.fn(),
-        icon: "/test.svg",
-        text: "Texte simple",
-        name: "PRESENTATION",
-        color: "#fff",
-        onClose: vi.fn(),
-    };
+describe("PresentationModal - Rendu conditionnel", () => {
+    it("ne rend rien si 'name' est absent", () => {
+        const { container } = render(
+            <PresentationModal {...defaultProps} name={undefined} />
+        );
+        expect(container).toBeEmptyDOMElement();
+    });
 
-    const renderModal = (props = {}) => {
-        const merged = { ...baseProps, ...props };
-        render(<PresentationModal {...merged} />);
-        return merged;
-    };
+    it("ne rend rien si 'icon' est absent", () => {
+        const { container } = render(
+            <PresentationModal {...defaultProps} icon={undefined} />
+        );
+        expect(container).toBeEmptyDOMElement();
+    });
+
+    it("ne rend rien si 'text' est absent", () => {
+        const { container } = render(
+            <PresentationModal {...defaultProps} text={undefined} />
+        );
+        expect(container).toBeEmptyDOMElement();
+    });
+
+    it("ne rend rien si la modale est fermée", () => {
+        render(<PresentationModal {...defaultProps} isOpen={false} />);
+        expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+
+    it("rend la modale si toutes les props requises sont présentes", () => {
+        render(<PresentationModal {...defaultProps} />);
+        expect(screen.getByRole("dialog")).toBeInTheDocument();
+    });
+});
+
+describe("PresentationModal - Titres selon 'name'", () => {
+    const cases: [string, string][] = [
+        ["TEACHER", "Présentation du jeu - ReViSE"],
+        ["MECA", "Équipe Ingénierie Mécatronique – MECA"],
+        ["GECO", "Équipe Gestion Écosystémique – GECO"],
+        ["EXPE", "Équipe Exploration d'Europe – EXPE"],
+        ["MEDI", "Équipe Accompagnement Psycho Médical – MEDI"],
+        ["AERO", "Équipe Ingénierie Aérospatiale – AERO"],
+        ["COOP", "Équipe Coordination opérationnelle – COOP"],
+        ["IA", "Fiabilité des systèmes d'IA"],
+        ["LAUNCHER", "Voyage interplanétaire"],
+    ];
+
+    it.each(cases)("affiche le bon titre pour name='%s'", (name, expectedTitle) => {
+        render(<PresentationModal {...defaultProps} name={name} />);
+        expect(screen.getByText(expectedTitle)).toBeInTheDocument();
+    });
+
+    it("affiche le name brut si non reconnu", () => {
+        render(<PresentationModal {...defaultProps} name="INCONNU" />);
+        expect(screen.getByText("INCONNU")).toBeInTheDocument();
+    });
+});
+
+describe("PresentationModal - Fermeture", () => {
+    let setIsOpen: ReturnType<typeof vi.fn>;
+    let onClose: ReturnType<typeof vi.fn>;
 
     beforeEach(() => {
-        vi.clearAllMocks();
+        setIsOpen = vi.fn();
+        onClose = vi.fn();
     });
 
-    it("ne rend rien si name est manquant", () => {
-        renderModal({ name: undefined });
+    it("appelle setIsOpen(false) au clic sur 'Continuer'", async () => {
+        render(
+            <PresentationModal {...defaultProps} setIsOpen={setIsOpen} />
+        );
 
-        expect(screen.queryByText(/continuer/i)).not.toBeInTheDocument();
+        await userEvent.click(screen.getByRole("button", { name: /continuer/i }));
+
+        expect(setIsOpen).toHaveBeenCalledWith(false);
     });
 
-    it("ne rend rien si icon est manquant", () => {
-        renderModal({ icon: undefined });
+    it("appelle onClose au clic sur 'Continuer' si fourni", async () => {
+        render(
+            <PresentationModal {...defaultProps} setIsOpen={setIsOpen} onClose={onClose} />
+        );
 
-        expect(screen.queryByText(/continuer/i)).not.toBeInTheDocument();
+        await userEvent.click(screen.getByRole("button", { name: /continuer/i }));
+
+        expect(onClose).toHaveBeenCalledOnce();
     });
 
-    it("ne rend rien si text est manquant", () => {
-        renderModal({ text: undefined });
+    it("n'appelle pas onClose si non fourni", async () => {
+        render(
+            <PresentationModal {...defaultProps} setIsOpen={setIsOpen} />
+        );
 
-        expect(screen.queryByText(/continuer/i)).not.toBeInTheDocument();
+        await userEvent.click(screen.getByRole("button", { name: /continuer/i }));
+
+        // Aucune erreur levée = onClose absent géré correctement
+        expect(setIsOpen).toHaveBeenCalledWith(false);
     });
 
-    it("affiche le titre correct pour TEACHER", () => {
-        renderModal({name: "TEACHER"});
+    it("appelle setIsOpen(false) lors de la fermeture via Headless UI (Escape / backdrop)", () => {
+        render(
+            <PresentationModal {...defaultProps} setIsOpen={setIsOpen} />
+        );
 
-        expect(
-          screen.getByText(/Présentation du jeu - ReViSE/i)
-        ).toBeInTheDocument();
+        fireEvent.keyDown(document.activeElement ?? document.body, {
+            key: "Escape",
+            code: "Escape",
+        });
+
+        expect(setIsOpen).toHaveBeenCalledWith(false);
+    });
+});
+
+describe("PresentationModal - Rendu du texte", () => {
+    it("affiche le texte fourni", () => {
+        render(<PresentationModal {...defaultProps} text="Bonjour le monde." />);
+        expect(screen.getByText("Bonjour le monde.")).toBeInTheDocument();
     });
 
-    it("affiche le titre pour AERO", () => {
-        renderModal({ name: "AERO" });
-
-        expect(
-          screen.getByText(/Équipe Ingénierie Aérospatiale – AERO/i)
-        ).toBeInTheDocument();
+    it("rend le texte en gras avec la syntaxe **bold**", () => {
+        render(
+            <PresentationModal {...defaultProps} text="Voici du **texte en gras** ici." />
+        );
+        expect(screen.getByText("texte en gras").tagName).toBe("STRONG");
     });
 
-    it("affiche le titre pour EXPE", () => {
-        renderModal({ name: "EXPE" });
-
-        expect(
-          screen.getByText(/Équipe Exploration d’Europe – EXPE/i)
-        ).toBeInTheDocument();
+    it("rend les listes avec bullet point (•)", () => {
+        render(
+            <PresentationModal {...defaultProps} text="• Premier élément" />
+        );
+        const paragraph = screen.getByText(/Premier élément/).closest("p");
+        expect(paragraph).toHaveClass("flex");
     });
 
-    it("affiche le titre pour COOP", () => {
-        renderModal({ name: "COOP" });
-
-        expect(
-          screen.getByText(/Équipe Coordination opérationnelle – COOP/i)
-        ).toBeInTheDocument();
+    it("rend les lignes normales centrées par défaut", () => {
+        render(
+            <PresentationModal {...defaultProps} text="Ligne normale" isJustify={false} />
+        );
+        const paragraph = screen.getByText(/Ligne normale/).closest("p");
+        expect(paragraph).toHaveClass("text-center");
     });
 
-    it("affiche le titre pour GECO", () => {
-        renderModal({ name: "GECO" });
-
-        expect(
-          screen.getByText(/Équipe Gestion Écosystémique – GECO/i)
-        ).toBeInTheDocument();
+    it("rend le texte justifié si isJustify=true", () => {
+        render(
+            <PresentationModal {...defaultProps} text="Ligne justifiée" isJustify={true} />
+        );
+        const paragraph = screen.getByText(/Ligne justifiée/).closest("p");
+        expect(paragraph).toHaveClass("text-justify");
     });
 
-    it("affiche le titre pour MEDI", () => {
-        renderModal({ name: "MEDI" });
-
-        expect(
-          screen.getByText(/Équipe Accompagnement Psycho Médical – MEDI/i)
-        ).toBeInTheDocument();
+    it("gère plusieurs lignes séparées par \\n", () => {
+        render(
+            <PresentationModal {...defaultProps} text={"Ligne 1\nLigne 2\nLigne 3"} />
+        );
+        expect(screen.getByText("Ligne 1")).toBeInTheDocument();
+        expect(screen.getByText("Ligne 2")).toBeInTheDocument();
+        expect(screen.getByText("Ligne 3")).toBeInTheDocument();
     });
+});
 
-    it("affiche le titre pour MECA", () => {
-        renderModal({ name: "MECA" });
-
-        expect(
-            screen.getByText(/Équipe Ingénierie Mécatronique – MECA/i)
-        ).toBeInTheDocument();
-    });
-
-    it("affiche le titre par défaut", () => {
-        renderModal({ name: "ALIEN" });
-
-        expect(
-            screen.getByText(/alien/i)
-        ).toBeInTheDocument();
-    });
-
+describe("PresentationModal - Image", () => {
     it("affiche l'image avec le bon src", () => {
-        renderModal();
+        render(<PresentationModal {...defaultProps} icon="/icons/meca.svg" />);
+        const img = screen.getByRole("img", { name: /\/icons\/meca\.svg/i });
+        expect(img).toHaveAttribute("src", expect.stringContaining("meca.svg"));
+    });
 
+    it("applique la classe spécifique pour /logo.svg", () => {
+        render(<PresentationModal {...defaultProps} icon="/logo.svg" />);
+        const img = screen.getByRole("img", { name: /\/logo\.svg/i });
+        expect(img).toHaveClass("w-35");
+    });
+
+    it("applique la classe standard pour une icône non-logo", () => {
+        render(<PresentationModal {...defaultProps} icon="/icons/meca.svg" />);
         const img = screen.getByRole("img");
-
-        expect(img).toHaveAttribute("src", "/test.svg");
+        expect(img).toHaveClass("w-20");
     });
+});
 
-    it("affiche le texte", () => {
-        renderModal({ text: "Bonjour le monde" });
-
-        expect(screen.getByText(/bonjour le monde/i)).toBeInTheDocument();
-    });
-
-    it("rend le texte en gras avec ** **", () => {
-        renderModal({ text: "Ceci est **important** !" });
-
-        const bold = screen.getByText("important");
-
-        expect(bold.tagName).toBe("STRONG");
-    });
-
-    it("gère les retours à la ligne", () => {
-        renderModal({
-            text: "ligne 1\nligne 2",
-        });
-
-        expect(screen.getByText(/ligne 1/i)).toBeInTheDocument();
-        expect(screen.getByText(/ligne 2/i)).toBeInTheDocument();
-    });
-
-    it("détecte les lignes de liste", () => {
-        renderModal({
-            text: "• élément 1\n• élément 2",
-        });
-
-        expect(screen.getByText(/élément 1/i)).toBeInTheDocument();
-        expect(screen.getByText(/élément 2/i)).toBeInTheDocument();
-    });
-
-    it("ferme la modal au clic sur continuer", async () => {
-        const props = renderModal();
-
-        const button = screen.getByRole("button", {
-            name: /continuer/i,
-        });
-
-        await userEvent.click(button);
-
-        expect(props.setIsOpen).toHaveBeenCalledWith(false);
-    });
-
-    it("appelle onClose si fourni", async () => {
-        const props = renderModal();
-
-        const button = screen.getByRole("button", {
-            name: /continuer/i,
-        });
-
-        await userEvent.click(button);
-
-        expect(props.onClose).toHaveBeenCalled();
-    });
-
-    it("n'appelle pas onClose s'il n'existe pas", async () => {
-        const props = renderModal({ onClose: undefined });
-
-        const button = screen.getByRole("button", {
-            name: /continuer/i,
-        });
-
-        await userEvent.click(button);
-
-        expect(props.setIsOpen).toHaveBeenCalledWith(false);
+describe("PresentationModal - Couleur du titre", () => {
+    it("applique la couleur fournie au titre", () => {
+        render(<PresentationModal {...defaultProps} color="#ABC123" />);
+        const title = screen.getByText("Équipe Ingénierie Mécatronique – MECA");
+        expect(title).toHaveStyle({ color: "#ABC123" });
     });
 });
