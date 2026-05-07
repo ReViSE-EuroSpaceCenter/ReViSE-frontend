@@ -51,11 +51,11 @@ describe("PresentationModal - Titres selon 'name'", () => {
         ["TEACHER", "Présentation du jeu - ReViSE"],
         ["MECA", "Équipe Ingénierie Mécatronique – MECA"],
         ["GECO", "Équipe Gestion Écosystémique – GECO"],
-        ["EXPE", "Équipe Exploration d'Europe – EXPE"],
+        ["EXPE", "Équipe Exploration d’Europe – EXPE"],
         ["MEDI", "Équipe Accompagnement Psycho Médical – MEDI"],
         ["AERO", "Équipe Ingénierie Aérospatiale – AERO"],
         ["COOP", "Équipe Coordination opérationnelle – COOP"],
-        ["IA", "Fiabilité des systèmes d'IA"],
+        ["IA", "Fiabilité des systèmes d’IA"],
         ["LAUNCHER", "Voyage interplanétaire"],
     ];
 
