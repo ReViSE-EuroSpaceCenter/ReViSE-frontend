@@ -107,6 +107,7 @@ export default function Launcher() {
                 <PresentationModal
                     isOpen={isPresentationOpen}
                     setIsOpen={setIsPresentationOpen}
+                    isJustify={true}
                     icon="/logo.svg"
                     text={text}
                     name="PRESENTATION"

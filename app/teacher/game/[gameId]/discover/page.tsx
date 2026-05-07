@@ -37,6 +37,8 @@ export default function DiscoverPage() {
     const isLastStep = stepIndex === steps.length - 1;
     const [isGameFinished, setIsGameFinished] = useState(false);
     const router = useRouter();
+    const hasNoScore = (data?.totalScore ?? 0) < 1;
+    const showEndButton = isGameFinished || hasNoScore;
 
     const handleEndGame = async () => {
         const confirmed = await confirmEndGameMessage();
@@ -50,7 +52,6 @@ export default function DiscoverPage() {
         router.push(`/endGame?win=true`);
     };
     const handleComplete = useCallback(() => {
-        console.log("GAME END");
         setIsGameFinished(true);
     }, []);
 
@@ -92,7 +93,7 @@ export default function DiscoverPage() {
                 color="#fff"
                 onClose={handleModalClose}
             />
-            {isGameFinished && (
+            {showEndButton && (
                 <div className="absolute bottom-6 right-6">
                     <button
                         onClick={handleEndGame}
