@@ -42,12 +42,12 @@ export default function SetUpPage() {
       useCallback((event) => {
           switch (event.type) {
               case "TEAM_JOINED":
-                  queryClient.setQueryData(["lobby", lobbyCode], (old: TeamInfo | undefined) => {
+                  queryClient.setQueryData(["lobbyInfo", lobbyCode], (old: TeamInfo | undefined) => {
                       if (!old) return old;
 
                       return {
                           ...old,
-                          availableTeams: old.availableTeams.slice(1),
+                          availableTeams: old.availableTeams.filter(t => t !== event.payload.teamLabel),
                       };
                   });
                   break;
