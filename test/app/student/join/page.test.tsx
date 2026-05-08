@@ -24,14 +24,14 @@ describe("JoinPage", () => {
         renderPage(<JoinPage />);
 
         expect(screen.getByText("Rejoindre une partie")).toBeInTheDocument();
-        expect(screen.getByPlaceholderText("EX: XKABDE")).toBeInTheDocument();
+        expect(screen.getByPlaceholderText("AAAAAA")).toBeInTheDocument();
         expect(screen.getByRole("button")).toBeInTheDocument();
     });
 
     it("bloque la soumission quand le code fait moins de 6 lettres", async () => {
         renderPage(<JoinPage />);
 
-        const input = screen.getByPlaceholderText("EX: XKABDE");
+        const input = screen.getByPlaceholderText("AAAAAA");
         const submit = screen.getByRole("button");
 
         await userEvent.type(input, "ABC"); // trop court
@@ -46,7 +46,7 @@ describe("JoinPage", () => {
     it("force la mise en majuscules et supprime les caractères invalides", async () => {
         renderPage(<JoinPage />);
 
-        const input = screen.getByPlaceholderText("EX: XKABDE");
+        const input = screen.getByPlaceholderText("AAAAAA");
 
         await userEvent.type(input, "ab12$c");
 
@@ -56,7 +56,7 @@ describe("JoinPage", () => {
     it("appelle joinLobbyMutation.mutate avec un code valide", async () => {
         renderPage(<JoinPage />);
 
-        const input = screen.getByPlaceholderText("EX: XKABDE");
+        const input = screen.getByPlaceholderText("AAAAAA");
         const submit = screen.getByRole("button");
 
         await userEvent.type(input, "abcdef");
@@ -70,7 +70,7 @@ describe("JoinPage", () => {
     it("retire le blocage et permet la soumission correcte après une tentative invalide", async () => {
         renderPage(<JoinPage />);
 
-        const input = screen.getByPlaceholderText("EX: XKABDE");
+        const input = screen.getByPlaceholderText("AAAAAA");
         const submit = screen.getByRole("button");
 
         await userEvent.type(input, "abc"); // trop court
