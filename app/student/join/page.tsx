@@ -45,7 +45,7 @@ export default function JoinPage() {
 						id="lobbyCode"
 						type="text"
 						name="lobbyCode"
-						placeholder="AAAAAA"
+						placeholder="HMETSH"
 						maxLength={6}
 						autoComplete="off"
 						onInput={(e) => {
