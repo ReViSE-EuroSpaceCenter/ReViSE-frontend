@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ReVISE",
-  description: "ReViSE est un jeu de plateau conçu par l’Euro Space Center (ESC), en collaboration avec l’Université de Namur et B12 Consulting.",
+  title: "ReVisE",
+  description: "ReVisE est un jeu de plateau conçu par l’Euro Space Center (ESC), en collaboration avec l’Université de Namur et B12 Consulting.",
 };
 
 export default function RootLayout({
