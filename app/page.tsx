@@ -33,7 +33,7 @@ export default function Home() {
                                   <Image src="/logos/eurospace.png" alt="Euro Space Center" width={200} height={56}
                                          className="h-12 w-auto object-contain" />
                                   <Image src="/logos/unamur_blanc.png" alt="UNamur" width={200} height={56} className="h-12 w-auto object-contain" />
-                                  <Image src="/logos/b12.png" alt="B12 Consulting" width={200} height={56} className="h-12 w-auto object-contain" />
+                                  <Image src="/logos/B12.png" alt="B12 Consulting" width={200} height={56} className="h-12 w-auto object-contain" />
                           </div>
                       </div>
 
