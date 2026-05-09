@@ -49,5 +49,27 @@ describe("EndGamePage", () => {
         expect(link).toBeInTheDocument();
         expect(link).toHaveAttribute("href", "/");
     });
+    it("exécute le scroll automatique", () => {
+        mockUseSearchParams.mockReturnValue({
+            get: () => "true",
+        });
 
+        const callbacks: FrameRequestCallback[] = [];
+
+        vi.spyOn(window, "scrollTo").mockImplementation(() => {});
+        vi.spyOn(window, "requestAnimationFrame").mockImplementation((callback) => {
+            callbacks.push(callback);
+            return callbacks.length;
+        });
+
+        renderPage(<EndGamePage />);
+
+        callbacks[0](1000);
+        callbacks[1](4000);
+        callbacks[2](5200);
+
+        expect(window.scrollTo).toHaveBeenCalledTimes(3);
+
+        vi.restoreAllMocks();
+    });
 });
