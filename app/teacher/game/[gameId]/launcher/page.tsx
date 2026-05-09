@@ -92,7 +92,7 @@ export default function Launcher() {
     }, []))
 
     return (
-        <div className="relative w-full h-[calc(100vh-80px)] overflow-hidden">
+        <div className="relative w-full h-[calc(100vh-130px)] overflow-hidden">
             <div className="absolute inset-0">
                 <LauncherBackground />
             </div>
