@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import {useSearchParams} from "next/navigation";
+import {useEffect} from "react";
 
 export default function EndGamePage() {
     const searchParams = useSearchParams();
@@ -10,6 +11,34 @@ export default function EndGamePage() {
     const title = isWin
         ? "Merci d’avoir joué à ReVisE !"
         : "Merci d’avoir joué à ReVisE ! Vous avez perdu !";
+    useEffect(() => {
+        const duration = 5200;
+        const startTime = performance.now();
+        const startY = window.scrollY;
+
+        const targetY = document.documentElement.scrollHeight - window.innerHeight;
+
+        const easeInOutCubic = (t: number) =>
+            t < 0.5
+                ? 4 * t * t * t
+                : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+        const animateScroll = (currentTime: number) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const easedProgress = easeInOutCubic(progress);
+
+            const nextY = startY + (targetY - startY) * easedProgress;
+
+            window.scrollTo(0, nextY);
+
+            if (progress < 1) {
+                requestAnimationFrame(animateScroll);
+            }
+        };
+
+        requestAnimationFrame(animateScroll);
+    }, []);
 
     return (
         <div className="min-h-[calc(100vh-80px)] flex items-center justify-center px-6 lg:px-12 py-12">
@@ -18,13 +47,90 @@ export default function EndGamePage() {
                     <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-purpleReViSE">
                         {title}
                     </h1>
-                    <p className="text-xl sm:text-2xl text-white font-medium">
-                        Crédits
-                    </p>
                 </div>
+
+                <div className="text-white space-y-8">
+                    <h2 className={`opacity-0 animate-[fadeInUp_700ms_ease-out_forwards] [animation-delay:200ms] text-3xl sm:text-4xl font-bold text-white`}>
+                        CRÉDITS
+                    </h2>
+
+                    <div className="space-y-6">
+                        <div className={`opacity-0 animate-[fadeInUp_700ms_ease-out_forwards] [animation-delay:500ms]`}>
+                            <h3 className="text-xl font-semibold text-purpleReViSE">
+                                Développement
+                            </h3>
+                            <p>Hugo Chot</p>
+                            <p className="text-sm opacity-80">(Euro Space Center)</p>
+                        </div>
+
+                        <div className={`opacity-0 animate-[fadeInUp_700ms_ease-out_forwards] [animation-delay:900ms]`}>
+                            <h3 className="text-xl font-semibold text-purpleReViSE">
+                                Scénario
+                            </h3>
+                            <p>Hugo Chot (Euro Space Center)</p>
+                            <p>Victor Hamer (B12 Consulting)</p>
+                            <p>Bastien Wauthoz (Designed by Acritarche)</p>
+                        </div>
+
+                        <div className={`opacity-0 animate-[fadeInUp_700ms_ease-out_forwards] [animation-delay:1300ms]`}>
+                            <h3 className="text-xl font-semibold text-purpleReViSE">
+                                Game Design
+                            </h3>
+                            <p>Bastien Wauthoz</p>
+                            <p className="text-sm opacity-80">(Designed by Acritarche)</p>
+                        </div>
+
+                        <div className={`opacity-0 animate-[fadeInUp_700ms_ease-out_forwards] [animation-delay:1700ms]`}>
+                            <h3 className="text-xl font-semibold text-purpleReViSE">
+                                Design Graphique
+                            </h3>
+                            <p>Bastien Wauthoz</p>
+                            <p className="text-sm opacity-80">(Designed by Acritarche)</p>
+                        </div>
+
+                        <div className={`opacity-0 animate-[fadeInUp_700ms_ease-out_forwards] [animation-delay:2100ms]`}>
+                            <h3 className="text-xl font-semibold text-purpleReViSE">
+                                Design Pédagogique
+                            </h3>
+                            <p>Julie Henry</p>
+                            <p>Cécile Lombart</p>
+                            <p className="text-sm opacity-80">(Université de Namur)</p>
+                        </div>
+
+                        <div className={`opacity-0 animate-[fadeInUp_700ms_ease-out_forwards] [animation-delay:2500ms]`}>
+                            <h3 className="text-xl font-semibold text-purpleReViSE">
+                                Référente Inclusivité
+                            </h3>
+                            <p>Julie Henry</p>
+                            <p className="text-sm opacity-80">(Université de Namur)</p>
+                        </div>
+
+                        <div className={`opacity-0 animate-[fadeInUp_700ms_ease-out_forwards] [animation-delay:2900ms]`}>
+                            <h3 className="text-xl font-semibold text-purpleReViSE">
+                                Validation des Contenus Techniques
+                            </h3>
+                            <p>Victor Hamer (B12 Consulting by YUMA)</p>
+                            <p>Julie Henry</p>
+                            <p>Cécile Lombart</p>
+                            <p className="text-sm opacity-80">(Université de Namur)</p>
+                        </div>
+
+                        <div className={`opacity-0 animate-[fadeInUp_700ms_ease-out_forwards] [animation-delay:3300ms]`}>
+                            <h3 className="text-xl font-semibold text-purpleReViSE">
+                                Développement Application Web
+                            </h3>
+                            <p>Erin Fouarge</p>
+                            <p>Hugo Raskin</p>
+                            <p>Mallory Bouchard</p>
+                            <p>Simon Karler</p>
+                            <p>Taj Eddine Temssamani Bouazza</p>
+                        </div>
+                    </div>
+                </div>
+
                 <Link
                     href="/"
-                    className="inline-block px-6 py-3 rounded-lg bg-purpleReViSE text-white font-semibold hover:opacity-90 transition"
+                    className="opacity-0 animate-[fadeInUp_700ms_ease-out_forwards] [animation-delay:3800ms] inline-block px-6 py-3 rounded-lg bg-purpleReViSE text-white font-semibold hover:opacity-90 transition"
                 >
                     Retour à l’accueil
                 </Link>
