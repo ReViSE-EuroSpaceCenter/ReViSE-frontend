@@ -51,23 +51,23 @@ export default function EndGamePage() {
     }, []);
 
     return (
-        <div ref={scrollRef} className="h-[calc(100vh-80px)] overflow-y-scroll overflow-x-hidden px-6 lg:px-12 bg-darkBlueReViSE">
-        <div className="min-h-[calc(100vh-80px)] flex items-center justify-center px-6 lg:px-12 py-12">
-            <div className="max-w-4xl w-full space-y-8 text-center">
-                <div className="space-y-4">
-                    <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-purpleReViSE">
+        <div ref={scrollRef} className="h-[calc(100vh-80px)] overflow-y-auto overflow-x-hidden px-6 lg:px-12 bg-darkBlueReViSE">
+        <div className="min-h-[calc(100vh-80px)] flex items-center justify-center py-4">
+            <div className="max-w-6xl w-full space-y-4 text-center">
+                <div className="space-y-2">
+                    <h1 className="text-4xl sm:text-4xl lg:text-5xl font-bold text-purpleReViSE">
                         {title}
                     </h1>
                 </div>
 
-                <div className="text-white space-y-8">
-                    <h2 className={`opacity-0 animate-[fadeInUp_700ms_ease-out_forwards] [animation-delay:200ms] text-3xl sm:text-4xl font-bold text-white`}>
+                <div className="text-white space-y-4">
+                    <h2 className={`opacity-0 animate-[fadeInUp_700ms_ease-out_forwards] [animation-delay:200ms] text-2xl sm:text-3xl font-bold text-white`}>
                         CRÉDITS
                     </h2>
 
-                    <div className="space-y-6">
-                        <div className={`opacity-0 animate-[fadeInUp_700ms_ease-out_forwards] [animation-delay:500ms]`}>
-                            <h3 className="text-xl font-semibold text-purpleReViSE">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-4">
+                        <div className="opacity-0 animate-[fadeInUp_700ms_ease-out_forwards] [animation-delay:500ms]">
+                            <h3 className="text-lg font-semibold text-purpleReViSE">
                                 Développement
                             </h3>
                             <p>Hugo Chot</p>
@@ -141,7 +141,7 @@ export default function EndGamePage() {
 
                     <Link
                         href="/"
-                        className="opacity-0 animate-[fadeInUp_700ms_ease-out_forwards] [animation-delay:3800ms] inline-block px-6 py-3 rounded-lg bg-purpleReViSE text-white font-semibold hover:opacity-90 transition"
+                        className="opacity-0 animate-[fadeInUp_700ms_ease-out_forwards] [animation-delay:3800ms] inline-block px-5 py-2 rounded-lg bg-purpleReViSE text-white font-semibold hover:opacity-90 transition"
                     >
                         Retour à l’accueil
                     </Link>
