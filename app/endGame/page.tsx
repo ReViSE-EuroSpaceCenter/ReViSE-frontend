@@ -16,7 +16,7 @@ export default function EndGamePage() {
         const startTime = performance.now();
         const startY = window.scrollY;
 
-        const targetY = document.documentElement.scrollHeight - window.innerHeight;
+        let animationFrameId: number;
 
         const easeInOutCubic = (t: number) =>
             t < 0.5
@@ -28,16 +28,23 @@ export default function EndGamePage() {
             const progress = Math.min(elapsed / duration, 1);
             const easedProgress = easeInOutCubic(progress);
 
+            const targetY =
+                document.documentElement.scrollHeight - window.innerHeight;
+
             const nextY = startY + (targetY - startY) * easedProgress;
 
             window.scrollTo(0, nextY);
 
             if (progress < 1) {
-                requestAnimationFrame(animateScroll);
+                animationFrameId = requestAnimationFrame(animateScroll);
             }
         };
 
-        requestAnimationFrame(animateScroll);
+        animationFrameId = requestAnimationFrame(animateScroll);
+
+        return () => {
+            cancelAnimationFrame(animationFrameId);
+        };
     }, []);
 
     return (
