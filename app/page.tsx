@@ -3,8 +3,8 @@ import {LogosSection} from "@/components/LogosSection";
 
 export default function Home() {
     return (
-      <div className="min-h-[calc(100vh-95px)] flex flex-col items-center">
-          <div className="grid lg:grid-cols-2 gap-16 px-16 lg:px-32 pt-8 lg:pt-24 pb-4 md:pb-2 w-full">
+      <div className="min-h-[calc(100vh-85px)] flex flex-col items-center">
+          <div className="grid lg:grid-cols-2 gap-16 px-16 lg:px-32 pt-4 md:pt-12 pb-4 md:pb-2 w-full">
               <div className="flex flex-col justify-center space-y-6">
                   <div className="space-y-3">
                       <p className="text-purpleReViSE font-semibold uppercase tracking-widest text-sm">

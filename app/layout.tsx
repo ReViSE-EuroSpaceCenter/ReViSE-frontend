@@ -19,12 +19,11 @@ export const metadata: Metadata = {
   title: "ReVisE",
   description: "ReVisE est un jeu de plateau conçu par l’Euro Space Center (ESC), en collaboration avec l’Université de Namur et B12 Consulting.",
 };
-
-export default function RootLayout({
-  children,
-}: Readonly<{
+type RootLayoutProps = {
   children: React.ReactNode;
-}>) {
+};
+
+export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
   return (
     <html lang="fr">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col h-dvh overflow-hidden`}>
