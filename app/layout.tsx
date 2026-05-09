@@ -27,12 +27,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col h-dvh overflow-hidden`}>
         <QueryProvider>
           <Header />
-          <main>
+          <main className="flex-1 overflow-y-auto">
             {children}
           </main>
         </QueryProvider>

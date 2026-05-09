@@ -71,7 +71,7 @@ export default function DiscoverPage() {
     }, []);
 
     return (
-        <div className="w-full h-[calc(100dvh-80px)] flex flex-col md:flex-row">
+        <div className="w-full h-[calc(100dvh-130px)] flex flex-col md:flex-row">
             <div className="w-full md:w-3/5 h-full py-8 flex items-center justify-center order-1 md:order-2">
                 <Gauge
                     stepTarget={currentStepTarget}

@@ -87,8 +87,8 @@ export default function HostMissionsPage() {
             lobbyCode={lobbyCode}
             clientId={hostId as string}
         >
-            <div className="min-h-[calc(100vh-80px)]">
-                <div className="px-6 lg:px-12 py-6 lg:py-12 space-y-12">
+            <div className="min-h-[calc(100vh-130px)]">
+                <div className="px-6 lg:px-12 py-4 lg:py-10 space-y-12">
                     <div className="mb-6 px-2 flex flex-col min-[900px]:flex-row min-[900px]:flex-wrap min-[900px]:items-end min-[900px]:gap-x-4 min-[900px]:gap-y-0">
                         <div className="order-1 min-[900px]:order-0">
                             <ReturnButton url={`/teacher/game/${lobbyCode}`} />
