@@ -1,5 +1,5 @@
 import { screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { renderPage } from "@/test/utils/renderPage";
 import EndGamePage from "@/app/endGame/page";
 
@@ -10,6 +10,9 @@ vi.mock("next/navigation", () => ({
 }));
 
 describe("EndGamePage", () => {
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
 
     it("affiche le contenu de victoire", () => {
         mockUseSearchParams.mockReturnValue({
@@ -56,14 +59,23 @@ describe("EndGamePage", () => {
 
         vi.spyOn(window, "requestAnimationFrame").mockImplementation((cb) => {
             callbacks.push(cb);
-            return 1;
+            return callbacks.length;
         });
+
+        vi.spyOn(window, "cancelAnimationFrame").mockImplementation(() => {});
 
         const { container } = renderPage(<EndGamePage />);
         const scrollContainer = container.firstElementChild as HTMLDivElement;
 
-        Object.defineProperty(scrollContainer, "scrollHeight", { value: 1000 });
-        Object.defineProperty(scrollContainer, "clientHeight", { value: 500 });
+        Object.defineProperty(scrollContainer, "scrollHeight", {
+            value: 1000,
+            configurable: true,
+        });
+
+        Object.defineProperty(scrollContainer, "clientHeight", {
+            value: 500,
+            configurable: true,
+        });
 
         callbacks[0](5200);
 
