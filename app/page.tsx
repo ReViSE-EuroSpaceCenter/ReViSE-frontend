@@ -1,10 +1,10 @@
 import HomeButtons from "@/components/HomeButtons";
-import Image from "next/image";
+import {LogosSection} from "@/components/LogosSection";
 
 export default function Home() {
     return (
-      <div className="min-h-[calc(100vh-95px)] flex items-center">
-          <div className="grid lg:grid-cols-2 gap-16 px-16 lg:px-32 pt-10 pb-4 md:pb-2 w-full">
+      <div className="min-h-[calc(100vh-85px)] flex flex-col items-center">
+          <div className="grid lg:grid-cols-2 gap-16 px-16 lg:px-32 pt-4 md:pt-12 pb-4 md:pb-2 w-full">
               <div className="flex flex-col justify-center space-y-6">
                   <div className="space-y-3">
                       <p className="text-purpleReViSE font-semibold uppercase tracking-widest text-sm">
@@ -18,40 +18,19 @@ export default function Home() {
                       </p>
                   </div>
 
-                  <div className="border-l-2 border-purpleReViSE pl-4 text-slate-300 leading-relaxed text-sm md:text-base">                      Concevez les conditions d{"'"}une exploration scientifique d{"'"}Europe, lune glacée de Jupiter,
-                      potentiellement porteuse de traces de vie. <br />
+                  <div className="border-l-2 border-purpleReViSE pl-4 text-slate-300 leading-relaxed text-sm md:text-base">
+                      Concevez les conditions d{"'"}une exploration scientifique d{"'"}Europe, lune glacée de Jupiter, potentiellement porteuse de traces de vie. <br />
                       Votre mission ne pourra aboutir qu{"'"}à une condition : <strong className="text-white">Apprendre à utiliser les technologies d{"'"}intelligence artificielle avec discernement.</strong> <br /><br />
                       Prêts à relever le défi ?
                   </div>
 
                   <HomeButtons />
 
-                  <div className="space-y-4 pt-4 border-t border-slate-700/50">
-                      <div className="space-y-2">
-                          <p className="text-xs uppercase tracking-widest text-slate-300 font-medium">En partenariat avec</p>
-                          <div className="flex items-center gap-8 flex-wrap">
-                                  <Image src="/logos/eurospace.png" alt="Euro Space Center" width={200} height={56}
-                                         className="h-12 w-auto object-contain" />
-                                  <Image src="/logos/unamur_blanc.png" alt="UNamur" width={200} height={56} className="h-12 w-auto object-contain" />
-                                  <Image src="/logos/B12.png" alt="B12 Consulting" width={200} height={56} className="h-12 w-auto object-contain" />
-                          </div>
-                      </div>
-
-                      <div className="flex gap-12 flex-wrap">
-                          <div className="space-y-2">
-                              <p className="text-xs uppercase tracking-widest text-slate-300 font-medium">Designed by</p>
-                                  <Image src="/logos/acritarche.png" alt="Acritarche" width={200} height={56}
-                                         className="h-12 w-auto object-contain" />
-                          </div>
-
-                          <div className="space-y-2">
-                              <p className="text-xs uppercase tracking-widest text-slate-300 font-medium">Avec le soutien de</p>
-                                  <Image src="/logos/WR.png" alt="Les talents du Futur (RW)" width={200} height={56}
-                                         className="h-12 w-auto object-contain" />
-                          </div>
-                      </div>
+                  <div className="hidden lg:block">
+                      <LogosSection />
                   </div>
               </div>
+
               <div className="flex flex-col justify-center space-y-4">
                   <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
                       Les phases du voyage
@@ -73,7 +52,10 @@ export default function Home() {
                       ))}
                   </div>
               </div>
+          </div>
 
+          <div className="lg:hidden w-full px-16 pb-8 pt-2">
+              <LogosSection />
           </div>
       </div>
     );
