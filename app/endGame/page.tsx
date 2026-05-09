@@ -2,19 +2,25 @@
 
 import Link from "next/link";
 import {useSearchParams} from "next/navigation";
-import {useEffect} from "react";
+import {useEffect, useRef} from "react";
 
 export default function EndGamePage() {
     const searchParams = useSearchParams();
     const isWin = searchParams.get("win") === "true";
 
+    const scrollRef = useRef<HTMLDivElement | null>(null);
+
     const title = isWin
         ? "Merci d’avoir joué à ReVisE !"
         : "Merci d’avoir joué à ReVisE ! Vous avez perdu !";
     useEffect(() => {
+        const container = scrollRef.current;
+        if (!container) return;
+
+        container.scrollTop = 0;
+
         const duration = 5200;
         const startTime = performance.now();
-        const startY = window.scrollY;
 
         let animationFrameId: number;
 
@@ -28,12 +34,9 @@ export default function EndGamePage() {
             const progress = Math.min(elapsed / duration, 1);
             const easedProgress = easeInOutCubic(progress);
 
-            const targetY =
-                document.documentElement.scrollHeight - window.innerHeight;
+            const targetY = container.scrollHeight - container.clientHeight;
 
-            const nextY = startY + (targetY - startY) * easedProgress;
-
-            window.scrollTo(0, nextY);
+            container.scrollTop = targetY * easedProgress;
 
             if (progress < 1) {
                 animationFrameId = requestAnimationFrame(animateScroll);
@@ -48,6 +51,7 @@ export default function EndGamePage() {
     }, []);
 
     return (
+        <div ref={scrollRef} className="h-[calc(100vh-80px)] overflow-y-scroll overflow-x-hidden px-6 lg:px-12 bg-darkBlueReViSE">
         <div className="min-h-[calc(100vh-80px)] flex items-center justify-center px-6 lg:px-12 py-12">
             <div className="max-w-4xl w-full space-y-8 text-center">
                 <div className="space-y-4">
@@ -135,12 +139,13 @@ export default function EndGamePage() {
                     </div>
                 </div>
 
-                <Link
-                    href="/"
-                    className="opacity-0 animate-[fadeInUp_700ms_ease-out_forwards] [animation-delay:3800ms] inline-block px-6 py-3 rounded-lg bg-purpleReViSE text-white font-semibold hover:opacity-90 transition"
-                >
-                    Retour à l’accueil
-                </Link>
+                    <Link
+                        href="/"
+                        className="opacity-0 animate-[fadeInUp_700ms_ease-out_forwards] [animation-delay:3800ms] inline-block px-6 py-3 rounded-lg bg-purpleReViSE text-white font-semibold hover:opacity-90 transition"
+                    >
+                        Retour à l’accueil
+                    </Link>
+                </div>
             </div>
         </div>
     );

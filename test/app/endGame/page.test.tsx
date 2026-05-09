@@ -50,26 +50,23 @@ describe("EndGamePage", () => {
         expect(link).toHaveAttribute("href", "/");
     });
     it("exécute le scroll automatique", () => {
-        mockUseSearchParams.mockReturnValue({
-            get: () => "true",
-        });
+        mockUseSearchParams.mockReturnValue({ get: () => "true" });
 
         const callbacks: FrameRequestCallback[] = [];
 
-        vi.spyOn(window, "scrollTo").mockImplementation(() => {});
-        vi.spyOn(window, "requestAnimationFrame").mockImplementation((callback) => {
-            callbacks.push(callback);
-            return callbacks.length;
+        vi.spyOn(window, "requestAnimationFrame").mockImplementation((cb) => {
+            callbacks.push(cb);
+            return 1;
         });
 
-        renderPage(<EndGamePage />);
+        const { container } = renderPage(<EndGamePage />);
+        const scrollContainer = container.firstElementChild as HTMLDivElement;
 
-        callbacks[0](1000);
-        callbacks[1](4000);
-        callbacks[2](5200);
+        Object.defineProperty(scrollContainer, "scrollHeight", { value: 1000 });
+        Object.defineProperty(scrollContainer, "clientHeight", { value: 500 });
 
-        expect(window.scrollTo).toHaveBeenCalledTimes(3);
+        callbacks[0](5200);
 
-        vi.restoreAllMocks();
+        expect(scrollContainer.scrollTop).toBeGreaterThan(0);
     });
 });
