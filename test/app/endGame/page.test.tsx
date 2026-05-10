@@ -35,7 +35,7 @@ describe("EndGamePage", () => {
         renderPage(<EndGamePage />);
 
         expect(
-            screen.getByRole("heading", { name: /Merci d’avoir joué à ReVisE ! Vous avez perdu !/i })
+            screen.getByRole("heading", { name: /Merci d’avoir joué à ReVisE !\s*Vous avez perdu !/i, })
         ).toBeInTheDocument();
 
     });
