@@ -105,14 +105,14 @@ export default function Dashboard() {
     };
 
     return (
-        <div className="min-h-[calc(100vh-120px)] max-h-[calc(100vh-120px)] w-full max-w-450 mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-[1fr_2fr_1fr] items-center justify-items-center gap-4 px-8 md:px-16 py-10 ">
+        <div className="min-h-[calc(100vh-168px)] max-h-[calc(100vh-168px)] w-full max-w-450 mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-[1fr_2fr_1fr] items-center justify-items-center gap-4 px-8 md:px-16 py-6">
             <div className="flex flex-col gap-12 xl:gap-18 w-full min-w-0 items-center xl:items-start xl:pr-12 order-2 xl:order-1 md:col-span-1">
                 <TeamsColumn teams={leftTeams} align="start" side="left" />
             </div>
 
-            <div className="w-full max-w-[min(800px,100vh)] flex justify-center order-1 xl:order-2 md:col-span-2 xl:col-span-1 p-4 md:p-8 xl:p-16">
+            <div className="w-full max-w-[min(800px,100vh)] flex justify-center order-1 xl:order-2 md:col-span-2 xl:col-span-1 p-4 md:p-4 xl:p-16">
                 <Toolbox
-                    centerAction={{ label: "Décollage\n🚀", onClick: confirmAndEndMission, disabled: !gameData?.allTeamsCompleted }}
+                    centerAction={{ label: "Décollage", onClick: confirmAndEndMission, disabled: !gameData?.allTeamsCompleted }}
                     actions={[
                         { label: "Fin du tour", onClick: () => setIsChecklistOpen(true), disabled: toolboxDisabled },
                         { label: "Missions terminées", onClick: () => router.push(`/teacher/game/${lobbyCode}/mission`), disabled: toolboxDisabled },

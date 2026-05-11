@@ -20,6 +20,7 @@ export default function Header() {
   	const teamName = teamPageMatch && teamPageMatch[1] !== "team" ? teamPageMatch[1] : null;
 
 	const teamColor = teamColorMap[teamName!];
+	const isTeacherPage = pathname.startsWith('/teacher');
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -49,9 +50,20 @@ export default function Header() {
 								className="h-auto w-32 lg:w-40 cursor-pointer"
 								priority
 								onClick={() => router.push('/')}/>
-							<span className="hidden lg:block text-sm text-slate-300 border-l border-slate-700/50 pl-4">
-                            Recherche de Vie Sur Europe
-                        </span>
+							{(isHomePage || isTeacherPage) && (
+								<div className="hidden lg:flex items-center gap-3 border-l border-slate-700/50 pl-4">
+									{["AERO", "COOP", "EXPE", "GECO", "MECA", "MEDI"].map((team) => (
+										<Image
+											key={team}
+											src={`/badges/teams/${team}.svg`}
+											alt={team}
+											width={40}
+											height={40}
+											className="object-contain drop-shadow-[0_0_6px_rgba(168,85,247,0.4)]"
+										/>
+									))}
+								</div>
+								)}
 						</div>
                         {teamName && (
                             <MissionHeader

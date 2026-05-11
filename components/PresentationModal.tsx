@@ -38,15 +38,23 @@ export default function PresentationModal({ isOpen, setIsOpen, isJustify = false
             )
         );
 
+    const getParagraphClassName = (isList: boolean, isJustify: boolean): string => {
+        if (isList) return "flex items-start gap-2 mb-2";
+        if (isJustify) return "text-justify mb-4";
+        return "text-center mb-4";
+    };
+
     const renderText = (text: string) =>
         text.split("\n").map((line, lineIndex) => {
             const trimmed = line.trimStart();
-            const isList = trimmed.startsWith("•");
+            const match = /^(\u2022|\p{Emoji})\s*/u.exec(trimmed);
+            const isList = match !== null;
+            const paragraphClassName = getParagraphClassName(isList, isJustify);
 
             return (
                 <p
                     key={`${hashString(line)}-${lineIndex}`}
-                    className={isList ? "mb-2 pl-6 -indent-6 text-left" : "mb-4"}
+                    className={paragraphClassName}
                 >
                     {line.split("\t").map((chunk, chunkIndex) => (
                         <span
@@ -63,9 +71,6 @@ export default function PresentationModal({ isOpen, setIsOpen, isJustify = false
     let title: string;
 
     switch (name) {
-        case "PRESENTATION":
-            title = "Fiabilité des systèmes d’IA";
-            break;
         case "TEACHER":
             title = "Présentation du jeu - ReViSE";
             break;
@@ -86,6 +91,14 @@ export default function PresentationModal({ isOpen, setIsOpen, isJustify = false
             break;
         case "COOP":
             title = "Équipe Coordination opérationnelle – COOP";
+            break;
+
+        case "IA":
+            title = "Fiabilité des systèmes d’IA"
+            break;
+
+        case "LAUNCHER":
+            title = "Voyage interplanétaire";
             break;
 
         default:

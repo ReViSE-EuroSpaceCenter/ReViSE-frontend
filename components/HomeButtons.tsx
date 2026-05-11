@@ -10,7 +10,7 @@ export default function HomeButtons() {
 
 	return (
 		<>
-			<div id="home-buttons" className="flex flex-col sm:flex-row gap-4 pt-4">
+			<div id="home-buttons" className="flex flex-col sm:flex-row gap-4">
 				<button
 					className="px-8 py-4 border-2 border-purpleReViSE hover:bg-purpleReViSE/20 rounded-lg font-semibold text-lg transition-colors cursor-pointer"
 					onClick={() => setIsModalOpen(true)}
