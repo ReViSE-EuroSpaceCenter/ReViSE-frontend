@@ -120,7 +120,7 @@ export default function Header() {
 						{!isHomePage && !teamName && (
 							<div className="flex justify-end">
 								<Image
-									src="/wallonie-relance.svg"
+									src="/logos/wallonie-relance.svg"
 									alt="Wallonie-Relance"
 									width={160}
 									height={60}
