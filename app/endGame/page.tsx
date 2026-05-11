@@ -55,7 +55,7 @@ export default function EndGamePage() {
         <div className="min-h-[calc(100vh-80px)] flex flex-col justify-between py-4">
             <div className="max-w-6xl w-full mx-auto space-y-4 text-center pt-2">
                 <div className="space-y-2">
-                    <h1 className="text-4xl sm:text-4xl lg:text-5xl font-bold text-purpleReViSE">
+                    <h1 className="text-4xl sm:text-4xl lg:text-4xl font-bold text-purpleReViSE">
                         <span>Merci d’avoir joué à ReVisE !</span>
                         {!isWin && (
                             <span className="block">
@@ -144,16 +144,10 @@ export default function EndGamePage() {
                     </div>
                 </div>
 
-                    <Link
-                        href="/"
-                        className={`${styles.fadeInUp} [animation-delay:3800ms] inline-block px-5 py-2 rounded-lg bg-purpleReViSE text-white font-semibold hover:opacity-90 transition`}
-                    >
-                        Retour à l’accueil
-                    </Link>
-                </div>
+
 
             <div
-                className={`${styles.fadeInUp} [animation-delay:4200ms] w-full max-w-5xl mx-auto pt-2 h-14 lg:h-16 overflow-hidden`}
+                className={`${styles.fadeInUp} [animation-delay:3800ms] w-full max-w-5xl mx-auto pt-2 h-14 lg:h-16 overflow-hidden`}
             >
                 <div className="h-full flex items-center justify-center gap-4 lg:gap-8 flex-nowrap">
                     <Image
@@ -192,6 +186,13 @@ export default function EndGamePage() {
                         className="h-8 lg:h-10 w-auto object-contain shrink-0"
                     />
                 </div>
+            </div>
+                <Link
+                    href="/"
+                    className={`${styles.fadeInUp} [animation-delay:4200ms] inline-block px-5 py-2 rounded-lg bg-purpleReViSE text-white font-semibold hover:opacity-90 transition`}
+                >
+                    Retour à l’accueil
+                </Link>
             </div>
             </div>
         </div>
