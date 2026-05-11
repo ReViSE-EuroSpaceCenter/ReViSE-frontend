@@ -12,6 +12,7 @@ vi.mock("next/navigation", () => ({
 describe("EndGamePage", () => {
     afterEach(() => {
         vi.restoreAllMocks();
+        mockUseSearchParams.mockReset();
     });
 
     it("affiche le contenu de victoire", () => {
@@ -57,6 +58,7 @@ describe("EndGamePage", () => {
 
         const callbacks: FrameRequestCallback[] = [];
 
+        vi.spyOn(performance, "now").mockReturnValue(0);
         vi.spyOn(window, "requestAnimationFrame").mockImplementation((cb) => {
             callbacks.push(cb);
             return callbacks.length;
@@ -64,7 +66,7 @@ describe("EndGamePage", () => {
 
         vi.spyOn(window, "cancelAnimationFrame").mockImplementation(() => {});
 
-        const { container } = renderPage(<EndGamePage />);
+        const { container, unmount } = renderPage(<EndGamePage />);
         const scrollContainer = container.firstElementChild as HTMLDivElement;
 
         Object.defineProperty(scrollContainer, "scrollHeight", {
@@ -77,8 +79,12 @@ describe("EndGamePage", () => {
             configurable: true,
         });
 
-        callbacks[0](5200);
+        callbacks[0](1000);
+        callbacks[1](5200);
 
         expect(scrollContainer.scrollTop).toBeGreaterThan(0);
+        unmount();
+        expect(window.cancelAnimationFrame).toHaveBeenCalled();
+        vi.restoreAllMocks();
     });
 });
