@@ -1,0 +1,170 @@
+name: Dependabot weekly batch
+
+# À placer dans .github/workflows/dependabot-batch.yml
+#
+# Déroulé :
+#  1. Se lance quand le workflow "Dependabot Updates" se termine (ou à la main).
+#  2. Attend les checks de chaque PR Dependabot ouverte et garde celles qui sont vertes.
+#  3. Fusionne ces branches dans une branche deps/batch-*, régénère le lockfile
+#     avec npm install, puis ouvre UNE PR groupée (qui déclenche ta CI).
+#  4. Quand la PR groupée est fusionnée, ferme les PR individuelles avec un
+#     commentaire "fusionnée dans #XXX". Si elle est refusée/fermée sans fusion,
+#     les PR individuelles restent intactes.
+
+on:
+  workflow_run:
+    workflows: ["Dependabot Updates"]
+    types: [completed]
+  workflow_dispatch:
+  pull_request:
+    types: [closed]
+
+jobs:
+  build-batch:
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    # Évite deux lots en parallèle (Dependabot Updates peut se déclencher plusieurs fois)
+    concurrency:
+      group: dependabot-batch-build
+      cancel-in-progress: false
+    permissions:
+      contents: read
+    env:
+      # PAT (ou token de GitHub App) nécessaire pour que la CI se lance sur la PR groupée.
+      # Doit exister en secret Actions ET en secret Dependabot (voir note plus bas).
+      GH_TOKEN: ${{ secrets.BATCH_PAT }}
+      GH_REPO: ${{ github.repository }}
+      BASE: ${{ github.event.repository.default_branch }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.repository.default_branch }}
+          token: ${{ secrets.BATCH_PAT }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*   # adapte à ta version (ou node-version-file: .nvmrc)
+
+      - name: Skip si un lot est déjà ouvert
+        id: guard
+        run: |
+          open=$(gh pr list --state open --json headRefName \
+            --jq '[.[] | select(.headRefName | startswith("deps/batch-"))] | length')
+          if [ "$open" -gt 0 ]; then
+            echo "Un lot est déjà ouvert, rien à faire."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Construire le lot
+        if: steps.guard.outputs.skip != 'true'
+        run: |
+          set -uo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          BRANCH="deps/batch-$(date +%F-%H%M)"
+          git checkout -b "$BRANCH"
+
+          merged=()
+
+          for pr in $(gh pr list --author "app/dependabot" --state open --base "$BASE" \
+                        --json number --jq '.[].number'); do
+            echo "::group::PR #$pr"
+
+            # Attend la fin des checks ; code de sortie 0 = tout est vert
+            if ! gh pr checks "$pr" --watch --interval 30 >/dev/null 2>&1; then
+              echo "Checks non verts (ou absents) : PR ignorée."
+              echo "::endgroup::"
+              continue
+            fi
+
+            ref=$(gh pr view "$pr" --json headRefName --jq .headRefName)
+            git fetch origin "$ref"
+
+            ok=0
+            if git merge --no-ff --no-commit "origin/$ref" >/dev/null 2>&1; then
+              ok=1
+            else
+              conflicts=$(git diff --name-only --diff-filter=U)
+              if [ "$conflicts" = "package-lock.json" ]; then
+                # Conflit uniquement sur le lockfile : on garde le nôtre,
+                # il sera régénéré par npm install à la fin.
+                git checkout --ours package-lock.json
+                git add package-lock.json
+                ok=1
+              else
+                echo "Conflit sur: $conflicts : PR ignorée."
+                git merge --abort
+              fi
+            fi
+
+            if [ "$ok" -eq 1 ]; then
+              git commit --no-edit -m "Merge Dependabot PR #$pr ($ref)" || true
+              merged+=("$pr")
+              echo "PR #$pr ajoutée au lot."
+            fi
+            echo "::endgroup::"
+          done
+
+          if [ "${#merged[@]}" -lt 2 ]; then
+            echo "Moins de 2 PR vertes et compatibles (${#merged[@]}) : pas de lot."
+            exit 0
+          fi
+
+          # Régénère le lockfile à partir du package.json fusionné
+          if ! npm install --ignore-scripts; then
+            echo "::error::npm install a échoué sur le lot, abandon."
+            exit 1
+          fi
+          git add package.json package-lock.json
+          git diff --cached --quiet || git commit -m "chore(deps): regenerate lockfile"
+
+          git push origin "$BRANCH"
+
+          csv=$(IFS=,; echo "${merged[*]}")
+          list=$(printf -- "- #%s\n" "${merged[@]}")
+          body=$(printf '%s\n\n%s\n\n%s\n\n%s' \
+            "Lot hebdomadaire des mises à jour Dependabot dont les checks étaient verts." \
+            "$list" \
+            "Si cette PR est fusionnée, les PR ci-dessus seront fermées automatiquement. Sinon elles restent inchangées." \
+            "<!-- batch-prs:${csv} -->")
+
+          gh pr create --base "$BASE" --head "$BRANCH" \
+            --title "chore(deps): weekly dependency batch" \
+            --body "$body"
+
+  cleanup:
+    if: >
+      github.event_name == 'pull_request' &&
+      startsWith(github.event.pull_request.head.ref, 'deps/batch-')
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_REPO: ${{ github.repository }}
+      BATCH_NUMBER: ${{ github.event.pull_request.number }}
+      BATCH_BODY: ${{ github.event.pull_request.body }}
+      BATCH_REF: ${{ github.event.pull_request.head.ref }}
+      MERGED: ${{ github.event.pull_request.merged }}
+    steps:
+      - name: Fermer les PR individuelles incluses dans le lot
+        if: env.MERGED == 'true'
+        run: |
+          ids=$(printf '%s' "$BATCH_BODY" | grep -oE 'batch-prs:[0-9,]+' | cut -d: -f2)
+          for id in ${ids//,/ }; do
+            echo "Fermeture de #$id"
+            gh pr close "$id" \
+              --comment "Cette mise à jour a été fusionnée dans la PR #${BATCH_NUMBER}. Fermeture automatique." \
+              || echo "Impossible de fermer #$id (déjà fermée ?)"
+          done
+
+      - name: Supprimer la branche du lot
+        run: |
+          gh api -X DELETE "repos/${GH_REPO}/git/refs/heads/${BATCH_REF}" \
+            || echo "Branche déjà supprimée."
